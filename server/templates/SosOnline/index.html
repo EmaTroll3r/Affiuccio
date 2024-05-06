@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SoS Online</title>
+        <div class="content">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='SosOnline/style.css') }}">
+        </div>
+    </head> 
+<body>
+    
+    
+    <h1 class="write">SoS Online</h1>
+    <button id="host-lobby">Host a lobby</button>
+    <button id="join-lobby">Join a lobby</button>
+    <input type="text" id="nickname" placeholder="Inserisci il tuo nickname">
+    <!-- <button id="start-game">Start Game</button> -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script> -->
+
+    <input type="hidden" id="gameEndpoint" value="SosOnline" />
+    <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='home/index_script.js') }}"></script>
+</body>
+</html>

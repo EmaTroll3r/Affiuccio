@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SoS Online</title>
+        <div class="content">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='SosOnline/style.css') }}">
+        </div>
+    </head> 
+<body>
+    <h1 class="write">Lobby</h1>
+    <p class="write" id="party-id">Codice della lobby: <span></span></p>
+    <h2 class="write">Giocatori:</h2>
+    <ul  class="write" id="player-list"></ul>
+    <button id="remove-player" class="host-buttons" style="display: none;">Remove Player</button>
+    <button id="start-game" class="host-buttons" style="display: none;">Start Game</button>
+    
+    <input type="hidden" id="gameEndpoint" value="SosOnline" />
+    <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='home/lobby_script.js') }}"></script>
+</body>
+</html>

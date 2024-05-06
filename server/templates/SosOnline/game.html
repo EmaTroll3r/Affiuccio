@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SoS Online</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='SosOnline/style.css') }}">
+</head>
+<body>
+    <!--<button id="drawButton">Draw</button>-->
+    <p id="playerTurn">Giocatore di turno:</p>
+    <hr>
+    <div id="game-images">
+        <img id="card1" class="card" src="">
+        <img id="card2" class="card">
+        <img id="card3" class="card">
+    </div>
+
+    
+    <div id="BigCard">
+        <img id="showedCard" style="display: none;" src="{{ url_for('static', filename='SosOnline/images/0.png') }}">
+    </div>
+
+    <select id="context-menu" size="3" style="display: none; position: fixed;">
+        <option id="context-play">Gioca</option>
+        <option id="context-block">Blocca</option>
+        <option id="context-blame">Scaricabarile</option>
+    </select>
+    
+    <!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script> -->
+    <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='SosOnline/game_script.js') }}"></script>
+</body>
+</html>
