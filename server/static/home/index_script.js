@@ -1,5 +1,13 @@
+var ip_address = "localhost"
 
-var socket = io.connect('http://localhost'); 
+fetch('/static/server_stats.json')
+    .then(response => response.json())
+    .then(data => ip_address = data['ip'])
+    .catch(error => console.error('Errore:', error));
+
+var socket = io.connect('http://'+ip_address);
+
+
 let gameEndpoint = document.getElementById('gameEndpoint').value;
 
 document.getElementById('host-lobby').addEventListener('click', function() {

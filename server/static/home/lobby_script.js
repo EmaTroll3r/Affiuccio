@@ -1,4 +1,13 @@
-var socket = io.connect('http://localhost');
+var ip_address = "localhost"
+
+fetch('/static/server_stats.json')
+    .then(response => response.json())
+    .then(data => ip_address = data['ip'])
+    .catch(error => console.error('Errore:', error));
+
+var socket = io.connect('http://'+ip_address);
+
+
 let gameEndpoint = document.getElementById('gameEndpoint').value;
 
 var urlParams = new URLSearchParams(window.location.search);
