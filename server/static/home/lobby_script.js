@@ -135,7 +135,7 @@ function startingFunction() {
     };
 
     socket.emit('join', socket_data);
-    console.log('join', socket_data);
+    //console.log('join', socket_data);
 }
 
 startingFunction()

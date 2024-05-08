@@ -1,14 +1,14 @@
 from flask import jsonify, render_template, request
 from flask_socketio import join_room, leave_room,emit
 import server.apps.SosOnline as sosOnline
-from global_vars import main, partyManager,socketio
+from global_vars import main, partyManager,socketio, test
 from .classes import Deck, Party, Player
 import json
 #from .classes import PartyNamespace
 
 #from run import socketio
 
-test = True
+#test = True
 
 def p(*args):
     print("\n\n\n",*args,"\n\n\n")
