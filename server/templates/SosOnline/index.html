@@ -18,7 +18,17 @@
     <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script> -->
 
     <input type="hidden" id="gameEndpoint" value="SosOnline" />
+
     <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
-    <script src="{{ url_for('static', filename='home/index_script.js') }}"></script>
+    
+    <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
+    <!-- <script src="{{ url_for('static', filename='home/index_script.js') }}"></script> -->
+    <script>
+        window.addEventListener('load', function() {
+            var script = document.createElement('script');
+            script.src = "{{ url_for('static', filename='home/index_script.js') }}";
+            document.body.appendChild(script);
+        });
+    </script>
 </body>
 </html>

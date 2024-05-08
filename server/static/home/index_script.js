@@ -1,12 +1,7 @@
-var ip_address = "localhost"
-
-fetch('/static/server_stats.json')
-    .then(response => response.json())
-    .then(data => ip_address = data['ip'])
-    .catch(error => console.error('Errore:', error));
-
-var socket = io.connect('http://'+ip_address);
-
+//socket_connect();
+//var socket;
+//socket_connect();
+//console.log('Start of script '+socket);
 
 let gameEndpoint = document.getElementById('gameEndpoint').value;
 
@@ -49,6 +44,7 @@ socket.on('player-joined', function(data) {
     localStorage.setItem('playerID', data.playerID);
     window.location.href = `/`+gameEndpoint+`/lobby?mtype=${data.mtype}&partyID=${data.partyID}&playerID=${data.playerID}`
 });
+
 
 document.getElementById('join-lobby').addEventListener('click', function() {
     var partyID = parseInt(prompt("Inserisci il partyID"));
