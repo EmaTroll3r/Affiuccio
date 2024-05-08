@@ -1,3 +1,4 @@
+/*
 var ip_address = "localhost"
 
 fetch('/static/server_stats.json')
@@ -6,7 +7,7 @@ fetch('/static/server_stats.json')
     .catch(error => console.error('Errore:', error));
 
 var socket = io.connect('http://'+ip_address);
-
+*/
 
 //--------------------------------------------------------------------------------------------
 var witheringLooks = [];
@@ -202,8 +203,14 @@ function showHand(){
     console.log('showHand',wlLevel);
 }
 
+/*
 window.onload = function() {
+    startingFunction()
+}
+*/
 
+function startingFunction(){
+    
     fetch('/static/SosOnline/SosOnlineLimits.json')
     .then(response => response.json())
     .then(data => {
@@ -228,3 +235,5 @@ window.onload = function() {
     
     //showHand();
 }
+
+startingFunction()

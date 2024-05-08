@@ -1,3 +1,4 @@
+/*
 var ip_address = "localhost"
 
 fetch('/static/server_stats.json')
@@ -6,7 +7,7 @@ fetch('/static/server_stats.json')
     .catch(error => console.error('Errore:', error));
 
 var socket = io.connect('http://'+ip_address);
-
+*/
 
 var maxHintHand = 3;
 var maxActionHand = 3;
@@ -238,8 +239,14 @@ function showPlayedCard(card,handtype){
     bigCard.addEventListener('click', handleBigCardClick);
 }
 
+/*
 window.onload = function() {
+    startingFunction()
+}
+*/
 
+function startingFunction() {
+    
     fetch('/static/SosOnline/SosOnlineLimits.json')
     .then(response => response.json())
     .then(data => {
@@ -274,3 +281,5 @@ window.onload = function() {
     socket.emit('join', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
     //showHand();
 }
+
+startingFunction()

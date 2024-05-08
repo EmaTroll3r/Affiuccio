@@ -1,11 +1,4 @@
-var ip_address = "localhost"
 
-fetch('/static/server_stats.json')
-    .then(response => response.json())
-    .then(data => ip_address = data['ip'])
-    .catch(error => console.error('Errore:', error));
-
-var socket = io.connect('http://'+ip_address);
 
 
 let gameEndpoint = document.getElementById('gameEndpoint').value;
@@ -126,7 +119,15 @@ document.getElementById('remove-player').addEventListener('click', function() {
     console.log("remove-player",partyID,targetMtype)
 });
 
+
+/*
 window.onload = function() {
+    startingFunction()
+}
+*/
+
+
+function startingFunction() {
     var socket_data = {
         playerID: playerID,
         partyID: partyID,
@@ -134,7 +135,10 @@ window.onload = function() {
     };
 
     socket.emit('join', socket_data);
+    console.log('join', socket_data);
 }
+
+startingFunction()
 
 /*
 socket.on('plaer_joined', function(data) {
