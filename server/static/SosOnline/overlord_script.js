@@ -120,15 +120,18 @@ document.getElementById('letDrawButton').addEventListener('click', function() {
     while(targetPlayer < 2){
         targetPlayer = parseInt(prompt("Quale giocatore vuoi far pescare? "));
         //console.log("got turn "+targetPlayer)
-        if(targetPlayer == null) 
+        if(isNaN(targetPlayer)) 
             return;
+        console.log("got targetPlayer "+targetPlayer)
     }
 
-    while(deck != 1 || deck != 2){
+    while(deck != 1 && deck != 2){
         deck = parseInt(prompt("Quale tipo di carta vuoi far pescare? (1) Spunto, (2) Azione "));
         //console.log("got turn "+targetPlayer)
-        if(deck == null) 
+        console.log("got deck "+deck)
+        if(isNaN(deck)) 
             return;
+        
     }
 
     if(deck == 1)
@@ -137,7 +140,17 @@ document.getElementById('letDrawButton').addEventListener('click', function() {
         verboseDeck = 'action'
 
     console.log("Player "+targetPlayer+" is drawing from deck "+verboseDeck)
-    socket.emit('draw', {'partyID':partyID,'playerID':playerID, 'mtype':mtype, 'targetPlayer':targetPlayer,'verboseDeck':verboseDeck} );
+    socket.emit('draw', {'partyID':partyID,'playerID':playerID, 'mtype':mtype, 'targetPlayer':targetPlayer,'targetHand':verboseDeck,'handtype':verboseDeck} );
+});
+
+socket.on('response-letDraw', function(data) {
+    
+    //console.log('card-played', data);
+    if(data.playerID == playerID){
+        alert(data.response['message'])
+        console.log(data.response)
+    }
+    
 });
 
 socket.on('card-played', function(data) {

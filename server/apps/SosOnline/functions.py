@@ -61,11 +61,11 @@ def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
                 if(cards[1] >= sosOnlineLimits['maxBlockCards']):      #se è uno scaricabarile
                     if newTurn > 0:
                         for i in range(sosOnlineLimits['maxHintHand'] - len(party.players[player.mtype-1].hands['hint'])):  #pesca hint card fino ad arrivare a maxHintHand
-                            party.draw(player.mtype,'hint','hint')
+                            party.raw_draw(player.mtype,'hint','hint')
                         newTurn = party.changeTurn(others['newTurn'],[1],needToPlay=needToPlay)        #cambia effettivamente il turno
                         emit('response-turn', {'response': {"status": 0, "message": "Success"},'playerID':player.id,'turn': newTurn}, room=party.partyID)
                 if(cards[1] < sosOnlineLimits['maxBlockCards']):        #se è una carta blocco
-                    party.draw(player.mtype,'action','action')
+                    party.raw_draw(player.mtype,'action','action')
 
                     
         response.update({"status": 0, "message": "Success"})

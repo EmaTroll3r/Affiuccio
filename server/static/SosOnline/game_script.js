@@ -124,6 +124,7 @@ socket.on('response-hand', function(data) {
         hand[data.handtype] = JSON.parse(data.hand).map(function(item) {
             return parseInt(item);
         });
+
         showHand();
     }
 });
@@ -246,7 +247,8 @@ window.onload = function() {
 */
 
 function startingFunction() {
-    
+
+
     fetch('/static/SosOnline/SosOnlineLimits.json')
     .then(response => response.json())
     .then(data => {

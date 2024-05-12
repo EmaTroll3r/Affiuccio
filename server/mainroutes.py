@@ -67,11 +67,11 @@ def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
                     if(cards[1] >= sosOnlineLimits['maxBlockCards']):      #se è uno scaricabarile
                         if newTurn > 0:
                             for i in range(sosOnlineLimits['maxHintHand'] - len(party.players[player.mtype-1].hands['hint'])):  #pesca hint card fino ad arrivare a maxHintHand
-                                party.draw(player.mtype,'hint','hint')
+                                party.raw_draw(player.mtype,'hint','hint')
                             newTurn = party.changeTurn(others['newTurn'],[1],needToPlay=True)        #cambia effettivamente il turno
                             emit('response-turn', {'turn': newTurn}, room=party.partyID)
                     if(cards[1] < sosOnlineLimits['maxBlockCards']):        #se è una carta blocco
-                        party.draw(player.mtype,'action','action')
+                        party.raw_draw(player.mtype,'action','action')
 
                         
             response.update({"status": 0, "message": "Success"})
@@ -189,14 +189,59 @@ def on_leave(data):
     leave_room(partyID)
     emit('player_left', {'playerID': playerID}, room=partyID)
 
-"""
+#"""
 @socketio.on('draw')
 def on_leave(data):
     partyID = int(data['partyID'])
     playerID = int(data['playerID'])
     mtype = int(data['mtype'])
-     = data['handtype']
-"""
+    handtype = data['handtype']
+    targetPlayer = int(data['targetPlayer'])
+    targetHand = data['targetHand']
+
+
+    try:
+        party = partyManager.get_party(partyID)
+        if(party == None):
+            response = {"status": 1, "message": "Party not found"}
+        elif(party.get_player(targetPlayer) == None):
+            response = {"status": 2, "message": "Player not found"}
+        elif(not(targetHand in party.get_player(targetPlayer).hands)):
+            response = {"status": 3, "message": "Hand not found"}
+        elif(not(handtype in party.decks)):
+            response = {"status": 4, "message": "Deck not found"}
+        else:
+            card = party.draw(targetPlayer,targetHand,handtype)
+            if (card > 0):
+                response = {"status": 0, "message": "Success"}
+            elif(card == -1):
+                response = {"status": 6, "message": "Maximum hand size reached"}
+            elif(card == -2):
+                response = {"status": 7, "message": "Player not found"}
+            elif(card == -3):
+                response = {"status": 8, "message": "Hand not found"}
+            elif(card == -4):
+                response = {"status": 9, "message": "Deck not found"}
+            else:
+                response = {"status": 5, "message": "Generic error"}
+    except Exception as e:
+        p("Error in draw",e)
+        response = {"status": 5, "message": "Generic error"}
+
+    """
+    if(targetPlayer != mtype):      #means that the player [mtype] is asking for another player (targetPlayer) draw
+        emit('response-letDraw', {'response':response, 'playerID': playerID, 'targetPlayer':targetPlayer, 'targetHand':targetHand, 'handtype':handtype}, room=partyID)
+        if(response['status'] == 0):
+            emit('response-hand', {'response':response,'playerID': partyManager.get_party(partyID).get_player(targetPlayer).id,'handtype':targetHand, 'hand': json.dumps(partyManager.get_party(partyID).get_player(targetPlayer).hands[targetHand].to_dict())}, room=partyID)
+    else:
+        emit('response-hand', {'response':response,'playerID': partyManager.get_party(partyID).get_player(targetPlayer).id,'handtype':targetHand, 'hand': json.dumps(partyManager.get_party(partyID).get_player(targetPlayer).hands[targetHand].to_dict())}, room=partyID)
+    #emit('response-hand', {'playerID': playerID,'handtype':handtype, 'hand': json.dumps(partyManager.get_party(partyID).players[mtype-1].hands[handtype].to_dict())}, room=partyID)
+    """
+    
+    emit('response-letDraw', {'response':response, 'playerID': playerID, 'targetPlayer':targetPlayer, 'targetHand':targetHand, 'handtype':handtype}, room=partyID)
+    if(response['status'] == 0):
+        emit('response-hand', {'playerID': partyManager.get_party(partyID).get_player(targetPlayer).id,'handtype':targetHand, 'hand': json.dumps(partyManager.get_party(partyID).get_player(targetPlayer).hands[targetHand].to_dict())}, room=partyID)
+
 
 @socketio.on('remove-player')
 def remove_player_from_lobby(data):
@@ -247,9 +292,9 @@ def sosonline_start_game(data):
             continue
         links[player.mtype] = '/SosOnline/game?partyID='+str(partyID)+'&mtype='+str(player.mtype) + '&playerID=' + str(player.id)
         for i in range(sosOnlineLimits['maxHintHand']):
-            partyManager.get_party(partyID).draw(player.mtype,'hint','hint')
+            partyManager.get_party(partyID).raw_draw(player.mtype,'hint','hint')
         for i in range(sosOnlineLimits['maxActionHand']):
-            partyManager.get_party(partyID).draw(player.mtype,'action','action')
+            partyManager.get_party(partyID).raw_draw(player.mtype,'action','action')
     """
 
     
@@ -267,9 +312,9 @@ def sosonline_start_game(data):
         player.mtype = real_mtype
         real_mtype += 1
         for i in range(sosOnlineLimits['maxHintHand']):
-            partyManager.get_party(partyID).draw(player.mtype,'hint','hint')
+            partyManager.get_party(partyID).raw_draw(player.mtype,'hint','hint')
         for i in range(sosOnlineLimits['maxActionHand']):
-            partyManager.get_party(partyID).draw(player.mtype,'action','action')
+            partyManager.get_party(partyID).raw_draw(player.mtype,'action','action')
 
 
     partyManager.get_party(partyID).turn = 2

@@ -3,6 +3,8 @@
 //socket_connect();
 //console.log('Start of script '+socket);
 
+//socket.emit('leave', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
+
 let gameEndpoint = document.getElementById('gameEndpoint').value;
 
 document.getElementById('host-lobby').addEventListener('click', function() {

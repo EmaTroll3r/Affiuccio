@@ -16,6 +16,7 @@ class Card:
 class Deck:
 
     def __init__(self, maxCards, ishand=False):
+        self.maxCards = maxCards
         if ishand:
             self.cards = []
         else:
@@ -31,6 +32,12 @@ class Deck:
             return self.cards.pop()
         else:
             return None
+
+    def addCard(self, card):
+        if len(self.cards) < self.maxCards:
+            self.cards.append(card)
+            return True
+        return False
 
     def to_dict(self):
         #return {'cards': [card.card for card in self.cards]}
@@ -85,15 +92,33 @@ class Party:
     def pickCard(self,deckNumber=0):
         return self.decks[deckNumber].draw()
     
-    def draw(self,mtype,handNumber=0,deckNumber=0):
+    def raw_draw(self,mtype,handNumber=0,deckNumber=0):
         
-        #print("\ndraw1",self.players[mtype-1].hands[handNumber],"\n")
         card = self.pickCard(deckNumber)
-        self.players[mtype-1].hands[handNumber].cards.append(card)
+        if self.get_player(mtype).hands[handNumber].addCard(card) == True:
+            return card
+        return -1
 
-        #print("\ndraw2",self.players[mtype-1].hands[handNumber],"\n")
-        return card
-    
+    def draw(self,mtype,handNumber=0,deckNumber=0):
+        if mtype > len(self.players) or mtype <= 0:
+            return -2
+        if isinstance(handNumber, int):
+            if handNumber >= len(self.players[mtype-1].hands) or handNumber < 0:
+                return -3
+        else:
+            if handNumber not in self.get_player(mtype).hands:
+                return -3
+            
+        if isinstance(deckNumber, int):
+            if deckNumber >= len(self.decks) or deckNumber < 0:
+                return -4
+        else:
+            if deckNumber not in self.decks:
+                return -4
+
+        card = self.raw_draw(mtype,handNumber,deckNumber)
+        return card.card
+
     def to_dict(self):
         return {
             'partyID': self.partyID,
