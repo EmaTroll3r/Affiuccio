@@ -233,18 +233,19 @@ function startingFunction(){
     .then(data => {
         maxHintCards = data.maxHintCards;
 
-        for (var i = 0; i < maxHintCards+1; i++) {
-            preloadedImages[i] = new Image();
-            preloadedImages[i].src = '/static/SosOnline/images/' + i + '.png';
-            //console.log("Preloaded",preloadedImages[i].src);
-        }
-        
         for (var i = 1; i < 4; i++) {
             witheringLooksImages[i] = new Image();
             witheringLooksImages[i].src = '/static/SosOnline/images/wl' + i + '.png';
             
             //console.log("Preloaded wl",witheringLooksImages[i].src);
         }
+
+        for (var i = 0; i < maxHintCards+1; i++) {
+            preloadedImages[i] = new Image();
+            preloadedImages[i].src = '/static/SosOnline/images/' + i + '.png';
+            //console.log("Preloaded",preloadedImages[i].src);
+        }
+        
         socket.emit('join', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
     })
     .catch(error => console.error('Errore:', error));
