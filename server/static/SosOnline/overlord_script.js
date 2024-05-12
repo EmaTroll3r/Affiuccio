@@ -148,7 +148,7 @@ socket.on('response-letDraw', function(data) {
     //console.log('card-played', data);
     if(data.playerID == playerID){
         alert(data.response['message'])
-        console.log(data.response)
+        //console.log(data.response)
     }
     
 });
