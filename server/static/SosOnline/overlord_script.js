@@ -147,7 +147,11 @@ socket.on('response-letDraw', function(data) {
     
     //console.log('card-played', data);
     if(data.playerID == playerID){
-        alert(data.response['message'])
+        if(data.response['status'] == 0){
+            alert("Carta pescata con successo");
+        }else{
+            alert(data.response['message'])
+        }
         //console.log(data.response)
     }
     
