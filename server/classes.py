@@ -97,7 +97,7 @@ class Party:
         card = self.pickCard(deckNumber)
         if self.get_player(mtype).hands[handNumber].addCard(card) == True:
             return card
-        return -1
+        return None
 
     def draw(self,mtype,handNumber=0,deckNumber=0):
         if mtype > len(self.players) or mtype <= 0:
@@ -117,6 +117,8 @@ class Party:
                 return -4
 
         card = self.raw_draw(mtype,handNumber,deckNumber)
+        if card == None:
+            return -1
         return card.card
 
     def to_dict(self):
