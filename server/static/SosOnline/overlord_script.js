@@ -268,7 +268,7 @@ function getPlayer(mtype){
     return null;
 }
 
-document.getElementById('turnButton').addEventListener('click', function() {
+document.getElementById('turnButton').addEventListener('click', async function() {
     /*
     var newTurn = -1
     while(newTurn < 2){
@@ -279,7 +279,7 @@ document.getElementById('turnButton').addEventListener('click', function() {
             return;
     }
     */
-    newTurn = choosePlayer([1]);
+    newTurn = await choosePlayer([1]);
     if (newTurn == null) 
         return;
     console.log("changing turn in "+newTurn)
