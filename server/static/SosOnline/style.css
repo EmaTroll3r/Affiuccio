@@ -55,7 +55,8 @@ button {
     transform: scale(0.95); /* Riduci l'immagine del 5% */
 }
 
-#context-menu {
+
+.context-menu {
     background-color: rgba(0, 0, 0, 0.8); /* Sfondo nero semi-trasparente */
     color: white; /* Testo bianco */
     border: none; /* Rimuovi il bordo predefinito */

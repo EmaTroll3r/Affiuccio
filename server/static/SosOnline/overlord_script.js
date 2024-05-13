@@ -15,6 +15,7 @@ var maxHintCards = 2;
 var witheringLooksImages = [];
 var preloadedImages = [];
 var turn = 0;
+var playerList = [];
 
 var urlParams = new URLSearchParams(window.location.search);
 var playerID = parseInt(urlParams.get('playerID'));
@@ -26,9 +27,10 @@ var mtype = urlParams.get('mtype');
 var image = document.getElementById('card1');
 var contextMenu = document.getElementById('context-menu');
 var bigCard = document.getElementById('showedCard');
+//var contextPlayers = document.getElementById("context-choosePlayer");
 
 // Aggiungi un ascoltatore di eventi 'change' al select
-contextMenu.addEventListener('click', function(e) {
+contextMenu.addEventListener('click',async function(e) {
     var selectedOption = this.options[this.selectedIndex];
     var clickedElement = e.target;
 
@@ -43,20 +45,125 @@ contextMenu.addEventListener('click', function(e) {
             case 'context-wl':
                 //console.log('Hai selezionato "Gioca"');
                 //playCard(contextMenu.getAttribute('selected-card'));
+                /*
                 mtype = -1
                 while(mtype < 2){
                     var mtype = parseInt(prompt("A quale giocatore vuoi lanciare l'occhiataccia? "));
                     if(mtype == null) 
                         return;
                 }
+                // */ 
+                //console.log('wl',mtype);
+                
+                //mtype = await choosePlayer(contextMenu.offsetLeft+contextMenu.offsetWidth+ 2,contextMenu.offsetTop,[1]);
+                mtype = await choosePlayer([1]);
+                if (mtype == null) 
+                    return;
+                console.log('wl',mtype);
                 playWl(witheringLooks[mtype] + 1,mtype);
                 break;
         }
     }
 });
 
+
+async function choosePlayer(foreignPlayers) {
+    let inputOptions = {};
+    for (let player of playerList) {
+        if (!foreignPlayers.includes(player.mtype)) {
+            inputOptions[player.mtype] = player.name;
+        }
+    }
+
+    let result = await Swal.fire({
+        //title: 'Seleziona un giocatore',
+        title: '<span style="color: #fff;">Seleziona un giocatore</span>',
+        input: 'select',
+        inputOptions: inputOptions,
+        //inputPlaceholder: 'Seleziona un\'opzione',
+        showCancelButton: true,
+        background: '#333',
+        customClass: {
+            content: 'swal-content-custom'
+        }
+    });
+
+    if (result.isConfirmed) {
+        return parseInt(result.value);
+    } else {
+        return null;
+    }
+}
+
+async function chooseOther(title,list) {
+    let result = await Swal.fire({
+        //title: title,
+        title: '<span style="color: #fff;">'+title+'</span>',
+        input: 'select',
+        inputOptions: list,
+        //inputPlaceholder: 'Seleziona un\'opzione',
+        showCancelButton: true,
+        background: '#333',
+        customClass: {
+            content: 'swal-content-custom'
+        }
+    });
+
+    if (result.isConfirmed) {
+        return result.value;
+    } else {
+        return null;
+    }
+}
+
+/*
+function handlePlayerChoice(x, y,foreignPlayers){
+    return new Promise((resolve, reject) => {
+
+        for (var i = 0; i < foreignPlayers.length;i++) {
+            contextPlayers.options[foreignPlayers[i]-1].style.display = 'none';
+        }
+        contextPlayers.style.left = x + 'px';
+        contextPlayers.style.top = y + 'px';
+        contextPlayers.style.display = 'block';
+
+        
+
+        
+        // Aggiungi un gestore di eventi per l'evento 'click'
+        contextPlayers.addEventListener('click', function(event) {
+            // L'elemento cliccato è event.target
+            var clickedOption = event.target;
+
+            // Ottieni l'attributo 'data-mtype' dell'elemento cliccato
+            var mtype = clickedOption.getAttribute('data-mtype');
+
+            // Nascondi contextPlayers
+            contextPlayers.style.display = 'none';
+            contextMenu.style.display = 'none';
+            for (var i = 0; i < foreignPlayers.length;i++) {
+                contextPlayers.options[foreignPlayers[i]-1].style.display = 'block';
+            }
+
+            // Risolvi la promessa con mtype
+            resolve(mtype);
+        });
+
+        
+    });
+}
+
+async function choosePlayer(x, y, foreignPlayers) {
+    let mtype = await handlePlayerChoice(x, y,foreignPlayers);
+    // Fai qualcosa con mtype
+    //console.log(mtype);
+    return parseInt(mtype);
+}
+*/
+
 image.addEventListener('click', function(event) {
     // Mostra il menu contestuale
+    //contextPlayers.style.display = 'none';
     contextMenu.style.display = 'block';
 
     // Posiziona il menu contestuale nel punto in cui è stato fatto clic
@@ -70,17 +177,32 @@ image.addEventListener('click', function(event) {
     contextMenu.setAttribute('selected-card', parts[parts.length - 1].split('.')[0]);
 });
 
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function(e) {    
+
+    /*
+    if (e.target.className !== 'context-menu' && e.target.className !== 'contextMenu-option') {
+        //console.log('click outside contextPlayers');
+        contextPlayers.style.display = 'none';
+        if (e.target.className !== 'card') {
+            contextMenu.style.display = 'none';
+        }
+    }
+    if (e.target.className == 'contextMenu-option') {
+        contextMenu.style.display = 'none';
+    }
+    //console.log(e.target.className);
+    */
     if (e.target.className !== 'card') {
         contextMenu.style.display = 'none';
     }
 });
 
+
 socket.on('response-turn', function(data) {
     turn = parseInt(data.turn);
 
     if (data.response['status'] == 0){
-        document.getElementById('playerTurn').innerHTML = 'Giocatore di turno: '+ turn ;
+        document.getElementById('playerTurn').innerHTML = 'Giocatore di turno: '+ getPlayer(turn).name;
         showHand();
     }
 
@@ -91,16 +213,63 @@ socket.on('response-turn', function(data) {
 
 socket.on('response-points', function(data) {
     witheringLooks = data.points;
+    
+
+});
+
+socket.on('response-playerList', function(data) {
+    playerList = data.playerList;
+    witheringLooks = new Array(playerList.length).fill(null);
+
+    playerList.forEach((player, i) => {
+        witheringLooks[player.mtype] = player.points;
+    });
+
     socket.emit('get-turn', {'partyID':partyID, 'playerID':playerID});
+    // Rimuovi tutte le opzioni esistenti
+    /*
+    while (contextPlayers.firstChild) {
+        contextPlayers.removeChild(contextPlayers.firstChild);
+    }
+
+    playerList.forEach((player, i) => {
+        witheringLooks[player.mtype] = player.points;
+
+        // Crea una nuova opzione
+        var option = document.createElement("option");
+        option.value = player.mtype;  // Imposta il valore dell'opzione come l'ID del giocatore
+        option.text = player.name;  // Imposta il testo dell'opzione come il nome del giocatore
+        option.setAttribute('data-mtype', player.mtype);  // Imposta un attributo data-* con il tipo del giocatore
+        option.setAttribute('data-playerID', player.playerID);  // Imposta un attributo data-* con il tipo del giocatore
+
+
+        // Aggiungi l'opzione al <contextPlayers>
+        contextPlayers.appendChild(option);
+    });
+
+    contextPlayers.setAttribute("size", playerList.length);
+    */
 });
 
 socket.on('player-joined', function(data) {
     if(data.playerID == playerID){
-        socket.emit('get-all-points', {'partyID':partyID});
+        //socket.emit('get-all-points', {'partyID':partyID});
+        socket.emit('get-playerList', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
+        socket.emit('get-turn', {'partyID':partyID, 'playerID':playerID});
     }
 });
 
+function getPlayer(mtype){
+    for (let player of playerList) {
+        if (player.mtype == mtype) {
+            return player;
+        }
+    }
+    return null;
+}
+
 document.getElementById('turnButton').addEventListener('click', function() {
+    /*
     var newTurn = -1
     while(newTurn < 2){
         newTurn = parseInt(prompt("A quale giocatore vuoi passare il turno? "));
@@ -109,11 +278,17 @@ document.getElementById('turnButton').addEventListener('click', function() {
         if(newTurn == null) 
             return;
     }
+    */
+    newTurn = choosePlayer([1]);
+    if (newTurn == null) 
+        return;
     console.log("changing turn in "+newTurn)
     socket.emit('sosonline-change-turn', {'partyID':partyID,'playerID':playerID, 'mtype':mtype, 'newTurn':newTurn} );
 });
 
-document.getElementById('letDrawButton').addEventListener('click', function() {
+document.getElementById('letDrawButton').addEventListener('click', async function() {
+    
+    /*
     var targetPlayer = -1
     var deck = 0;
     var verboseDeck = 'hint'
@@ -124,7 +299,6 @@ document.getElementById('letDrawButton').addEventListener('click', function() {
             return;
         console.log("got targetPlayer "+targetPlayer)
     }
-
     while(deck != 1 && deck != 2){
         deck = parseInt(prompt("Quale tipo di carta vuoi far pescare? (1) Spunto, (2) Azione "));
         //console.log("got turn "+targetPlayer)
@@ -133,11 +307,18 @@ document.getElementById('letDrawButton').addEventListener('click', function() {
             return;
         
     }
-
     if(deck == 1)
         verboseDeck = 'hint'
     else if(deck == 2)
         verboseDeck = 'action'
+    */
+
+    var targetPlayer = await choosePlayer([1]);
+    if (targetPlayer == null) 
+        return;
+    var verboseDeck = await chooseOther("Quale carta vuoi far pescare?",{'hint':'Carta Spunto','action':'Carta Azione'});
+    if (verboseDeck == null) 
+        return;
 
     console.log("Player "+targetPlayer+" is drawing from deck "+verboseDeck)
     socket.emit('draw', {'partyID':partyID,'playerID':playerID, 'mtype':mtype, 'targetPlayer':targetPlayer,'targetHand':verboseDeck,'handtype':verboseDeck} );
@@ -213,9 +394,11 @@ function showPlayedCard(card,handtype){
 }
 
 function showHand(){
+    //console.log(witheringLooks[turn])
     let wlLevel = witheringLooks[turn] + 1;
     if(wlLevel >= 4) 
         wlLevel = 3;
+    //console.log('wlLevel',wlLevel);
     image.src = witheringLooksImages[wlLevel].src;
     console.log('showHand',wlLevel);
 }
@@ -246,6 +429,8 @@ function startingFunction(){
             //console.log("Preloaded",preloadedImages[i].src);
         }
         
+        //console.log('playerID',playerID);
+        //console.log(preloadedImages[5].src);
         socket.emit('join', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
     })
     .catch(error => console.error('Errore:', error));

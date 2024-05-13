@@ -103,7 +103,7 @@ class Party:
         if mtype > len(self.players) or mtype <= 0:
             return -2
         if isinstance(handNumber, int):
-            if handNumber >= len(self.players[mtype-1].hands) or handNumber < 0:
+            if handNumber >= len(self.get_player(mtype).hands) or handNumber < 0:
                 return -3
         else:
             if handNumber not in self.get_player(mtype).hands:

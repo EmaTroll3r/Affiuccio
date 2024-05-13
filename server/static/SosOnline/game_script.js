@@ -21,6 +21,8 @@ var preloadedImages = [];
 var witheringLooksImages = []
 var turn = 0;
 var bigCardActive = false;
+var playerList = [];
+var witheringLooks = [];
 
 var urlParams = new URLSearchParams(window.location.search);
 var playerID = parseInt(urlParams.get('playerID'));
@@ -32,9 +34,10 @@ var mtype = urlParams.get('mtype');
 var images = document.getElementsByClassName('card');
 var bigCard = document.getElementById('showedCard');
 var contextMenu = document.getElementById('context-menu');
+//var contextPlayers = document.getElementById("context-choosePlayer");
 
 // Aggiungi un ascoltatore di eventi 'change' al select
-contextMenu.addEventListener('click', function(e) {
+contextMenu.addEventListener('click', async function(e) {
     var selectedOption = this.options[this.selectedIndex];
     var clickedElement = e.target;
 
@@ -66,6 +69,7 @@ contextMenu.addEventListener('click', function(e) {
                 for(let i=0;i<maxActionHand;i++){
                     //console.log('Blame',hand['action'][i])
                     if(hand['action'][i] >= maxBlockCards){
+                        /*
                         var newTurn = 0;
                         while(newTurn < 1 || newTurn == turn){
                             newTurn = parseInt(prompt("Quale giocatore vuoi incolpare? "));
@@ -73,9 +77,13 @@ contextMenu.addEventListener('click', function(e) {
                             if(newTurn == null) 
                                return;
                         }
+                        */
+                        //newTurn = await choosePlayer(contextMenu.offsetLeft+contextMenu.offsetWidth+ 2,contextMenu.offsetTop,[1,mtype]);
+                        newTurn = await choosePlayer([1,parseInt(mtype)]);
+                        if (newTurn == null) 
+                            return;
                         playCard(contextMenu.getAttribute('selected-card'),hand['action'][i],others = {'newTurn':newTurn});
 
-                        //console.log('Blocco',hand['action'][i]);
                         return;
                     }
                 }
@@ -112,6 +120,20 @@ for (var i = 0; i < images.length; i++) {
 }
 
 document.addEventListener('click', function(e) {
+    
+    /*
+    if (e.target.className !== 'context-menu' && e.target.className !== 'contextMenu-option') {
+        //console.log('click outside contextPlayers');
+        contextPlayers.style.display = 'none';
+        if (e.target.className !== 'card') {
+            contextMenu.style.display = 'none';
+        }
+    }
+    if (e.target.className == 'contextMenu-option') {
+        contextMenu.style.display = 'none';
+    }
+    console.log(e.target.className);
+    */
     if (e.target.className !== 'card') {
         contextMenu.style.display = 'none';
     }
@@ -133,7 +155,7 @@ socket.on('response-turn', function(data) {
     turn = parseInt(data.turn);
 
     if (data.response['status'] == 0){
-        document.getElementById('playerTurn').innerHTML = 'Giocatore di turno: '+ turn ;
+        document.getElementById('playerTurn').innerHTML = 'Giocatore di turno: '+ getPlayer(turn).name;
         showHand();
     }
     
@@ -147,10 +169,40 @@ socket.on('player-joined', function(data) {
     if(data.playerID == playerID){
         socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'hint'});
         socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'action'});
-        socket.emit('get-turn', {'partyID':partyID, 'playerID':playerID});
-
+        socket.emit('get-playerList', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
     }
     //document.getElementById('playerTurn').innerHTML = 'Giocatore di turno: ' + data.playerID;
+});
+
+socket.on('response-playerList', function(data) {
+    playerList = data.playerList;
+    witheringLooks = new Array(playerList.length).fill(null);
+    socket.emit('get-turn', {'partyID':partyID, 'playerID':playerID});
+    /*
+    // Rimuovi tutte le opzioni esistenti
+    while (contextPlayers.firstChild) {
+        contextPlayers.removeChild(contextPlayers.firstChild);
+    }
+
+    playerList.forEach((player, i) => {
+        witheringLooks[player.mtype] = player.points;
+
+        // Crea una nuova opzione
+        var option = document.createElement("option");
+        option.value = player.mtype;  // Imposta il valore dell'opzione come l'ID del giocatore
+        option.text = player.name;  // Imposta il testo dell'opzione come il nome del giocatore
+        option.setAttribute('data-mtype', player.mtype);  // Imposta un attributo data-* con il tipo del giocatore
+        option.setAttribute('data-playerID', player.playerID);  // Imposta un attributo data-* con il tipo del giocatore
+        //console.log('response-playerList added',player);
+
+        // Aggiungi l'opzione al <contextPlayers>
+        contextPlayers.appendChild(option);
+    });
+
+    contextPlayers.setAttribute("size", playerList.length);
+    //console.log('response-playerList',playerList);
+    //console.log('response-playerList',contextPlayers);
+    */
 });
 
 socket.on('card-played', function(data) {
@@ -181,8 +233,17 @@ socket.on('card-played', function(data) {
 
 socket.on('game-end', function(data) {
     console.log('game-end', data);
+    
 });
 
+function getPlayer(mtype){
+    for (let player of playerList) {
+        if (player.mtype == mtype) {
+            return player;
+        }
+    }
+    return null;
+}
 
 function playCard(card,actionCard = 0,others=null){
     console.log('playCard',card);
@@ -195,6 +256,103 @@ function playCard(card,actionCard = 0,others=null){
     */
 }
 
+/*
+function handlePlayerChoice(x, y,foreignPlayers){
+    return new Promise((resolve, reject) => {
+
+        for (var i = 0; i < foreignPlayers.length;i++) {
+            contextPlayers.options[foreignPlayers[i]-1].style.display = 'none';
+        }
+        contextPlayers.style.left = x + 'px';
+        contextPlayers.style.top = y + 'px';
+        
+
+        //contextPlayers.setAttribute("size", playerList.length - foreignPlayers.length);
+        contextPlayers.style.display = 'block';
+        //console.log('handlePlayerChoice',contextPlayers.style.display,contextPlayers.style.left,contextPlayers.style.top)
+        
+        // Aggiungi un gestore di eventi per l'evento 'click'
+        contextPlayers.addEventListener('click', function(event) {
+            // L'elemento cliccato è event.target
+            var clickedOption = event.target;
+
+            // Ottieni l'attributo 'data-mtype' dell'elemento cliccato
+            var mtype = clickedOption.getAttribute('data-mtype');
+
+            // Nascondi contextPlayers
+            contextPlayers.style.display = 'none';
+            contextMenu.style.display = 'none';
+            for (var i = 0; i < foreignPlayers.length;i++) {
+                contextPlayers.options[foreignPlayers[i]-1].style.display = 'block';
+            }
+            //contextPlayers.setAttribute("size", playerList.length);
+
+            // Risolvi la promessa con mtype
+            resolve(mtype);
+        });
+
+        
+    });
+}
+
+async function choosePlayer(x, y, foreignPlayers) {
+    console.log('choosePlayer',x,y,foreignPlayers);
+    let mtype = await handlePlayerChoice(x, y,foreignPlayers);
+    // Fai qualcosa con mtype
+    //console.log(mtype);
+    return parseInt(mtype);
+}
+*/
+
+async function choosePlayer(foreignPlayers) {
+    console.log('choosePlayer',foreignPlayers);
+    let inputOptions = {};
+    for (let player of playerList) {
+        if (!foreignPlayers.includes(player.mtype)) {
+            inputOptions[player.mtype] = player.name;
+        }
+    }
+
+    let result = await Swal.fire({
+        //title: 'Seleziona un giocatore',
+        title: '<span style="color: #fff;">Seleziona un giocatore</span>',
+        input: 'select',
+        inputOptions: inputOptions,
+        //inputPlaceholder: 'Seleziona un\'opzione',
+        showCancelButton: true,
+        background: '#333',
+        customClass: {
+            content: 'swal-content-custom'
+        }
+    });
+
+    if (result.isConfirmed) {
+        return parseInt(result.value);
+    } else {
+        return null;
+    }
+}
+
+async function chooseOther(title,list) {
+    let result = await Swal.fire({
+        //title: title,
+        title: '<span style="color: #fff;">'+title+'</span>',
+        input: 'select',
+        inputOptions: list,
+        //inputPlaceholder: 'Seleziona un\'opzione',
+        showCancelButton: true,
+        background: '#333',
+        customClass: {
+            content: 'swal-content-custom'
+        }
+    });
+
+    if (result.isConfirmed) {
+        return result.value;
+    } else {
+        return null;
+    }
+}
 
 function showHand(){
     if(bigCardActive == false){
@@ -246,9 +404,8 @@ window.onload = function() {
 }
 */
 
-function startingFunction() {
 
-
+function loadImages(){
     fetch('/static/SosOnline/SosOnlineLimits.json')
     .then(response => response.json())
     .then(data => {
@@ -277,8 +434,11 @@ function startingFunction() {
     })
     .catch(error => console.error('Errore:', error));
 
-    
+}
 
+function startingFunction() {
+
+    loadImages();
     
     socket.emit('join', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
     //showHand();

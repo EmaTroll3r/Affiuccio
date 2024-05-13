@@ -191,7 +191,7 @@ def on_leave(data):
 
 #"""
 @socketio.on('draw')
-def on_leave(data):
+def draw(data):
     partyID = int(data['partyID'])
     playerID = int(data['playerID'])
     mtype = int(data['mtype'])
@@ -241,6 +241,18 @@ def on_leave(data):
     emit('response-letDraw', {'response':response, 'playerID': playerID, 'targetPlayer':targetPlayer, 'targetHand':targetHand, 'handtype':handtype}, room=partyID)
     if(response['status'] == 0):
         emit('response-hand', {'playerID': partyManager.get_party(partyID).get_player(targetPlayer).id,'handtype':targetHand, 'hand': json.dumps(partyManager.get_party(partyID).get_player(targetPlayer).hands[targetHand].to_dict())}, room=partyID)
+
+@socketio.on('get-playerList')
+def draw(data):
+    partyID = int(data['partyID'])
+    playerID = int(data['playerID'])
+    mtype = int(data['mtype'])
+
+    playerList = []
+    for player in partyManager.get_party(partyID).players:
+        playerList.append({"name": player.name, "mtype": player.mtype, "playerID": player.id, 'points': player.points},)
+
+    emit('response-playerList', {'mtype':mtype, 'partyID':partyID, 'playerID':playerID, 'playerList': playerList}, room=partyID)
 
 
 @socketio.on('remove-player')

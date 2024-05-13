@@ -16,8 +16,22 @@
         <img id="showedCard" style="display: none;" src="{{ url_for('static', filename='SosOnline/images/0.png') }}">
     </div>
     
-    <select id="context-menu" size="3" style="display: none; position: fixed;">
-        <option id="context-wl">Lancia occhiataccia</option>
+    <select id="context-menu" class="context-menu" size="2" style="display: none; position: fixed;">
+        <option id="context-wl" class="contextMenu-option">Lancia occhiataccia</option>
+    </select>
+
+    <!-- L'alert con dropdown -->
+    <div id="alertDropdown" style="display: none; position: fixed; width: 300px; height: 200px; background: white; border: 1px solid black; padding: 20px; z-index: 1000;">
+        <p>Messaggio di alert</p>
+        <select id="alertDropdownSelect">
+            <option value="1">Opzione 1</option>
+            <option value="2">Opzione 2</option>
+            <!-- Altre opzioni -->
+        </select>
+        <button onclick="hideAlertDropdown()">OK</button>
+    </div>
+    
+    <select id="context-choosePlayer" class="context-menu" size="3" style="display: none; position: fixed;">
     </select>
 
     <button id="turnButton">Cambia Turno</button>
@@ -25,6 +39,7 @@
     <!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script> -->
     <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
     <!-- <script src="{{ url_for('static', filename='home/index_script.js') }}"></script> -->
     <script>
