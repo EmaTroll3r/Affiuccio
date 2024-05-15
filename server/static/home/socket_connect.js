@@ -1,21 +1,24 @@
-var ip_address = "localhost"
+var domain = "http://localhost"
 var socket;
 
-async function getIp() {
+async function getDoamin() {
     try {
         const response = await fetch('/static/server_stats.json');
         const data = await response.json();
-        return data['ip'];
+        return data['domain'];
     } catch (error) {
         console.error('Errore:', error);
     }
 }
 
 async function socket_connect() {
-    ip_address = await getIp();
-    console.log('Connecting to: ' + ip_address);
-    socket = io.connect('http://'+ip_address);
-    console.log('Socket connected to: ' + ip_address);
+    domain = await getDoamin();
+    //console.log('Connecting to: ' + ip_address);
+    //socket = io.connect('http://'+ip_address);
+    
+    console.log('Connecting to: ' + domain);
+    socket = io.connect(domain, {secure: true})
+    console.log('Socket connected to: ' + domain);
 }
 
 socket_connect();

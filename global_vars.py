@@ -6,14 +6,17 @@ from json import dump
 
 test = True
 ip_address = "158.180.238.217"
+domain = "https://affiuccio.duckdns.org:443"
 
 data = {
     'ip': ip_address,
+    'domain': domain
 }
 
 if test == True:
     data = {
         'ip': "localhost",
+        'domain': "http://localhost"
     }
 
 with open('server/static/server_stats.json', 'w') as f:

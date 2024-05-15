@@ -3,6 +3,7 @@
 <head>
     <title>SoS Online</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='SosOnline/style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
 </head>
 <body>
     <!--<button id="drawButton">Draw</button>-->
@@ -22,14 +23,27 @@
         <img id="showedCard" style="display: none;" src="{{ url_for('static', filename='SosOnline/images/0.png') }}">
     </div>
 
-    <select id="context-menu" class="context-menu"  size="3" style="display: none; position: fixed;">
+    <!--
+    <select id="context-menu" class="context-menu" style="display: none; position: fixed; height: auto; overflow-y: auto;">
         <option id="context-play" class="contextMenu-option">Gioca</option>
         <option id="context-block" class="contextMenu-option">Blocca</option>
         <option id="context-blame" class="contextMenu-option">Scaricabarile</option>
     </select>
+    -->
+
+    <div class="wrapper">
+        <div class="content">
+          <ul class="menu">
+            <li id="context-play" class="item"><span>Gioca</span></li>
+            <li id="context-block" class="item"><span>Blocca</span></li>
+            <li id="context-blame" class="item"><span>Scaricabarile</span></li>
+        </div>
+    </div>
     
     <!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script> -->
+    
+    <!--<script src="{{ url_for('static', filename='home/contextmenu.js') }}"></script>-->
     <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>

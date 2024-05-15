@@ -31,11 +31,19 @@ var mtype = urlParams.get('mtype');
 
 
 
-var images = document.getElementsByClassName('card');
+//var images = document.getElementsByClassName('card');
+var images = document.querySelectorAll('.card');
 var bigCard = document.getElementById('showedCard');
-var contextMenu = document.getElementById('context-menu');
+var playContext = document.getElementById('context-play');
+var blockContext = document.getElementById('context-block');
+var blameContext = document.getElementById('context-blame');
+var menu = document.querySelector('.menu');
+const contextMenu = document.querySelector(".wrapper");
+
+//var contextMenu = document.getElementById('context-menu');
 //var contextPlayers = document.getElementById("context-choosePlayer");
 
+/*
 // Aggiungi un ascoltatore di eventi 'change' al select
 contextMenu.addEventListener('click', async function(e) {
     var selectedOption = this.options[this.selectedIndex];
@@ -69,15 +77,6 @@ contextMenu.addEventListener('click', async function(e) {
                 for(let i=0;i<maxActionHand;i++){
                     //console.log('Blame',hand['action'][i])
                     if(hand['action'][i] >= maxBlockCards){
-                        /*
-                        var newTurn = 0;
-                        while(newTurn < 1 || newTurn == turn){
-                            newTurn = parseInt(prompt("Quale giocatore vuoi incolpare? "));
-                            console.log('newTurn',newTurn);
-                            if(newTurn == null) 
-                               return;
-                        }
-                        */
                         //newTurn = await choosePlayer(contextMenu.offsetLeft+contextMenu.offsetWidth+ 2,contextMenu.offsetTop,[1,mtype]);
                         newTurn = await choosePlayer([1,parseInt(mtype)]);
                         if (newTurn == null) 
@@ -92,52 +91,108 @@ contextMenu.addEventListener('click', async function(e) {
         }
     }
 });
+*/
 
-for (var i = 0; i < images.length; i++) {
-    images[i].addEventListener('click', function(event) {
-        if(this.src != preloadedImages[0].src){
-            console.log(this.src)
-            // Mostra il menu contestuale
-            var options = contextMenu.getElementsByTagName('option');
-            options[1].textContent = 'Blocca x'+hand['action'].filter(x => x < maxBlockCards).length;
-            options[2].textContent = 'Scaricabarile x'+hand['action'].filter(x => x >= maxBlockCards).length;
+playContext.addEventListener('click', function() {
+    playCard(menu.getAttribute('selected-card'));
+});
+
+blockContext.addEventListener('click', function() {
+    for(let i=0;i<maxActionHand;i++){
+        if(hand['action'][i] < maxBlockCards){
+            playCard(menu.getAttribute('selected-card'),hand['action'][i]);
+            console.log('Blocco',hand['action'][i]);
+            return;
+        }
+    }
+    alert("You don't have Block Cards")
+});
+
+blameContext.addEventListener('click', async function() {
+   
+    for(let i=0;i<maxActionHand;i++){
+        //console.log('Blame',hand['action'][i])
+        if(hand['action'][i] >= maxBlockCards){
+            newTurn = await choosePlayer([1,parseInt(mtype)]);
+            if (newTurn == null) 
+                return;
+            playCard(menu.getAttribute('selected-card'),hand['action'][i],others = {'newTurn':newTurn});
+
+            return;
+        }
+    }
+    alert("You don't have Blame Cards")
+});
+
+/*
+window.addEventListener("click", e => {
+    e.preventDefault();
+    let x = e.offsetX, y = e.offsetY,
+    winWidth = window.innerWidth,
+    winHeight = window.innerHeight,
+    cmWidth = contextMenu.offsetWidth,
+    cmHeight = contextMenu.offsetHeight;
+    x = x > winWidth - cmWidth ? winWidth - cmWidth - 5 : x;
+    y = y > winHeight - cmHeight ? winHeight - cmHeight - 5 : y;
+    
+    contextMenu.style.left = `${x}px`;
+    contextMenu.style.top = `${y}px`;
+    contextMenu.style.visibility = "visible";
+});
+*/
+
+
+images.forEach(function(image) {
+    image.addEventListener('click', function(e) {
+        var parts = this.src.split('/');
+        var card = parts[parts.length - 1].split('.')[0];
+        if(card != '0'){
+            e.preventDefault();
+            let x = e.pageX, y = e.pageY,
+            winWidth = window.innerWidth,
+            winHeight = window.innerHeight,
+            cmWidth = contextMenu.offsetWidth,
+            cmHeight = contextMenu.offsetHeight;
+
+            x = x > winWidth - cmWidth ? winWidth - cmWidth - 5 : x;
+            y = y > winHeight - cmHeight ? winHeight - cmHeight - 5 : y;
             
-            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${x}px`;
+            contextMenu.style.top = `${y}px`;
 
-            // Posiziona il menu contestuale nel punto in cui è stato fatto clic
-            contextMenu.style.left = event.pageX + 'px';
-            contextMenu.style.top = event.pageY + 'px';
+            
+            blockContext.textContent = 'Blocca x'+hand['action'].filter(x => x < maxBlockCards).length;
+            blameContext.textContent = 'Scaricabarile x'+hand['action'].filter(x => x >= maxBlockCards).length;
 
-            // Ottieni il src dell'immagine
+            contextMenu.style.visibility = "visible";
+            /*
             var imageSrc = this.src;
+            console.log('imageSrc',imageSrc);
             var parts = imageSrc.split('/');
+            */
 
-            contextMenu.setAttribute('selected-card', parts[parts.length - 1].split('.')[0]);
-        }else{
-            contextMenu.style.display = 'none';
+            //menu.setAttribute('selected-card', parts[parts.length - 1].split('.')[0]);
+            
+            menu.setAttribute('selected-card', card);
         }
     });
-}
+});
+
+//document.addEventListener("click", () => contextMenu.style.visibility = "hidden");
 
 document.addEventListener('click', function(e) {
-    
-    /*
-    if (e.target.className !== 'context-menu' && e.target.className !== 'contextMenu-option') {
-        //console.log('click outside contextPlayers');
-        contextPlayers.style.display = 'none';
-        if (e.target.className !== 'card') {
-            contextMenu.style.display = 'none';
+    if(e.target.className === 'card'){
+        var parts = e.target.src.split('/');
+        var card = parts[parts.length - 1].split('.')[0];
+        console.log('click',e.target.className,card)
+        if(card == '0'){   
+            contextMenu.style.visibility = 'hidden';
         }
-    }
-    if (e.target.className == 'contextMenu-option') {
-        contextMenu.style.display = 'none';
-    }
-    console.log(e.target.className);
-    */
-    if (e.target.className !== 'card') {
-        contextMenu.style.display = 'none';
+    }else if (e.target.className !== 'card') {
+        contextMenu.style.visibility = 'hidden';
     }
 });
+//*/
 
 socket.on('response-hand', function(data) {
     //console.log('response-hand', data);
@@ -366,6 +421,7 @@ function showHand(){
             img = preloadedImages[pos].src;
             //imageElement.src = img;
             images[i].src = img;
+            images[i].setAttribute('used', 'false');
             //ncard++;
         }
     }

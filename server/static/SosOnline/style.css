@@ -119,3 +119,88 @@ button {
     border: none !important;
     /* Aggiungi altre proprietà come necessario, ad esempio per l'immagine di sfondo, il bordo, ecc. */
 }
+
+
+
+/* Import Google Font - Poppins */
+/*@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');*/
+
+.wrapper{
+  visibility: hidden;
+  position: absolute;
+  /*width: 150px; /**/
+  border-radius: 10px;
+  background: #fff;
+  background-color: rgba(0, 0, 0, 0.8); /* Sfondo nero semi-trasparente */
+  /*width: 50%; /**/
+  color: white;
+  box-shadow: 0 12px 35px rgba(0,0,0,0.1);
+  
+}
+.wrapper .menu{
+  padding: 0px 12px;
+}
+.content .item{
+  font-size: 1.2em; /* Imposta la dimensione del font a 1em (relativo alla dimensione del font del genitore) */
+  /*height: 2em; /* Imposta l'altezza a 2em (relativo alla dimensione del font del genitore) */
+  list-style: none;
+  /*font-size: 22px;*/
+  height: 40px;/**/
+  display: flex;
+  /*width: 100%;/**/
+  width: 150px;
+  cursor: pointer;
+  align-items: center;
+  border-radius: 5px;
+  margin-bottom: 1px;
+  padding: 0 5px 0 10px;
+}
+.content .item:hover{
+  /*background: #f2f2f2;*/
+  background-color: rgba(255, 255, 255, 0.1);
+  
+  height: 30px; /* Riduci l'altezza */
+  width: 90%; /* Riduci la larghezza */
+  padding: 5px; /* Riduci il padding */
+}
+
+.content .item span{
+  font-size: 1em; /* Imposta la dimensione del font a 0.8em (relativo alla dimensione del font del genitore) */
+  margin-left: 8px;
+  margin-right: 8px;
+  /*font-size: 19px;*/
+}
+
+#context-wl{
+  width: 200px !important;
+}
+/*
+.content .setting{
+  display: flex;
+  margin-top: -5px;
+  padding: 5px 12px;
+  border-top: 1px solid #ccc;
+}
+
+.content .share{
+  position: relative;
+  justify-content: space-between;
+}
+
+.share .share-menu{
+  position: absolute;
+  background: #fff;
+  width: 200px;
+  right: -200px;
+  top: -35px;
+  padding: 13px;
+  opacity: 0;
+  pointer-events: none;
+  border-radius: 10px;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.08);
+  transition: 0.2s ease;
+}
+.share:hover .share-menu{
+  opacity: 1;
+  pointer-events: auto;
+}

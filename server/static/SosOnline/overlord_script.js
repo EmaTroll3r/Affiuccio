@@ -25,10 +25,15 @@ var mtype = urlParams.get('mtype');
 
 
 var image = document.getElementById('card1');
-var contextMenu = document.getElementById('context-menu');
+//var contextMenu = document.getElementById('context-menu');
 var bigCard = document.getElementById('showedCard');
+var wlContext = document.getElementById('context-wl');
+
+var menu = document.querySelector('.menu');
+const contextMenu = document.querySelector(".wrapper");
 //var contextPlayers = document.getElementById("context-choosePlayer");
 
+/*
 // Aggiungi un ascoltatore di eventi 'change' al select
 contextMenu.addEventListener('click',async function(e) {
     var selectedOption = this.options[this.selectedIndex];
@@ -45,15 +50,6 @@ contextMenu.addEventListener('click',async function(e) {
             case 'context-wl':
                 //console.log('Hai selezionato "Gioca"');
                 //playCard(contextMenu.getAttribute('selected-card'));
-                /*
-                mtype = -1
-                while(mtype < 2){
-                    var mtype = parseInt(prompt("A quale giocatore vuoi lanciare l'occhiataccia? "));
-                    if(mtype == null) 
-                        return;
-                }
-                // */ 
-                //console.log('wl',mtype);
                 
                 //mtype = await choosePlayer(contextMenu.offsetLeft+contextMenu.offsetWidth+ 2,contextMenu.offsetTop,[1]);
                 mtype = await choosePlayer([1]);
@@ -65,7 +61,15 @@ contextMenu.addEventListener('click',async function(e) {
         }
     }
 });
+*/
 
+wlContext.addEventListener('click', async function() {
+    mtype = await choosePlayer([1]);
+    if (mtype == null) 
+        return;
+    console.log('wl',mtype);
+    playWl(witheringLooks[mtype] + 1,mtype);
+});
 
 async function choosePlayer(foreignPlayers) {
     let inputOptions = {};
@@ -160,7 +164,7 @@ async function choosePlayer(x, y, foreignPlayers) {
     return parseInt(mtype);
 }
 */
-
+/*
 image.addEventListener('click', function(event) {
     // Mostra il menu contestuale
     //contextPlayers.style.display = 'none';
@@ -175,6 +179,35 @@ image.addEventListener('click', function(event) {
     var parts = imageSrc.split('/');
 
     contextMenu.setAttribute('selected-card', parts[parts.length - 1].split('.')[0]);
+});
+*/
+
+image.addEventListener('click', function(e) {
+    var parts = this.src.split('/');
+    var card = parts[parts.length - 1].split('.')[0];
+    if(card != '0'){
+        e.preventDefault();
+        let x = e.pageX, y = e.pageY,
+        winWidth = window.innerWidth,
+        winHeight = window.innerHeight,
+        cmWidth = contextMenu.offsetWidth,
+        cmHeight = contextMenu.offsetHeight;
+
+        x = x > winWidth - cmWidth ? winWidth - cmWidth - 5 : x;
+        y = y > winHeight - cmHeight ? winHeight - cmHeight - 5 : y;
+        
+        contextMenu.style.left = `${x}px`;
+        contextMenu.style.top = `${y}px`;
+        contextMenu.style.visibility = "visible";
+        /*
+        var imageSrc = this.src;
+        console.log('imageSrc',imageSrc);
+        var parts = imageSrc.split('/');
+        */
+
+        //menu.setAttribute('selected-card', parts[parts.length - 1].split('.')[0]);
+        
+    }
 });
 
 document.addEventListener('click', function(e) {    
@@ -193,7 +226,7 @@ document.addEventListener('click', function(e) {
     //console.log(e.target.className);
     */
     if (e.target.className !== 'card') {
-        contextMenu.style.display = 'none';
+        contextMenu.style.visibility = 'hidden';
     }
 });
 

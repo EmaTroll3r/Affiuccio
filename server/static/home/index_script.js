@@ -69,3 +69,26 @@ document.getElementById('join-lobby').addEventListener('click', function() {
         console.error('Error:', error);
     });
 });
+
+
+
+/*
+let contextMenu = document.getElementById('context-menu');
+document.addEventListener('click', function(event) {
+    contextMenu.style.display = 'block';
+    
+    contextMenu.style.left = event.pageX + 'px';
+    contextMenu.style.top = event.pageY + 'px';
+    console.log('Clicked');
+});
+//*/
+
+/*
+var menu = document.querySelector('.menu');
+var newItem = document.createElement('li');
+newItem.className = 'item';
+var newText = document.createElement('span');
+newText.textContent = 'bbbbbb';
+newItem.appendChild(newText);
+menu.appendChild(newItem);
+*/
