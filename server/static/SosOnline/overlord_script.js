@@ -419,6 +419,7 @@ function showPlayedCard(card,handtype){
     image.src = preloadedImages[0].src;
     
     bigCard.src = img;
+    contextMenu.style.visibility = 'hidden';
     bigCard.style.display = 'block'; // Mostra bigCard
     //console.log('showPlayedCard',img);
 

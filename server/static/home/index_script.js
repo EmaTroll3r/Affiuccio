@@ -49,7 +49,16 @@ socket.on('player-joined', function(data) {
 
 
 document.getElementById('join-lobby').addEventListener('click', function() {
+    var playername = document.getElementById('nickname').value;
+    if (playername == '') {
+        alert('Inserisci un nome valido');
+        return;
+    }
     var partyID = parseInt(prompt("Inserisci il partyID"));
+    if (isNaN(partyID)) {
+        //alert('Inserisci un partyID valido');
+        return;
+    }
     var player = document.getElementById('nickname').value;
     fetch(`/`+gameEndpoint+`/join?partyID=${partyID}&player=${player}`, {
         method: 'GET',

@@ -485,6 +485,7 @@ function showPlayedCard(card,handtype){
     }
     bigCardActive = true;
     bigCard.src = img;
+    contextMenu.style.visibility = 'hidden';
     bigCard.style.display = 'block'; // Mostra bigCard
     //console.log('showPlayedCard',img);
 
