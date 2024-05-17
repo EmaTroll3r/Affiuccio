@@ -291,6 +291,19 @@ socket.on('game-end', function(data) {
     
 });
 
+function alert(text) {
+    Swal.fire({
+        title: '<span style="color: #fff;">Attenzione!</span>',
+        html: '<span style="color: #fff;">' + text + '</span>',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+        background: '#333',
+        customClass: {
+            content: 'swal-content-custom'
+        }
+    });
+}
+
 function getPlayer(mtype){
     for (let player of playerList) {
         if (player.mtype == mtype) {
@@ -309,6 +322,31 @@ function playCard(card,actionCard = 0,others=null){
         socket.emit('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'card':actionCard, 'handtype':'action', 'askHand':1});
     }
     */
+}
+
+function toggleFullScreen(elem) {
+    // ## The below if statement seems to work better ## if ((document.fullScreenElement && document.fullScreenElement !== null) || (document.msfullscreenElement && document.msfullscreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+    if ((document.fullScreenElement !== undefined && document.fullScreenElement === null) || (document.msFullscreenElement !== undefined && document.msFullscreenElement === null) || (document.mozFullScreen !== undefined && !document.mozFullScreen) || (document.webkitIsFullScreen !== undefined && !document.webkitIsFullScreen)) {
+        if (elem.requestFullScreen) {
+            elem.requestFullScreen();
+        } else if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullScreen) {
+            elem.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+        } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        }
+    } else {
+        if (document.cancelFullScreen) {
+            document.cancelFullScreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitCancelFullScreen) {
+            document.webkitCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
 }
 
 /*
@@ -492,8 +530,30 @@ function loadImages(){
 
 }
 
-function startingFunction() {
+async function askFullScreen() {
+    Swal.fire({
+        title: '<span style="color: #fff;">Vuoi attivare il FullScreen?</span>',
+        showCancelButton: true,
+        confirmButtonText: 'Sì',
+        cancelButtonText: 'No',
+        background: '#333',
+        customClass: {
+            content: 'swal-content-custom'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // L'utente ha cliccato su "Sì"
+            toggleFullScreen(document.documentElement);
+            console.log("L'utente ha confermato FullScreen");
+        } else if (result.isDismissed) {
+            console.log("L'utente ha annullato o chiuso il popup");
+        }
+    });
+}
 
+function startingFunction() {
+    //toggleFullScreen(document.body);
+    askFullScreen();
     loadImages();
     
     socket.emit('join', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
