@@ -5,6 +5,17 @@ from json import dump
 #from socketio_instance import socketio
 
 test = True
+#"""
+from os import getenv
+env = getenv('AffiuccioTest')
+if env == 'development':
+    test = True
+elif env == 'production':
+    test = False
+else:
+    test = True
+#"""
+
 ip_address = "158.180.238.217"
 domain = "https://affiuccio.duckdns.org:443"
 
