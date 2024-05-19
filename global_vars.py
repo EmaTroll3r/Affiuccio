@@ -16,8 +16,8 @@ data = {
 if test == True:
     data = {
         'ip': "localhost",
-        #'domain': "http://localhost"
-        'domain': "http://192.168.57.38"
+        'domain': "http://localhost"
+        #'domain': "http://192.168.57.38"
     }
 
 with open('server/static/server_stats.json', 'w') as f:

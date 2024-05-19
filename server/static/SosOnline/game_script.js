@@ -23,6 +23,7 @@ var turn = 0;
 var bigCardActive = false;
 var playerList = [];
 var witheringLooks = [];
+var firstAskHand = false;
 
 var urlParams = new URLSearchParams(window.location.search);
 var playerID = parseInt(urlParams.get('playerID'));
@@ -197,12 +198,27 @@ document.addEventListener('click', function(e) {
 socket.on('response-hand', function(data) {
     //console.log('response-hand', data);
     if(data.playerID == playerID){
+        
         //console.log('in')
         hand[data.handtype] = JSON.parse(data.hand).map(function(item) {
             return parseInt(item);
         });
 
+        //console.log('response-hand',hand[data.handtype]);
+        
+        if(firstAskHand == false){
+            hand[data.handtype].forEach((card, i) => {
+                preloadedImages[card] = new Image();
+                preloadedImages[card].src = '/static/SosOnline/images/' + card + '.png';
+                //console.log("Preloaded",preloadedImages[card].src);
+            });
+        }
+
         showHand();
+        if(firstAskHand == false){
+            firstAskHand = true;
+            loadAllImages();
+        }
     }
 });
 
@@ -500,7 +516,7 @@ window.onload = function() {
 */
 
 
-function loadImages(){
+function loadAllImages(){
     fetch('/static/SosOnline/SosOnlineLimits.json')
     .then(response => response.json())
     .then(data => {
@@ -555,7 +571,7 @@ async function askFullScreen() {
 function startingFunction() {
     //toggleFullScreen(document.body);
     askFullScreen();
-    loadImages();
+    //loadAllImages();
     
     socket.emit('join', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
     //showHand();

@@ -9,9 +9,9 @@ var partyID = urlParams.get('partyID');
 var playerID = parseInt(localStorage.getItem('playerID'));
 
 document.getElementById('party-id').querySelector('span').textContent = partyID;
-var playerList = document.getElementById('player-list');
+var playerListElem = document.getElementById('player-list');
 var players = [];
-
+var playerList = [];
 
 if (mtype == 1) {
     var buttons = document.querySelectorAll('.host-buttons');
@@ -31,18 +31,24 @@ socket.on('player-joined', function(data) {
             
 
             // Rimuovere tutti i figli precedenti
-            while (playerList.firstChild) {
-                playerList.removeChild(playerList.firstChild);
+            while (playerListElem.firstChild) {
+                playerListElem.removeChild(playerListElem.firstChild);
+                playerList = [];
+                players = [];
             }
 
             // Aggiungere un nuovo elemento <li> per ogni giocatore
+            //console.log(playerss)
             playerss.forEach(player => {
                 var li = document.createElement('li');
                 players.push(player.name);
+                //console.log(player)
+                playerList.push({name: player.name, mtype: player.mtype, playerID: player.playerID});
                 li.textContent = player.name;
-                playerList.appendChild(li);
+                playerListElem.appendChild(li);
             //console.log(players);
             });
+            console.log(playerList);
         })
         .catch(error => console.error('Error:', error));
     //console.log('A player joined with ID: ' + data.playerID);
@@ -51,21 +57,26 @@ socket.on('player-joined', function(data) {
 socket.on('playerList', function(data) {
     if(data.response['status'] == 0){
         var playerss = data.playerList;
-        console.log(playerss);
+        //console.log(playerss);
 
-        while (playerList.firstChild) {
-            playerList.removeChild(playerList.firstChild);
+        while (playerListElem.firstChild) {
+            playerListElem.removeChild(playerListElem.firstChild);
             players = [];
+            playerList = [];
         }
 
         // Aggiungere un nuovo elemento <li> per ogni giocatore
         playerss.forEach(player => {
             var li = document.createElement('li');
             players.push(player.name);
+            
+            playerList.push({name: player.name, mtype: player.mtype, playerID: player.playerID});
+            
             li.textContent = player.name;
-            playerList.appendChild(li);
+            playerListElem.appendChild(li);
         //console.log(players);
         });
+        console.log(playerList);
     }else{
         alert(data.response['message'])
     }
@@ -104,7 +115,8 @@ document.getElementById('start-game').addEventListener('click', function() {
     */
 });
 
-document.getElementById('remove-player').addEventListener('click', function() {
+document.getElementById('remove-player').addEventListener('click', async function() {
+    /*
     targetMtype = -1;
 
     while(isNaN(targetMtype) || targetMtype < 2 || targetMtype >= players.length) {
@@ -115,11 +127,46 @@ document.getElementById('remove-player').addEventListener('click', function() {
             alert("You can't remove the host")
         }
     }
+    */
+    targetMtype = await choosePlayer([1])
+    if(targetMtype == null || isNaN(targetMtype) || targetMtype < 2 || targetMtype > players.length) 
+        return;
     socket.emit("remove-player", {'partyID': partyID, 'playerID':playerID,'targetMtype': targetMtype, 'homeLink':"/"+gameEndpoint});
     console.log("remove-player",partyID,targetMtype)
 });
 
+async function choosePlayer(foreignPlayers) {
+    console.log('choosePlayer',foreignPlayers);
+    let inputOptions = {};
+    for (let player of playerList) {
+        //console.log(player);
+        if (!foreignPlayers.includes(player.mtype)) {
+            //console.log('in');
+            inputOptions[player.mtype] = player.name;
+        }
+    }
 
+    //console.log('inputOptions',inputOptions);
+    let result = await Swal.fire({
+        //title: 'Seleziona un giocatore',
+        title: '<span style="color: #fff;">Seleziona un giocatore</span>',
+        input: 'select',
+        inputOptions: inputOptions,
+        //inputPlaceholder: 'Seleziona un\'opzione',
+        showCancelButton: true,
+        background: '#333',
+        customClass: {
+            content: 'swal-content-custom'
+        }
+    });
+
+    console.log('result',result);
+    if (result.isConfirmed) {
+        return parseInt(result.value);
+    } else {
+        return null;
+    }
+}
 /*
 window.onload = function() {
     startingFunction()

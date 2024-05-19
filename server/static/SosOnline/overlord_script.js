@@ -504,9 +504,7 @@ async function askFullScreen() {
     });
 }
 
-
-function startingFunction(){
-    askFullScreen();
+async function loadAllImages() {
     fetch('/static/SosOnline/SosOnlineLimits.json')
     .then(response => response.json())
     .then(data => {
@@ -527,11 +525,16 @@ function startingFunction(){
         
         //console.log('playerID',playerID);
         //console.log(preloadedImages[5].src);
-        socket.emit('join', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
     })
     .catch(error => console.error('Errore:', error));
+}
 
-    
+function startingFunction(){
+    askFullScreen();
+    witheringLooksImages[1] = new Image();
+    witheringLooksImages[1].src = '/static/SosOnline/images/wl1.png';
+    socket.emit('join', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
+    loadAllImages();
     //showHand();
 }
 

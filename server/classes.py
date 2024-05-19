@@ -50,12 +50,14 @@ class Deck:
         return len(self.cards)
 
 class Party:
+
     def __init__(self, partyID,decks,gameEndpoint):
         self.partyID = partyID
         self.decks = decks
         self.players = []
         self.gameEndpoint = gameEndpoint
         self.turn = -1
+        self.last_mtype = 0
         """self.partynamespace = PartyNamespace('/'+str(partyID))
         from global_vars import socketio
         socketio.on_namespace(self.partynamespace)"""
@@ -67,6 +69,7 @@ class Party:
         #self.hands = {key: Deck(value) for key, value in maxHandCardDict.items()}
         self.gameEndpoint = gameEndpoint
         self.turn = 0
+        self.last_mtype = 0
 
     @staticmethod
     def create_party(gameEndpoint,test=False):
@@ -132,8 +135,14 @@ class Party:
         self.decks[name] = deck
 
     def join(self, player):
+        
         self.players.append(player)
-        player.mtype = len(self.players)
+        
+        self.last_mtype += 1
+        print("\n\n\n\nJoined",self.last_mtype,"\n\n\n\n")
+        #player.mtype = len(self.players)
+        player.mtype = self.last_mtype
+
 
         """
         from flask_socketio import emit,join_room
@@ -238,8 +247,10 @@ class Player:
 
     def to_dict(self):
         return {
-            'id': self.id,
+            'playerID': self.id,
             'name': self.name,
+            'mtype': self.mtype,
+            'points': self.points,
             'hands': {key: str(deck) for key, deck in self.hands.items()},
             'party': self.party.to_dict() if self.party else None
         }

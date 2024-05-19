@@ -110,7 +110,8 @@ def on_join(data):
     #print("\n\n\nJoined\n\n\n\n")
     join_room(partyID)
     #emit('joined', room=partyID)
-    emit('player-joined', {'playerID': playerID, 'partyID': partyID, 'mtype': data['mtype'], 'playerName': partyManager.get_player(playerID).name}, room=partyID)
+    #emit('player-joined', {'playerID': playerID, 'partyID': partyID, 'mtype': data['mtype'], 'playerName': partyManager.get_player(playerID).name}, room=partyID)
+    emit('player-joined', {'playerID': playerID, 'partyID': partyID, 'mtype': partyManager.get_player(playerID).mtype, 'playerName': partyManager.get_player(playerID).name}, room=partyID)
     
 
 @socketio.on('test')
@@ -330,7 +331,7 @@ def sosonline_start_game(data):
 
 
     partyManager.get_party(partyID).turn = 2
-
+    p("start-game", links)
     emit('start-game',{'links': links}, room = partyID)
 
 

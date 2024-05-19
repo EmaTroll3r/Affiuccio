@@ -4,11 +4,14 @@ from flask import Flask
 from .mainroutes import main
 #from .apps.SosOnline.routes import sos_online
 
-from global_vars import socketio
+#from global_vars import socketio
 
 def create_app():
     app = Flask(__name__)
     app.logger.setLevel(logging.ERROR)
+    #log = logging.getLogger('werkzeug')
+    #log.disabled = True
+    #log.setLevel(logging.ERROR)
     app.config['DEBUG'] = True
     app.config['SECRET_KEY'] = 'secret'
 

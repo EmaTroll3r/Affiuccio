@@ -44,6 +44,7 @@ socket.on('player-joined', function(data) {
     //console.log('A player joined with ID: ' + data.playerID);
     //alert('A player joined with ID: ' + data.playerID);
     localStorage.setItem('playerID', data.playerID);
+    //socket.disconnect();
     window.location.href = `/`+gameEndpoint+`/lobby?mtype=${data.mtype}&partyID=${data.partyID}&playerID=${data.playerID}`
 });
 
