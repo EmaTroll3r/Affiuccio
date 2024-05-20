@@ -236,6 +236,7 @@ window.addEventListener('beforeunload', function(event) {
 });
 
 socket.on('response-turn', function(data) {
+    console.log('response-turn', data);
     turn = parseInt(data.turn);
 
     if (data.response['status'] == 0){
@@ -286,6 +287,26 @@ socket.on('response-playerList', function(data) {
 
     contextPlayers.setAttribute("size", playerList.length);
     */
+});
+
+socket.on('response-hand', function(data) {
+    var hintHand = JSON.parse(data.hand).map(function(item) {
+        return parseInt(item);
+    });
+
+    hintHand.forEach((card, i) => {
+        //console.log('preloadedImages[card]',preloadedImages[card]);
+        if(preloadedImages[card] == undefined){
+            preloadedImages[card] = new Image();
+            preloadedImages[card].src = '/static/SosOnline/images/' + card + '.png';
+            console.log("preloaded "+preloadedImages[card].src)
+        }
+    });
+
+    if(data.playerID == playerID){
+        hand[data.handtype] = hintHand;
+        showHand();
+    }
 });
 
 socket.on('player-joined', function(data) {
@@ -404,8 +425,6 @@ function playWl(wl,mtype){
     //console.log('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'cards': [wl], 'handtype':['wl'],others:{'victim':mtype}});
     socket.emit('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'cards': [wl], 'handtype':['wl'],others:{'victim':mtype}, 'askHand':0} );
 }
-
-
 
 function handleBigCardClick() {
     bigCard.style.display = 'none'; // Nascondi bigCard
@@ -533,12 +552,22 @@ async function loadAllImages() {
     .catch(error => console.error('Errore:', error));
 }
 
+function loadGeneralImages(){
+
+    for (var i = 1; i < 4; i++) {
+        witheringLooksImages[i] = new Image();
+        witheringLooksImages[i].src = '/static/SosOnline/images/wl' + i + '.png';
+        //console.log("Preloaded wl",witheringLooksImages[i].src);
+    }
+}
+
 function startingFunction(){
-    askFullScreen();
     witheringLooksImages[1] = new Image();
     witheringLooksImages[1].src = '/static/SosOnline/images/wl1.png';
     socket.emit('join', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
-    loadAllImages();
+    askFullScreen();
+    loadGeneralImages();
+    //loadAllImages();
     //showHand();
 }
 

@@ -196,16 +196,32 @@ document.addEventListener('click', function(e) {
 //*/
 
 socket.on('response-hand', function(data) {
-    //console.log('response-hand', data);
+    var hintHand = JSON.parse(data.hand).map(function(item) {
+        return parseInt(item);
+    });
+
+    hintHand.forEach((card, i) => {
+        //console.log('preloadedImages[card]',preloadedImages[card]);
+        if(preloadedImages[card] == undefined){
+            preloadedImages[card] = new Image();
+            preloadedImages[card].src = '/static/SosOnline/images/' + card + '.png';
+            console.log("preloaded "+preloadedImages[card].src)
+        }
+    });
+
     if(data.playerID == playerID){
         
         //console.log('in')
+        /*
         hand[data.handtype] = JSON.parse(data.hand).map(function(item) {
             return parseInt(item);
         });
+        console.log('response-hand',hand);
+        //*/
+        hand[data.handtype] = hintHand;
 
         //console.log('response-hand',hand[data.handtype]);
-        
+        /*
         if(firstAskHand == false){
             hand[data.handtype].forEach((card, i) => {
                 preloadedImages[card] = new Image();
@@ -216,13 +232,17 @@ socket.on('response-hand', function(data) {
             preloadedImages[0] = new Image();
             preloadedImages[0].src = '/static/SosOnline/images/0.png';
         }
+        */
 
-
+        //console.log('show')
+        console.log('ShowHand -------- response-hand');
         showHand();
+        /*
         if(firstAskHand == false){
             firstAskHand = true;
-            loadAllImages();
+            //loadAllImages();
         }
+        */
     }
 });
 
@@ -236,6 +256,7 @@ socket.on('response-turn', function(data) {
 
     if (data.response['status'] == 0){
         document.getElementById('playerTurn').innerHTML = 'Giocatore di turno: '+ getPlayer(turn).name;
+        console.log('ShowHand -------- response-turn');
         showHand();
     }
     
@@ -493,6 +514,7 @@ function showHand(){
 function handleBigCardClick() {
     bigCard.style.display = 'none'; // Nascondi bigCard
     bigCardActive = false;
+    console.log('ShowHand -------- handleBigCardClick');
     showHand();
     bigCard.removeEventListener('click', handleBigCardClick); // Rimuovi il listener di eventi
 }
@@ -577,13 +599,27 @@ async function askFullScreen() {
     });
 }
 
+function loadGeneralImages(){
+
+    preloadedImages[0] = new Image();
+    preloadedImages[0].src = '/static/SosOnline/images/0.png';
+
+    for (var i = 1; i < 4; i++) {
+        witheringLooksImages[i] = new Image();
+        witheringLooksImages[i].src = '/static/SosOnline/images/wl' + i + '.png';
+        //console.log("Preloaded wl",witheringLooksImages[i].src);
+    }
+
+
+}
+
 function startingFunction() {
-    //toggleFullScreen(document.body);
-    askFullScreen();
+    
     //loadAllImages();
     
     socket.emit('join', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
-    //showHand();
+    askFullScreen();
+    loadGeneralImages();
 }
 
 startingFunction()
