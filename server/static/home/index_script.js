@@ -40,7 +40,7 @@ document.getElementById('host-lobby').addEventListener('click', function() {
 });
 
 window.addEventListener('beforeunload', function(event) {
-    //socket.close();
+    socket.close();
     console.log('Socket closed');
 });
 
