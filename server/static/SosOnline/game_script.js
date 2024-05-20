@@ -212,7 +212,11 @@ socket.on('response-hand', function(data) {
                 preloadedImages[card].src = '/static/SosOnline/images/' + card + '.png';
                 //console.log("Preloaded",preloadedImages[card].src);
             });
+            
+            preloadedImages[0] = new Image();
+            preloadedImages[0].src = '/static/SosOnline/images/0.png';
         }
+
 
         showHand();
         if(firstAskHand == false){
