@@ -222,6 +222,11 @@ socket.on('response-hand', function(data) {
     }
 });
 
+window.addEventListener('beforeunload', function(event) {
+    socket.close();
+    console.log('Socket closed');
+});
+
 socket.on('response-turn', function(data) {
     turn = parseInt(data.turn);
 

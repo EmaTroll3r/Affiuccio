@@ -230,6 +230,10 @@ document.addEventListener('click', function(e) {
     }
 });
 
+window.addEventListener('beforeunload', function(event) {
+    socket.close();
+    console.log('Socket closed');
+});
 
 socket.on('response-turn', function(data) {
     turn = parseInt(data.turn);

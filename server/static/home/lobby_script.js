@@ -22,6 +22,11 @@ if (mtype == 1) {
     //document.getElementById('remove-player').style.display = 'none'; // o 'inline', 'inline-block', a seconda del tuo layout
 }
 
+window.addEventListener('beforeunload', function(event) {
+    socket.close();
+    console.log('Socket closed');
+});
+
 socket.on('player-joined', function(data) {
     //if (data.playerID != playerID)
         //alert('A player joined with ID: ' + data.playerName);
@@ -87,6 +92,7 @@ socket.on('start-game', function(data){
     //console.log(data)
     //console.log(data.links[mtype])
     //console.log(mtype)
+    //socket.close();
     window.location.href = data.links[mtype]
 });
 
