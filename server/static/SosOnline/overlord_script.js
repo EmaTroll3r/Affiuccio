@@ -66,7 +66,7 @@ contextMenu.addEventListener('click',async function(e) {
 */
 
 wlContext.addEventListener('click', async function() {
-    mtype = await choosePlayer([1]);
+    mtype = await choosePlayer([1],turn);
     if (mtype == null) 
         return;
     console.log('wl',mtype);
@@ -337,8 +337,8 @@ turnButton.addEventListener('click', async function() {
     if(nextTurn > playerList.length){
         nextTurn = 2;
     }
-    console.log(nextTurn)
-    newTurn = await choosePlayer([1],nextTurn);
+    //console.log(nextTurn)
+    newTurn = await choosePlayer([1,turn],nextTurn);
     if (newTurn == null) 
         return;
     console.log("changing turn in "+newTurn)
