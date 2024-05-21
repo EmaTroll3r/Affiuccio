@@ -73,7 +73,7 @@ wlContext.addEventListener('click', async function() {
     playWl(witheringLooks[mtype] + 1,mtype);
 });
 
-async function choosePlayer(foreignPlayers) {
+async function choosePlayer(foreignPlayers,defaultChoice = null) {
     let inputOptions = {};
     for (let player of playerList) {
         if (!foreignPlayers.includes(player.mtype)) {
@@ -85,6 +85,7 @@ async function choosePlayer(foreignPlayers) {
         //title: 'Seleziona un giocatore',
         title: '<span style="color: #fff;">Seleziona un giocatore</span>',
         input: 'select',
+        inputValue: defaultChoice,
         inputOptions: inputOptions,
         //inputPlaceholder: 'Seleziona un\'opzione',
         showCancelButton: true,
@@ -332,7 +333,12 @@ turnButton.addEventListener('click', async function() {
             return;
     }
     */
-    newTurn = await choosePlayer([1]);
+    var nextTurn = turn + 1;
+    if(nextTurn > playerList.length){
+        nextTurn = 2;
+    }
+    console.log(nextTurn)
+    newTurn = await choosePlayer([1],nextTurn);
     if (newTurn == null) 
         return;
     console.log("changing turn in "+newTurn)
@@ -366,7 +372,7 @@ letDrawButton.addEventListener('click', async function() {
         verboseDeck = 'action'
     */
 
-    var targetPlayer = await choosePlayer([1]);
+    var targetPlayer = await choosePlayer([1],turn);
     if (targetPlayer == null) 
         return;
     var verboseDeck = await chooseOther("Quale carta vuoi far pescare?",{'hint':'Carta Spunto','action':'Carta Azione'});
