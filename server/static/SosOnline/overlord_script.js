@@ -418,7 +418,8 @@ socket.on('card-played', function(data) {
     if(data.response['status'] == 0){
         if(data.handtype[0] == "wl"){
             witheringLooks[data.others.victim] = card;
-            console.log('wlLevel ',card, ' to player ', data.others.victim);
+            //console.log('wlLevel ',card, ' to player ', data.others.victim);
+            alert("Occhiataccia lanciata con successo!",data.response['status'])
             showHand();
         }else{
             //console.log('card-played', card);
@@ -516,6 +517,7 @@ function toggleFullScreen(elem) {
 function alert(text,status = 1) {
     var title = '<span style="color: #fff;">Attenzione!</span>';
     var icon = 'warning'
+    //console.log(status)
     if(status == 0){
         title = '<span style="color: #fff;">Successo!</span>'
         icon = 'success'
