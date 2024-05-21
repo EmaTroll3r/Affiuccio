@@ -70,7 +70,7 @@ document.getElementById('join-lobby').addEventListener('click', function() {
     })
     .then(response => response.json())
     .then(data => {
-        
+        //console.log(data);
         var socket_data = {
             playerID: data.playerID,
             partyID: data.partyID,
@@ -80,10 +80,29 @@ document.getElementById('join-lobby').addEventListener('click', function() {
         socket.emit('join', socket_data);
     })
     .catch((error) => {
-        console.error('Error:', error);
+        //console.error('Error:', error);
+        alert("No Party Found!");
     });
 });
 
+function alert(text,status = 1) {
+    var title = '<span style="color: #fff;">Attenzione!</span>';
+    var icon = 'warning'
+    if(status == 0){
+        title = '<span style="color: #fff;">Successo!</span>'
+        icon = 'success'
+    }
+    Swal.fire({
+        title: title,
+        html: '<span style="color: #fff;">' + text + '</span>',
+        icon: icon,
+        confirmButtonText: 'OK',
+        background: '#333',
+        customClass: {
+            content: 'swal-content-custom'
+        }
+    });
+}
 
 
 /*

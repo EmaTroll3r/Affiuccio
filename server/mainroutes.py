@@ -413,6 +413,8 @@ def sosonline_join():
 
     if partyManager.get_party(partyID) is None:
         return "sorry no party found"
+    if partyManager.get_party(partyID) is None:
+        return "sorry no party found"
     if playername:
 
         player = Player(playername,partyManager.get_party(partyID),{'hint': sosOnlineLimits['maxHintHand'], 'action': sosOnlineLimits['maxActionHand']})
