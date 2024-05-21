@@ -276,7 +276,7 @@ def draw(data):
         hand = partyManager.get_party(partyID).get_player(targetPlayer).hands[targetHand].to_dict()
         emit('response-hand', {'playerID': partyManager.get_party(partyID).get_player(targetPlayer).id,'handtype':targetHand, 'hand': hand}, room=partyID)
         #p(partyManager.get_party(partyID).decks[handtype].watchNextCards(sosOnlineLimits['watchCards']+1))
-        emit('response-inGameCards', {'hand': partyManager.get_party(partyID).decks[handtype].watchNextCards(sosOnlineLimits['watchCards']+1), 'playerID':playerID, 'mtype': mtype,'playerID':playerID}, room=partyID)
+        emit('response-inGameCards', {'hand': partyManager.get_party(partyID).decks[handtype].watchNextCards(2*sosOnlineLimits['watchCards']), 'playerID':playerID, 'mtype': mtype,'playerID':playerID}, room=partyID)
 
 @socketio.on('get-playerList')
 def draw(data):
