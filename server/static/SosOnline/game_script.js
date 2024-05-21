@@ -201,16 +201,10 @@ document.addEventListener('click', function(e) {
     }
 });
 
-
+/*
 socket.on('response-inGameCards', function(data) {
     console.log('response-inGameCards',data.hand);
     
-    /*
-    var hintHand = JSON.parse(data.hand).map(function(item) {
-        return parseInt(item);
-    });
-    */ 
-    //console.log('response-inGameCards',data.targetPlayer,playerID);
     if(data.targetPlayer == playerID || data.targetPlayer == undefined){
         //console.log('in')
         data.hand.forEach((card, i) => {
@@ -225,6 +219,37 @@ socket.on('response-inGameCards', function(data) {
     }
     //socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'hint'});
     //socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'action'});
+});
+*/
+socket.on('response-inGameCards',async  function(data) {
+    console.log('response-inGameCards',data.hand);
+
+    if(data.targetPlayer == playerID || data.targetPlayer == undefined){
+        // Mostra la barra di caricamento
+        let loadingBar = document.getElementById('loadingBar');
+        //loadingBar.style.display = 'block';
+        loadingBar.value = 0;
+
+        data.hand.forEach( async (card, i) => {
+            if(preloadedImages[card] == undefined){
+                preloadedImages[card] = new Image();
+                preloadedImages[card].src = '/static/SosOnline/images/' + card + '.png';
+                console.log("preloaded "+preloadedImages[card].src)
+
+                // Ascolta l'evento 'load' per sapere quando l'immagine è stata caricata
+                preloadedImages[card].addEventListener('load', async function() {
+                    // Aggiorna il valore della barra di caricamento
+                    loadingBar.value++;
+                    // Se tutte le immagini sono state caricate, nascondi la barra di caricamento
+                    if (loadingBar.value === 3) {
+                        loadingBar.style.display = 'none';
+                        canShowHand = true;
+                    }
+                });
+            }
+        });
+        //canShowHand = true;
+    }
 });
 
 socket.on('response-hand', async function(data) {
@@ -666,13 +691,39 @@ function loadGeneralImages(){
 
 }
 
+async function fakeLoading(){
+    for (var i = 0; i < 3; i++) {
+        loadingBar.value++;
+        await new Promise(r => setTimeout(r, 1000));
+    }
+    loadingBar.style.display = 'none';
+}
+
 function startingFunction() {
     
     //loadAllImages();
-    
+    ///*
     socket.emit('join', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
     askFullScreen();
     loadGeneralImages();
+    //*/
 }
 
+async function f(){
+    
+    askFullScreen();
+    await fakeLoading()
+    console.log('startingFunction');
+    for(var i = 1; i < 4; i++){
+        preloadedImages[i] = new Image();
+        preloadedImages[i].src = '/static/SosOnline/images/' + i + '.png';
+        hand['hint'].push(i);
+        console.log("preloaded "+preloadedImages[i].src)
+    }
+    showHand();
+}
+
+
+//f()     /*
 startingFunction()
+//*/
