@@ -225,6 +225,11 @@ socket.on('response-inGameCards', function(data) {
 
 socket.on('response-hand', async function(data) {
     ///*
+    while(canShowHand == false){
+        //console.log('ShowHand -------- response-hand waiting');
+        await new Promise(r => setTimeout(r, 100));
+    }
+
     //console.log('response-hand',data);
     if(data.handtype == 'hint'){
         /*
@@ -274,10 +279,6 @@ socket.on('response-hand', async function(data) {
 
         //console.log('show')
         //console.log('ShowHand -------- response-hand');
-        while(canShowHand == false){
-            //console.log('ShowHand -------- response-hand waiting');
-            await new Promise(r => setTimeout(r, 100));
-        }
         showHand();
         /*
         if(firstAskHand == false){
