@@ -129,14 +129,19 @@ def sosonline_inGameCards(data):
     playerID = int(data['playerID'])
 
     cards = []
+    for card in partyManager.get_party(partyID).get_player(mtype).hands['hint'].cards:
+        cards.append(card.card)
+
     for player in partyManager.get_party(partyID).players:
+        if player.mtype == mtype:
+            continue
         for card in player.hands['hint'].cards:
             cards.append(card.card)
 
     #cards.extend([card.card for card in partyManager.get_party(partyID).decks['hint'].watchNextCards(3,'card')])
     cards.extend(partyManager.get_party(partyID).decks['hint'].watchNextCards(sosOnlineLimits['maxHintHand']))
     p(cards)
-    emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype,'playerID':playerID}, room=partyID)
+    emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype,'playerID':playerID,'targetPlayer':playerID}, room=partyID)
 #"""
 
 @socketio.on('sosonline-change-turn')

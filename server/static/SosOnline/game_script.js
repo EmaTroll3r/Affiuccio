@@ -204,21 +204,25 @@ document.addEventListener('click', function(e) {
 
 socket.on('response-inGameCards', function(data) {
     console.log('response-inGameCards',data.hand);
+    
     /*
     var hintHand = JSON.parse(data.hand).map(function(item) {
         return parseInt(item);
     });
     */ 
-
-    data.hand.forEach((card, i) => {
-        //console.log('preloadedImages[card]',preloadedImages[card]);
-        if(preloadedImages[card] == undefined){
-            preloadedImages[card] = new Image();
-            preloadedImages[card].src = '/static/SosOnline/images/' + card + '.png';
-            console.log("preloaded "+preloadedImages[card].src)
-        }
-    });
-    canShowHand = true;
+    //console.log('response-inGameCards',data.targetPlayer,playerID);
+    if(data.targetPlayer == playerID || data.targetPlayer == undefined){
+        //console.log('in')
+        data.hand.forEach((card, i) => {
+            //console.log('preloadedImages[card]',preloadedImages[card]);
+            if(preloadedImages[card] == undefined){
+                preloadedImages[card] = new Image();
+                preloadedImages[card].src = '/static/SosOnline/images/' + card + '.png';
+                console.log("preloaded "+preloadedImages[card].src)
+            }
+        });
+        canShowHand = true;
+    }
     //socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'hint'});
     //socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'action'});
 });
@@ -641,9 +645,9 @@ async function askFullScreen() {
         if (result.isConfirmed) {
             // L'utente ha cliccato su "Sì"
             toggleFullScreen(document.documentElement);
-            console.log("L'utente ha confermato FullScreen");
+            //console.log("L'utente ha confermato FullScreen");
         } else if (result.isDismissed) {
-            console.log("L'utente ha annullato o chiuso il popup");
+            //console.log("L'utente ha annullato o chiuso il popup");
         }
     });
 }
