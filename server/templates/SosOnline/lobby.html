@@ -22,7 +22,7 @@
         script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
         script.onload = function() {
             var gameScript = document.createElement('script');
-            gameScript.src = "{{ url_for('static', filename=''home/lobby_script.js') }}";
+            gameScript.src = "{{ url_for('static', filename='home/lobby_script.js') }}";
             document.body.appendChild(gameScript);
         };
         document.body.appendChild(script);
