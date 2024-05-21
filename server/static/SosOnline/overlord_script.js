@@ -240,10 +240,10 @@ window.addEventListener('beforeunload', function(event) {
 });
 
 socket.on('response-turn', function(data) {
-    console.log('response-turn', data);
+    //console.log('response-turn', data);
     turn = parseInt(data.turn);
 
-    if (data.response['status'] == 0){
+    if (data.response['status'] == 0 && getPlayer(turn)){
         document.getElementById('playerTurn').innerHTML = 'Giocatore di turno: '+ getPlayer(turn).name;
         showHand();
     }

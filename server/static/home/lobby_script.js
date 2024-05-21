@@ -55,7 +55,7 @@ socket.on('player-joined', function(data) {
                 playerListElem.appendChild(li);
             //console.log(players);
             });
-            console.log(playerList);
+            //console.log(playerList);
         })
         .catch(error => console.error('Error:', error));
     //console.log('A player joined with ID: ' + data.playerID);
