@@ -21,5 +21,19 @@ async function socket_connect() {
     console.log('Socket connected to: ' + domain);
 }
 
-socket_connect();
+async function connectAndLoadScript() {
+    await socket_connect()
+    let scriptURL = document.getElementById('scriptURL')
+    if(scriptURL){
+        var realScript = document.createElement('script');
+        realScript.src = scriptURL.value;;
+        document.body.appendChild(realScript);
+    }else{
+        console.log('No script to load');
+
+    }
+}
+
+connectAndLoadScript()
+
 //console.log('Socket connected to: ' + ip_address);
