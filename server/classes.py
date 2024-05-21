@@ -4,7 +4,11 @@ class Card:
         self.playable = True
 
     def __str__(self):
-        return self.card
+        return str(self.card)
+    
+    def __repr__(self):
+        return self.__str__()
+
         
     def play(self):
         if(self.playable):

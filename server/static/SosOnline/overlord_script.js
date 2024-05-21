@@ -31,6 +31,8 @@ var wlContext = document.getElementById('context-wl');
 
 var menu = document.querySelector('.menu');
 const contextMenu = document.querySelector(".wrapper");
+var letDrawButton = document.getElementById('letDrawButton')
+var turnButton = document.getElementById('turnButton')
 //var contextPlayers = document.getElementById("context-choosePlayer");
 
 /*
@@ -231,6 +233,7 @@ document.addEventListener('click', function(e) {
 });
 
 window.addEventListener('beforeunload', function(event) {
+    socket.emit("leave", {'partyID': partyID, 'playerID':playerID});
     socket.close();
     console.log('Socket closed');
 });
@@ -251,8 +254,6 @@ socket.on('response-turn', function(data) {
 
 socket.on('response-points', function(data) {
     witheringLooks = data.points;
-    
-
 });
 
 socket.on('response-playerList', function(data) {
@@ -289,12 +290,9 @@ socket.on('response-playerList', function(data) {
     */
 });
 
-socket.on('response-hand', function(data) {
-    var hintHand = JSON.parse(data.hand).map(function(item) {
-        return parseInt(item);
-    });
-
-    hintHand.forEach((card, i) => {
+socket.on('response-inGameCards', function(data) {
+    console.log('response-inGameCards',data.hand);
+    data.hand.forEach((card, i) => {
         //console.log('preloadedImages[card]',preloadedImages[card]);
         if(preloadedImages[card] == undefined){
             preloadedImages[card] = new Image();
@@ -302,11 +300,6 @@ socket.on('response-hand', function(data) {
             console.log("preloaded "+preloadedImages[card].src)
         }
     });
-
-    if(data.playerID == playerID){
-        hand[data.handtype] = hintHand;
-        showHand();
-    }
 });
 
 socket.on('player-joined', function(data) {
@@ -314,6 +307,8 @@ socket.on('player-joined', function(data) {
         //socket.emit('get-all-points', {'partyID':partyID});
         socket.emit('get-playerList', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
         socket.emit('get-turn', {'partyID':partyID, 'playerID':playerID});
+        socket.emit('sosonline-get-inGameCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
+        
     }
 });
 
@@ -326,7 +321,7 @@ function getPlayer(mtype){
     return null;
 }
 
-document.getElementById('turnButton').addEventListener('click', async function() {
+turnButton.addEventListener('click', async function() {
     /*
     var newTurn = -1
     while(newTurn < 2){
@@ -344,7 +339,7 @@ document.getElementById('turnButton').addEventListener('click', async function()
     socket.emit('sosonline-change-turn', {'partyID':partyID,'playerID':playerID, 'mtype':mtype, 'newTurn':newTurn} );
 });
 
-document.getElementById('letDrawButton').addEventListener('click', async function() {
+letDrawButton.addEventListener('click', async function() {
     
     /*
     var targetPlayer = -1
@@ -387,13 +382,27 @@ socket.on('response-letDraw', function(data) {
     //console.log('card-played', data);
     if(data.playerID == playerID){
         if(data.response['status'] == 0){
-            alert("Carta pescata con successo");
+            alert("Carta pescata con successo",0);
         }else{
             alert(data.response['message'])
         }
         //console.log(data.response)
     }
     
+});
+
+socket.on('response-hand', function(data) {
+    ///*
+    if(data.handtype == 'hint'){
+        data.hand.forEach((card, i) => {
+            //console.log('preloadedImages[card]',preloadedImages[card]);
+            if(preloadedImages[card] == undefined){
+                preloadedImages[card] = new Image();
+                preloadedImages[card].src = '/static/SosOnline/images/' + card + '.png';
+                console.log("preloaded "+preloadedImages[card].src)
+            }
+        });
+    }
 });
 
 socket.on('card-played', function(data) {
@@ -428,6 +437,9 @@ function playWl(wl,mtype){
 
 function handleBigCardClick() {
     bigCard.style.display = 'none'; // Nascondi bigCard
+    
+    turnButton.style.visibility = 'visible';
+    letDrawButton.style.visibility = 'visible';
     showHand();
     bigCard.removeEventListener('click', handleBigCardClick); // Rimuovi il listener di eventi
 }
@@ -443,6 +455,9 @@ function showPlayedCard(card,handtype){
     
     bigCard.src = img;
     contextMenu.style.visibility = 'hidden';
+    turnButton.style.visibility = 'hidden';
+    letDrawButton.style.visibility = 'hidden';
+
     bigCard.style.display = 'block'; // Mostra bigCard
     //console.log('showPlayedCard',img);
 
@@ -492,11 +507,17 @@ function toggleFullScreen(elem) {
 }
 
 
-function alert(text) {
+function alert(text,status = 1) {
+    var title = '<span style="color: #fff;">Attenzione!</span>';
+    var icon = 'warning'
+    if(status == 0){
+        title = '<span style="color: #fff;">Successo!</span>'
+        icon = 'success'
+    }
     Swal.fire({
-        title: '<span style="color: #fff;">Attenzione!</span>',
+        title: title,
         html: '<span style="color: #fff;">' + text + '</span>',
-        icon: 'warning',
+        icon: icon,
         confirmButtonText: 'OK',
         background: '#333',
         customClass: {
@@ -553,6 +574,8 @@ async function loadAllImages() {
 }
 
 function loadGeneralImages(){
+    preloadedImages[0] = new Image();
+    preloadedImages[0].src = '/static/SosOnline/images/0.png';
 
     for (var i = 1; i < 4; i++) {
         witheringLooksImages[i] = new Image();

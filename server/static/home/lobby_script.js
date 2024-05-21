@@ -6,7 +6,8 @@ let gameEndpoint = document.getElementById('gameEndpoint').value;
 var urlParams = new URLSearchParams(window.location.search);
 var mtype = urlParams.get('mtype');
 var partyID = urlParams.get('partyID');
-var playerID = parseInt(localStorage.getItem('playerID'));
+var playerID = parseInt(urlParams.get('playerID'));
+//var playerID = parseInt(localStorage.getItem('playerID'));
 
 document.getElementById('party-id').querySelector('span').textContent = partyID;
 var playerListElem = document.getElementById('player-list');
@@ -23,6 +24,7 @@ if (mtype == 1) {
 }
 
 window.addEventListener('beforeunload', function(event) {
+    socket.emit("leave", {'partyID': partyID, 'playerID':playerID});
     socket.close();
     console.log('Socket closed');
 });

@@ -23,7 +23,8 @@ var turn = 0;
 var bigCardActive = false;
 var playerList = [];
 var witheringLooks = [];
-var firstAskHand = false;
+//var firstAskHand = false;
+var canShowHand = false;
 
 var urlParams = new URLSearchParams(window.location.search);
 var playerID = parseInt(urlParams.get('playerID'));
@@ -125,6 +126,12 @@ blameContext.addEventListener('click', async function() {
     alert("You don't have Blame Cards")
 });
 
+window.addEventListener('beforeunload', function(event) {
+    socket.emit("leave", {'partyID': partyID, 'playerID':playerID});
+    socket.close();
+    console.log('Socket closed');
+});
+
 /*
 window.addEventListener("click", e => {
     e.preventDefault();
@@ -193,14 +200,16 @@ document.addEventListener('click', function(e) {
         contextMenu.style.visibility = 'hidden';
     }
 });
-//*/
 
-socket.on('response-hand', function(data) {
+
+socket.on('response-inGameCards', function(data) {
+    console.log('response-inGameCards',data.hand);
+    /*
     var hintHand = JSON.parse(data.hand).map(function(item) {
         return parseInt(item);
     });
-
-    hintHand.forEach((card, i) => {
+    */  
+    data.hand.forEach((card, i) => {
         //console.log('preloadedImages[card]',preloadedImages[card]);
         if(preloadedImages[card] == undefined){
             preloadedImages[card] = new Image();
@@ -208,6 +217,30 @@ socket.on('response-hand', function(data) {
             console.log("preloaded "+preloadedImages[card].src)
         }
     });
+    canShowHand = true;
+    //socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'hint'});
+    //socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'action'});
+});
+
+socket.on('response-hand', async function(data) {
+    ///*
+    console.log('response-hand',data);
+    if(data.handtype == 'hint'){
+        /*
+        var hintHand = JSON.parse(data.hand).map(function(item) {
+            return parseInt(item);
+        });
+        */
+        data.hand.forEach((card, i) => {
+            console.log('preloadedImages[card]',preloadedImages[card]);
+            if(preloadedImages[card] == undefined){
+                preloadedImages[card] = new Image();
+                preloadedImages[card].src = '/static/SosOnline/images/' + card + '.png';
+                console.log("preloaded "+preloadedImages[card].src)
+            }
+        });
+    }
+    //*/
 
     if(data.playerID == playerID){
         
@@ -217,9 +250,13 @@ socket.on('response-hand', function(data) {
             return parseInt(item);
         });
         console.log('response-hand',hand);
+        */
+        /*
+        hand[data.handtype] = JSON.parse(data.hand).map(function(item) {
+            return parseInt(item);
+        });
         //*/
-        hand[data.handtype] = hintHand;
-
+        hand[data.handtype] = data.hand;
         //console.log('response-hand',hand[data.handtype]);
         /*
         if(firstAskHand == false){
@@ -229,34 +266,34 @@ socket.on('response-hand', function(data) {
                 //console.log("Preloaded",preloadedImages[card].src);
             });
             
-            preloadedImages[0] = new Image();
-            preloadedImages[0].src = '/static/SosOnline/images/0.png';
+            //preloadedImages[0] = new Image();
+            //preloadedImages[0].src = '/static/SosOnline/images/0.png';
         }
-        */
+        //*/
 
         //console.log('show')
-        console.log('ShowHand -------- response-hand');
+        //console.log('ShowHand -------- response-hand');
+        while(canShowHand == false){
+            //console.log('ShowHand -------- response-hand waiting');
+            await new Promise(r => setTimeout(r, 100));
+        }
         showHand();
         /*
         if(firstAskHand == false){
             firstAskHand = true;
             //loadAllImages();
         }
-        */
+        //*/
     }
 });
 
-window.addEventListener('beforeunload', function(event) {
-    socket.close();
-    console.log('Socket closed');
-});
 
 socket.on('response-turn', function(data) {
     turn = parseInt(data.turn);
 
     if (data.response['status'] == 0){
         document.getElementById('playerTurn').innerHTML = 'Giocatore di turno: '+ getPlayer(turn).name;
-        console.log('ShowHand -------- response-turn');
+        //console.log('ShowHand -------- response-turn');
         showHand();
     }
     
@@ -265,9 +302,11 @@ socket.on('response-turn', function(data) {
     }
 });
 
+
 socket.on('player-joined', function(data) {
     //console.log('join', data);
     if(data.playerID == playerID){
+        socket.emit('sosonline-get-inGameCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
         socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'hint'});
         socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'action'});
         socket.emit('get-playerList', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
@@ -337,11 +376,17 @@ socket.on('game-end', function(data) {
     
 });
 
-function alert(text) {
+function alert(text,status = 1) {
+    var title = '<span style="color: #fff;">Attenzione!</span>';
+    var icon = 'warning'
+    if(status == 0){
+        title = '<span style="color: #fff;">Successo!</span>'
+        icon = 'success'
+    }
     Swal.fire({
-        title: '<span style="color: #fff;">Attenzione!</span>',
+        title: title,
         html: '<span style="color: #fff;">' + text + '</span>',
-        icon: 'warning',
+        icon: icon,
         confirmButtonText: 'OK',
         background: '#333',
         customClass: {
@@ -495,7 +540,7 @@ async function chooseOther(title,list) {
 
 function showHand(){
     if(bigCardActive == false){
-        console.log('showHand',hand);
+        //console.log('showHand',hand);
         //var ncard = 1;
         for(let i=0;i<maxHintHand;i++){
             /*
@@ -514,7 +559,7 @@ function showHand(){
 function handleBigCardClick() {
     bigCard.style.display = 'none'; // Nascondi bigCard
     bigCardActive = false;
-    console.log('ShowHand -------- handleBigCardClick');
+    //console.log('ShowHand -------- handleBigCardClick');
     showHand();
     bigCard.removeEventListener('click', handleBigCardClick); // Rimuovi il listener di eventi
 }
@@ -526,10 +571,12 @@ function showPlayedCard(card,handtype){
         img = preloadedImages[card].src;
     }
 
+
     for (var i = 0; i < images.length; i++) {
         images[i].src = preloadedImages[0].src;
         //console.log('showPlayedCard',images[i].src);
     }
+
     bigCardActive = true;
     bigCard.src = img;
     contextMenu.style.visibility = 'hidden';
