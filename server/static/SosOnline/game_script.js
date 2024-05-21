@@ -208,7 +208,8 @@ socket.on('response-inGameCards', function(data) {
     var hintHand = JSON.parse(data.hand).map(function(item) {
         return parseInt(item);
     });
-    */  
+    */ 
+
     data.hand.forEach((card, i) => {
         //console.log('preloadedImages[card]',preloadedImages[card]);
         if(preloadedImages[card] == undefined){
@@ -224,7 +225,7 @@ socket.on('response-inGameCards', function(data) {
 
 socket.on('response-hand', async function(data) {
     ///*
-    console.log('response-hand',data);
+    //console.log('response-hand',data);
     if(data.handtype == 'hint'){
         /*
         var hintHand = JSON.parse(data.hand).map(function(item) {
@@ -232,11 +233,11 @@ socket.on('response-hand', async function(data) {
         });
         */
         data.hand.forEach((card, i) => {
-            console.log('preloadedImages[card]',preloadedImages[card]);
+            //console.log('preloadedImages[card]',preloadedImages[card]);
             if(preloadedImages[card] == undefined){
                 preloadedImages[card] = new Image();
                 preloadedImages[card].src = '/static/SosOnline/images/' + card + '.png';
-                console.log("preloaded "+preloadedImages[card].src)
+                console.error("preloaded "+preloadedImages[card].src)
             }
         });
     }

@@ -10,6 +10,9 @@ import json
 
 #test = True
 
+with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
+    sosOnlineLimits = json.load(f)
+
 def p(*args):
     print("\n\n\n",*args,"\n\n\n")
 
@@ -130,6 +133,9 @@ def sosonline_inGameCards(data):
         for card in player.hands['hint'].cards:
             cards.append(card.card)
 
+    #cards.extend([card.card for card in partyManager.get_party(partyID).decks['hint'].watchNextCards(3,'card')])
+    cards.extend(partyManager.get_party(partyID).decks['hint'].watchNextCards(sosOnlineLimits['maxHintHand']))
+    p(cards)
     emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype,'playerID':playerID}, room=partyID)
 #"""
 
@@ -151,27 +157,28 @@ def play_card_endpoint(data):
     partyID = int(data['partyID'])
     mtype = int(data['mtype'])
     cards = data['cards']
-    handtype = data['handtype']
+    handtypes = data['handtype']
     playerID = int(data['playerID'])
     others = data.get('others', None)
     askHand = data.get('askHand', 1)
     
     #response = play_card(cards,handtypes,partyManager.get_player(playerID),partyManager.get_party(partyID),others=others)
     if(partyManager.get_party(partyID).gameEndpoint == 'SosOnline'):
-        response,end_response = sosOnline.play_card(cards,handtype,partyManager.get_player(playerID),partyManager.get_party(partyID),others=others)
+        response,end_response = sosOnline.play_card(cards,handtypes,partyManager.get_player(playerID),partyManager.get_party(partyID),others=others)
     
     
     if (response['status'] == 0):
         if(askHand == 1):
-            for handtype in handtype:
+            for handtype in handtypes:                
                 
                 hand = partyManager.get_party(partyID).get_player(mtype).hands[handtype].to_dict()
                 emit('response-hand', {'playerID': playerID,'handtype':handtype, 'hand': hand}, room=partyID)
+                #emit('response-inGameCards', {'hand': [partyManager.get_party(partyID).decks[handtype].watchNextCards().card], 'playerID':playerID, 'mtype': mtype,'playerID':playerID}, room=partyID)
                 #emit('response-hand', {'playerID': playerID,'handtype':handtype, 'hand': json.dumps(partyManager.get_party(partyID).players[mtype-1].hands[handtype].to_dict())}, room=partyID)
                 #p('response-hand', {'playerID': playerID,'handtype':handtype, 'hand': json.dumps(partyManager.get_party(partyID).players[mtype-1].hands[handtype].to_dict())})
 
     
-    emit('card-played', {'response': response, 'playerID': playerID, 'cards': cards, 'handtype': handtype, 'partyID':partyID, 'mtype':mtype,'others':others }, room=partyID)
+    emit('card-played', {'response': response, 'playerID': playerID, 'cards': cards, 'handtype': handtypes, 'partyID':partyID, 'mtype':mtype,'others':others }, room=partyID)
 
     if(end_response != None):
         emit('game-end', end_response, room=partyID)
@@ -268,6 +275,8 @@ def draw(data):
         #emit('response-hand', {'playerID': partyManager.get_party(partyID).get_player(targetPlayer).id,'handtype':targetHand, 'hand': json.dumps(partyManager.get_party(partyID).get_player(targetPlayer).hands[targetHand].to_dict())}, room=partyID)
         hand = partyManager.get_party(partyID).get_player(targetPlayer).hands[targetHand].to_dict()
         emit('response-hand', {'playerID': partyManager.get_party(partyID).get_player(targetPlayer).id,'handtype':targetHand, 'hand': hand}, room=partyID)
+        #p(partyManager.get_party(partyID).decks[handtype].watchNextCards(sosOnlineLimits['watchCards']+1))
+        emit('response-inGameCards', {'hand': partyManager.get_party(partyID).decks[handtype].watchNextCards(sosOnlineLimits['watchCards']+1), 'playerID':playerID, 'mtype': mtype,'playerID':playerID}, room=partyID)
 
 @socketio.on('get-playerList')
 def draw(data):
@@ -317,8 +326,8 @@ def sosonline_start_game(data):
     links = [None] * (maxPlayersMtype + 1)
 
     #print("\n\n\n",partyManager.get_party(partyID).players[0].hands['hint'],"\n\n\n")
-    with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
-        sosOnlineLimits = json.load(f)
+    #with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
+    #    sosOnlineLimits = json.load(f)
 
     """
     for player in partyManager.get_party(partyID).players:
@@ -391,8 +400,8 @@ def sosonline_host():
 @main.route('/SosOnline/join', methods=['GET'])
 def sosonline_join():
     
-    with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
-        sosOnlineLimits = json.load(f)
+    #with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
+    #    sosOnlineLimits = json.load(f)
     
     partyID = int(request.args.get('partyID'))
     playername = request.args.get('player')

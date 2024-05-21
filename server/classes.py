@@ -36,6 +36,15 @@ class Deck:
             return self.cards.pop()
         else:
             return None
+        
+    def watchNextCards(self,n= 1,mode = 'n'):
+        if len(self.cards) >= n and n > 0:
+            if(mode == 'n'):
+                return [card.card for card in self.cards[-n:][::-1]]        #inverte l'ordine
+            elif(mode == 'card'):
+                return [card for card in self.cards[-n:][::-1]]             #inverte l'ordine
+        return None
+    
 
     def addCard(self, card):
         if len(self.cards) < self.maxCards:
