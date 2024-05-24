@@ -55,7 +55,7 @@ def restart():
 
 
 @app.route('/manager/restart', methods=['POST'])
-def restart():
+def restartAffiuccio():
     data = request.get_json()
     clientPassword = data.get('password')
     confirm = data.get('confirm')    
@@ -74,5 +74,45 @@ def restart():
         }
     return json.dumps(response), 200
 
+
+@app.route('/manager/run', methods=['POST'])
+def runAffiuccio():
+    data = request.get_json()
+    clientPassword = data.get('password')
+    confirm = data.get('confirm')    
+    
+    if clientPassword == password:
+        run_shell_script('/home/ubuntu/', 'run.sh')
+        response = {
+            "message": "Server Avviato",
+            "status": "ok"
+        }
+    else:
+        response = {
+            "message": "Password errata",
+            "status": "error"
+        }
+    return json.dumps(response), 200
+
+@app.route('/manager/runp', methods=['POST'])
+def runAffiuccio():
+    data = request.get_json()
+    clientPassword = data.get('password')
+    confirm = data.get('confirm')    
+    
+    if clientPassword == password:
+        run_shell_script('/home/ubuntu/', 'runp.sh')
+        response = {
+            "message": "Server Avviato in Produzione",
+            "status": "ok"
+        }
+    else:
+        response = {
+            "message": "Password errata",
+            "status": "error"
+        }
+    return json.dumps(response), 200
+
+
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(port=5000, host='0.0.0.0')
