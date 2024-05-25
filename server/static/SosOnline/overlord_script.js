@@ -595,6 +595,16 @@ function loadGeneralImages(){
 function startingFunction(){
     witheringLooksImages[1] = new Image();
     witheringLooksImages[1].src = '/static/SosOnline/images/wl1.png';
+
+
+    witheringLooksImages[1].addEventListener('load', async function() {
+        loadingBar.value++;
+        if (loadingBar.value === 1) {
+            await new Promise(r => setTimeout(r, 500));
+            loadingBar.style.display = 'none';
+            canShowHand = true;
+        }
+    });
     socket.emit('join', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
     askFullScreen();
     loadGeneralImages();
