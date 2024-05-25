@@ -150,7 +150,7 @@ def sosonline_inGameCards(data):
 
     #cards.extend([card.card for card in partyManager.get_party(partyID).decks['hint'].watchNextCards(3,'card')])
     cards.extend(partyManager.get_party(partyID).decks['hint'].watchNextCards(sosOnlineLimits['maxHintHand']))
-    p(cards)
+    #p(cards)
     emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype,'playerID':playerID,'targetPlayer':playerID}, room=partyID)
 #"""
 
