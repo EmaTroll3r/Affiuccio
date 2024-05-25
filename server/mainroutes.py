@@ -108,7 +108,17 @@ def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
 @socketio.on('join')
 def on_join(data):
     partyID = int(data['partyID'])
-    playerID = data['playerID']
+    playerID = int(data['playerID'])
+    mtype = int(data['mtype'])
+
+
+    if partyManager.get_party(partyID) is None:
+        #p("No party found")
+        #join_room(partyID)
+        #emit('error', {'playerID': playerID, 'partyID': partyID, 'message': "No party found", 'status': 1}, room=partyID)
+        #leave_room(partyID)
+        return "sorry no party found"
+
 
     #print("\n\n\nJoined\n\n\n\n")
     join_room(partyID)
@@ -385,6 +395,8 @@ def home_index():
 def get_player_list():
     partyID = int(request.args.get('partyID'))
     #print("\n\n\n",partyID,"\n\n\n")
+    if partyManager.get_party(partyID) is None:
+        return {'message':"sorry no party found", 'status': 1}
     players = partyManager.get_party(partyID).players
     return jsonify([player.to_dict() for player in players])
 
@@ -411,8 +423,7 @@ def sosonline_join():
     partyID = int(request.args.get('partyID'))
     playername = request.args.get('player')
 
-    if partyManager.get_party(partyID) is None:
-        return "sorry no party found"
+    
     if partyManager.get_party(partyID) is None:
         return "sorry no party found"
     if playername:
@@ -450,5 +461,8 @@ def sosonline_overlord():
 @main.route('/SosOnline/lobby')
 def sosonline_lobby():
     #partyID = request.args.get('partyID')
+    partyID = int(request.args.get('partyID'))
+    if partyManager.get_party(partyID) is None:
+        return "sorry no party found"
     return render_template('SosOnline/lobby.html')
 

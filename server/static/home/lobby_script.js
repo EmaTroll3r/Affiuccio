@@ -88,6 +88,14 @@ socket.on('playerList', function(data) {
         alert(data.response['message'])
     }
 });
+/*
+socket.on('error', function(data) {
+    console.log('error ',data,playerID,mtype,partyID);
+    if(data.playerID == playerID && data.mtype == mtype && data.partyID == partyID){
+        alert(data.message)
+    }
+});
+*/
 
 socket.on('start-game', function(data){
     console.log("received")

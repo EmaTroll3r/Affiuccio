@@ -116,10 +116,14 @@ def host(test=False):
     partyID = Party.create_party('SosOnline',test=test)
     partyManager.get_party(partyID).add_deck(Deck(sosOnlineLimits['maxHintCards']),'hint')
     partyManager.get_party(partyID).add_deck(Deck(sosOnlineLimits['maxActionCards']),'action')
+    with open('server/static/server_stats.json', 'r') as f:
+        data = load(f)
+    partyManager.get_party(partyID).homeLink = data['domain'] + '/SosOnline'
     #partyManager.get_party(partyID).add_deck(Deck(3),'wl')
     
     player = Player(request.get_json().get('player'),partyManager.get_party(partyID),{'hint': sosOnlineLimits['maxHintHand'], 'action': sosOnlineLimits['maxActionHand']})
     
+
     response = {
         'partyID': partyID,
         'mtype': partyManager.get_party(partyID).join(player),

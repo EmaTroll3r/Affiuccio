@@ -71,6 +71,7 @@ class Party:
         self.gameEndpoint = gameEndpoint
         self.turn = -1
         self.last_mtype = 0
+        self.homeLink = None
         """self.partynamespace = PartyNamespace('/'+str(partyID))
         from global_vars import socketio
         socketio.on_namespace(self.partynamespace)"""
@@ -83,6 +84,7 @@ class Party:
         self.gameEndpoint = gameEndpoint
         self.turn = 0
         self.last_mtype = 0
+        self.homeLink = None
 
     @staticmethod
     def create_party(gameEndpoint,test=False):

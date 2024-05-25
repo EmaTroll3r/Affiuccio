@@ -36,7 +36,7 @@ def home():
 
 
 @app.route('/manager/password', methods=['POST'])
-def restart():
+def controlPassword():
     data = request.get_json()
     clientPassword = data.get('password')
 
@@ -95,7 +95,7 @@ def runAffiuccio():
     return json.dumps(response), 200
 
 @app.route('/manager/runp', methods=['POST'])
-def runAffiuccio():
+def runpAffiuccio():
     data = request.get_json()
     clientPassword = data.get('password')
     confirm = data.get('confirm')    
