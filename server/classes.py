@@ -158,14 +158,11 @@ class Party:
         #print("\n\n\n\nJoined",self.last_mtype,"\n\n\n\n")
         #player.mtype = len(self.players)
         player.mtype = self.last_mtype
-
-
         """
         from flask_socketio import emit,join_room
         join_room(self.partyID)
         emit('player-joined', {'player': player}, room=str(self.partyID))
         """
-        
         return player.mtype
 
     def get_player(self,mtype):
