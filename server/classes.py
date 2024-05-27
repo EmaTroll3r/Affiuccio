@@ -154,6 +154,7 @@ class Party:
         self.players.append(player)
         
         self.last_mtype += 1
+        print("\n\n\n Last mtype",self.last_mtype,"\n\n\n")
         #print("\n\n\n\nJoined",self.last_mtype,"\n\n\n\n")
         #player.mtype = len(self.players)
         player.mtype = self.last_mtype
@@ -165,7 +166,7 @@ class Party:
         emit('player-joined', {'player': player}, room=str(self.partyID))
         """
         
-        return len(self.players)
+        return player.mtype
 
     def get_player(self,mtype):
         try:
