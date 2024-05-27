@@ -8,6 +8,7 @@
 <body>
     <!--<button id="drawButton">Draw</button>-->
     <p id="playerTurn">Giocatore di turno:</p>
+    <img id="noise-image" src="{{ url_for('static', filename='SosOnline/images/noise.png') }}" alt="Noise" style="position: absolute; top: 15px; right: 40px; width: 50px; height: 50px;">
     <hr>
     <div id="game-images">
         <img id="card1" class="card" src="">
@@ -44,6 +45,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script> -->
     
     <progress id="loadingBar" value="0" max="3" style="display: visible;"></progress>
+
     <!--<script src="{{ url_for('static', filename='home/contextmenu.js') }}"></script>-->
     <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>

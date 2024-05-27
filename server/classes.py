@@ -154,7 +154,7 @@ class Party:
         self.players.append(player)
         
         self.last_mtype += 1
-        print("\n\n\n Last mtype",self.last_mtype,"\n\n\n")
+        #print("\n\n\n Last mtype",self.last_mtype,"\n\n\n")
         #print("\n\n\n\nJoined",self.last_mtype,"\n\n\n\n")
         #player.mtype = len(self.players)
         player.mtype = self.last_mtype
@@ -250,6 +250,7 @@ class Player:
         self.hands = {key: Deck(value,True) for key, value in maxHandCardDict.items()}
         self.party = party
         self.points = 0
+        self.components = {}
         partyManager.add_player(self)
         
     def get_id(self):
@@ -265,7 +266,8 @@ class Player:
             'mtype': self.mtype,
             'points': self.points,
             'hands': {key: str(deck) for key, deck in self.hands.items()},
-            'party': self.party.to_dict() if self.party else None
+            'party': self.party.to_dict() if self.party else None,
+            'components': self.components if self.components else None
         }
 
     def play(self, card_id, handNumber=0):

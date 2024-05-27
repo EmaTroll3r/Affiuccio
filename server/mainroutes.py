@@ -156,15 +156,21 @@ def sosonline_inGameCards(data):
 
 @socketio.on('sosonline-change-turn')
 def sosonline_change_turn(data):
-    partyID = int(data['partyID'])
-    mtype = int(data['mtype'])
-    turn = int(data['newTurn'])
-    playerID = int(data['playerID'])
+    #partyID = int(data['partyID'])
+    #playerID = int(data['playerID'])
+    #mtype = int(data['mtype'])
+    #turn = int(data['newTurn'])
 
-    if mtype == 1:
-        newTurn = partyManager.get_party(partyID).changeTurn(turn,forbittenPlayers = [1])
-        response = Party.verboseErrors(newTurn,'turn')
-        emit('response-turn', {'response': response, 'playerID':playerID, 'turn': newTurn}, room=partyID)
+    return sosOnline.change_turn(int(data['partyID']),int(data['playerID']),int(data['mtype']),int(data['newTurn']))
+
+@socketio.on('sosonline-noise')
+def sosonline_noise(data):
+    return sosOnline.noise(int(data['partyID']),int(data['playerID']),int(data['mtype']),int(data['targetPlayer']),int(data['noiseLevel']))
+
+@socketio.on('sosonline-get-noise')
+def sosonline_get_noise(data):
+    return sosOnline.get_noise(int(data['partyID']),int(data['playerID']),int(data['mtype']))
+
 
 
 @socketio.on('play-card')
@@ -218,7 +224,7 @@ def get_turn(data):
     playerID = int(data['playerID'])
     #print("\n\n\nRicevuto ask hand",json.dumps(partyManager.get_party(partyID).players[int(data['mtype'])-1].hands[data['hand']].to_dict()),"\n\n\n")
     #print("\n\n\nRicevuto ask hand\n\n\n")
-    emit('response-turn', {'response': {"status": 0, "message": "Success"},'playerID':playerID,'turn': partyManager.get_party(partyID).turn}, room=partyID)
+    emit('response-turn', {'response': {"status": 0, "message": "Success"},'playerID':playerID,'turn': partyManager.get_party(partyID).turn, 'requestType':'request'}, room=partyID)
 
 @socketio.on('get-all-points')
 def get_allPoints(data):
@@ -422,23 +428,8 @@ def sosonline_join():
     
     partyID = int(request.args.get('partyID'))
     playername = request.args.get('player')
-
     
-    if partyManager.get_party(partyID) is None:
-        return "sorry no party found"
-    if playername:
-
-        player = Player(playername,partyManager.get_party(partyID),{'hint': sosOnlineLimits['maxHintHand'], 'action': sosOnlineLimits['maxActionHand']})
-
-        response = {
-            'partyID': partyID,
-            'mtype': partyManager.get_party(partyID).join(player),
-            'playerID': player.id
-        }
-        
-        return jsonify(response)
-    else:
-        return "no player name provided"
+    return sosOnline.join(partyID,playername)
 
 @main.route('/SosOnline/game', methods=['GET'])
 def sosonline_game():

@@ -33,6 +33,7 @@ var menu = document.querySelector('.menu');
 const contextMenu = document.querySelector(".wrapper");
 var letDrawButton = document.getElementById('letDrawButton')
 var turnButton = document.getElementById('turnButton')
+var noiseButton = document.getElementById('noise-image');
 //var contextPlayers = document.getElementById("context-choosePlayer");
 
 /*
@@ -66,11 +67,11 @@ contextMenu.addEventListener('click',async function(e) {
 */
 
 wlContext.addEventListener('click', async function() {
-    mtype = await choosePlayer([1],turn);
-    if (mtype == null) 
+    targetPlayer = await choosePlayer([1],turn);
+    if (targetPlayer == null) 
         return;
-    console.log('wl',mtype);
-    playWl(witheringLooks[mtype] + 1,mtype);
+    console.log('wl',targetPlayer);
+    playWl(witheringLooks[targetPlayer] + 1,targetPlayer);
 });
 
 async function choosePlayer(foreignPlayers,defaultChoice = null) {
@@ -233,6 +234,37 @@ document.addEventListener('click', function(e) {
     }
 });
 
+noiseButton.addEventListener('click', async function() {
+    let targetPlayer = await choosePlayer([parseInt(mtype)],turn)
+    if (targetPlayer == null)
+        return;
+
+    inputOptions = {};
+    for(let i=1;i<=noisePoints;i++){
+        inputOptions[i] = i;
+    }
+
+    let noiseLevel = await Swal.fire({
+        //title: 'Seleziona un giocatore',
+        title: '<span style="color: #fff;">Seleziona un giocatore</span>',
+        input: 'select',
+        inputOptions: inputOptions,
+        //inputPlaceholder: 'Seleziona un\'opzione',
+        showCancelButton: true,
+        background: '#333',
+        customClass: {
+            content: 'swal-content-custom'
+        }
+    });
+
+    if (noiseLevel.isConfirmed){
+        
+        console.log('noiseLevel',parseInt(noiseLevel.value))
+        socket.emit('sosonline-noise', {'partyID':partyID, 'mtype':mtype, 'playerID':playerID, 'targetPlayer':targetPlayer, 'noiseLevel':parseInt(noiseLevel.value)});
+    }
+});
+
+
 window.addEventListener('beforeunload', function(event) {
     socket.emit("leave", {'partyID': partyID, 'playerID':playerID});
     socket.close();
@@ -303,13 +335,34 @@ socket.on('response-inGameCards', function(data) {
     });
 });
 
+socket.on('receive-noise', function(data) {
+    console.log('receive-noise',data,playerID);
+    if(data.response['status'] == 0){
+        if(data.targetPlayer == parseInt(mtype)){
+            console.log('receive-noise',data.noiseLevel);
+            navigator.vibrate(1000 * data.noiseLevel)
+        }
+    }
+    if(data.playerID == playerID){
+        alert(data.response['message'],data.response['status'])
+    }
+});
+
+socket.on('response-noise', function(data) {
+    //console.log('response-noise',data);
+    if(data.playerID == playerID){
+        //console.log('response-noise');
+        noisePoints = data.noisePoints;
+    }
+});
+
 socket.on('player-joined', function(data) {
     if(data.playerID == playerID){
         //socket.emit('get-all-points', {'partyID':partyID});
         socket.emit('get-playerList', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
         socket.emit('get-turn', {'partyID':partyID, 'playerID':playerID});
         socket.emit('sosonline-get-inGameCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
-        
+        socket.emit('sosonline-get-noise', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
     }
 });
 
@@ -437,9 +490,9 @@ socket.on('game-end', function(data) {
     console.log('game-end', data);
 });
 
-function playWl(wl,mtype){
+function playWl(wl,targetPlayer){
     //console.log('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'cards': [wl], 'handtype':['wl'],others:{'victim':mtype}});
-    socket.emit('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'cards': [wl], 'handtype':['wl'],others:{'victim':mtype}, 'askHand':0} );
+    socket.emit('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'cards': [wl], 'handtype':['wl'],others:{'victim':targetPlayer}, 'askHand':0} );
 }
 
 function handleBigCardClick() {

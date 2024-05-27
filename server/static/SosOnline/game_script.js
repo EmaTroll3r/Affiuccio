@@ -25,6 +25,7 @@ var playerList = [];
 var witheringLooks = [];
 //var firstAskHand = false;
 var canShowHand = false;
+var noisePoints = 0;
 
 var urlParams = new URLSearchParams(window.location.search);
 var playerID = parseInt(urlParams.get('playerID'));
@@ -39,6 +40,7 @@ var bigCard = document.getElementById('showedCard');
 var playContext = document.getElementById('context-play');
 var blockContext = document.getElementById('context-block');
 var blameContext = document.getElementById('context-blame');
+var noiseButton = document.getElementById('noise-image');
 var menu = document.querySelector('.menu');
 const contextMenu = document.querySelector(".wrapper");
 
@@ -99,6 +101,36 @@ playContext.addEventListener('click', function() {
     playCard(menu.getAttribute('selected-card'));
 });
 
+noiseButton.addEventListener('click', async function() {
+    let targetPlayer = await choosePlayer([parseInt(mtype)],turn)
+    if (targetPlayer == null)
+        return;
+
+    inputOptions = {};
+    for(let i=1;i<=noisePoints;i++){
+        inputOptions[i] = i;
+    }
+
+    let noiseLevel = await Swal.fire({
+        //title: 'Seleziona un giocatore',
+        title: '<span style="color: #fff;">Seleziona un giocatore</span>',
+        input: 'select',
+        inputOptions: inputOptions,
+        //inputPlaceholder: 'Seleziona un\'opzione',
+        showCancelButton: true,
+        background: '#333',
+        customClass: {
+            content: 'swal-content-custom'
+        }
+    });
+
+    if (noiseLevel.isConfirmed){
+        
+        console.log('noiseLevel',parseInt(noiseLevel.value))
+        socket.emit('sosonline-noise', {'partyID':partyID, 'mtype':mtype, 'playerID':playerID, 'targetPlayer':targetPlayer, 'noiseLevel':parseInt(noiseLevel.value)});
+    }
+});
+
 blockContext.addEventListener('click', function() {
     for(let i=0;i<maxActionHand;i++){
         if(hand['action'][i] < maxBlockCards){
@@ -126,11 +158,45 @@ blameContext.addEventListener('click', async function() {
     alert("You don't have Blame Cards")
 });
 
-window.addEventListener('beforeunload', function(event) {
+window.addEventListener('beforeunload', async function(event) {
     socket.emit("leave", {'partyID': partyID, 'playerID':playerID});
     socket.close();
     console.log('Socket closed');
 });
+
+/*
+window.addEventListener('popstate', async function(event) {
+    event.preventDefault();
+
+    const result = await Swal.fire({
+        title: '<span style="color: #fff;">Sei sicuro di voler uscire?</span>',
+        showCancelButton: true,
+        confirmButtonText: 'Sì',
+        cancelButtonText: 'No',
+        background: '#333',
+        customClass: {
+            content: 'swal-content-custom'
+        }
+    });
+
+    if (result.isConfirmed) {
+        // L'utente ha cliccato su "Sì"
+        socket.emit("leave", {'partyID': partyID, 'playerID':playerID});
+        socket.close();
+        console.log('Socket closed');
+        history.go(-1); // Permette di tornare indietro se l'utente conferma
+    } else if (result.isDismissed) {
+        // L'utente ha annullato o chiuso il popup
+        history.pushState(null, null, location.href); // Impedisce di tornare indietro se l'utente annulla
+    }
+});
+
+// Impedisce di tornare indietro quando la pagina viene caricata
+history.pushState(null, null, location.href);
+window.onpopstate = function () {
+    history.go(1);
+};
+*/
 
 /*
 window.addEventListener("click", e => {
@@ -318,6 +384,26 @@ socket.on('response-hand', async function(data) {
     }
 });
 
+socket.on('receive-noise', function(data) {
+    console.log('receive-noise',data,playerID);
+    if(data.response['status'] == 0){
+        if(data.targetPlayer == parseInt(mtype)){
+            console.log('receive-noise',data.noiseLevel);
+            navigator.vibrate(1000 * data.noiseLevel)
+        }
+    }
+    if(data.playerID == playerID){
+        alert(data.response['message'],data.response['status'])
+    }
+});
+
+socket.on('response-noise', function(data) {
+    //console.log('response-noise',data);
+    if(data.playerID == playerID){
+        //console.log('response-noise');
+        noisePoints = data.noisePoints;
+    }
+});
 
 socket.on('response-turn', function(data) {
     turn = parseInt(data.turn);
@@ -326,6 +412,12 @@ socket.on('response-turn', function(data) {
         document.getElementById('playerTurn').innerHTML = 'Giocatore di turno: '+ getPlayer(turn).name;
         //console.log('ShowHand -------- response-turn');
         showHand();
+    }
+
+    //console.log('response-turn',parseInt(mtype),turn,parseInt(mtype) == turn,data.response['status']);
+    if(parseInt(mtype) == turn && data.response['status'] == 0 && data.requestType == 'changeTurn'){
+        console.log('response-turn in');
+        navigator.vibrate(400)
     }
     
     if(data.playerID == playerID && data.response['status'] != 0){
@@ -341,6 +433,7 @@ socket.on('player-joined', function(data) {
         socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'hint'});
         socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'action'});
         socket.emit('get-playerList', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
+        socket.emit('sosonline-get-noise', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
     }
     //document.getElementById('playerTurn').innerHTML = 'Giocatore di turno: ' + data.playerID;
 });
@@ -382,6 +475,11 @@ socket.on('card-played', function(data) {
         if(data.handtype[0] == "wl"){
             //console.log('wl ',card);
             showPlayedCard(card,data.handtype[0]);
+
+            if(data.others['victim'] == parseInt(mtype)){
+                navigator.vibrate(750 * card)
+            }
+
         }else{
             //console.log('card-played', card);
             showPlayedCard(card,data.handtype[0]);
@@ -519,8 +617,7 @@ async function choosePlayer(x, y, foreignPlayers) {
 }
 */
 
-async function choosePlayer(foreignPlayers) {
-    console.log('choosePlayer',foreignPlayers);
+async function choosePlayer(foreignPlayers,defaultChoice = null) {
     let inputOptions = {};
     for (let player of playerList) {
         if (!foreignPlayers.includes(player.mtype)) {
@@ -532,6 +629,7 @@ async function choosePlayer(foreignPlayers) {
         //title: 'Seleziona un giocatore',
         title: '<span style="color: #fff;">Seleziona un giocatore</span>',
         input: 'select',
+        inputValue: defaultChoice,
         inputOptions: inputOptions,
         //inputPlaceholder: 'Seleziona un\'opzione',
         showCancelButton: true,
