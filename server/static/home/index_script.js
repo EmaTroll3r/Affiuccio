@@ -5,6 +5,11 @@
 
 //socket.emit('leave', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
 
+window.addEventListener('pageshow', function(event) {
+    //console.log('Page show event',performance.getEntriesByType('navigation')[0].type);
+    //location.reload();
+});
+
 let gameEndpoint = document.getElementById('gameEndpoint').value;
 
 document.getElementById('host-lobby').addEventListener('click', function() {
@@ -29,7 +34,8 @@ document.getElementById('host-lobby').addEventListener('click', function() {
             mtype: data.mtype
         };
 
-        socket.emit('join', socket_data);
+        //socket.emit('join', socket_data);
+        window.location.href = `/`+gameEndpoint+`/lobby?mtype=${data.mtype}&partyID=${data.partyID}&playerID=${data.playerID}`
         console.log('Socket connected to partyID: ' + data.partyID);
     })
     .catch((error) => {
@@ -40,10 +46,22 @@ document.getElementById('host-lobby').addEventListener('click', function() {
 });
 
 window.addEventListener('beforeunload', function(event) {
-    socket.close();
+    //socket.close();
     console.log('Socket closed');
 });
 
+/*
+window.onunload = function() {
+    return null;
+}
+
+window.addEventListener("pageshow", function ( event ) {
+    window.location.reload();
+})
+*/
+
+    
+/*
 socket.on('player-joined', function(data) {
     //console.log('A player joined with ID: ' + data.playerID);
     //alert('A player joined with ID: ' + data.playerID);
@@ -51,7 +69,7 @@ socket.on('player-joined', function(data) {
     //socket.close();
     window.location.href = `/`+gameEndpoint+`/lobby?mtype=${data.mtype}&partyID=${data.partyID}&playerID=${data.playerID}`
 });
-
+*/
 
 document.getElementById('join-lobby').addEventListener('click', function() {
     var playername = document.getElementById('nickname').value;
@@ -77,7 +95,8 @@ document.getElementById('join-lobby').addEventListener('click', function() {
             mtype: data.mtype
         };
 
-        socket.emit('join', socket_data);
+        //socket.emit('join', socket_data);
+        window.location.href = `/`+gameEndpoint+`/lobby?mtype=${data.mtype}&partyID=${data.partyID}&playerID=${data.playerID}`
     })
     .catch((error) => {
         //console.error('Error:', error);
