@@ -235,7 +235,7 @@ document.addEventListener('click', function(e) {
 
 window.addEventListener('beforeunload', function(event) {
     socket.emit("leave", {'partyID': partyID, 'playerID':playerID});
-    //socket.close();
+    socket.close();
     console.log('Socket closed');
 });
 
