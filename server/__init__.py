@@ -9,6 +9,9 @@ from .mainroutes import main
 def create_app():
     app = Flask(__name__)
     app.logger.setLevel(logging.ERROR)
+    #logging.basicConfig(filename='app.log', level=logging.INFO)
+    #logging.info('This message will be logged to the file app.log')
+    
     #log = logging.getLogger('werkzeug')
     #log.disabled = True
     #log.setLevel(logging.ERROR)

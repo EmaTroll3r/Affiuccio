@@ -24,7 +24,7 @@ if (mtype == 1) {
 }
 
 window.addEventListener('beforeunload', function(event) {
-    socket.emit("leave", {'partyID': partyID, 'playerID':playerID});
+    //socket.emit("leave", {'partyID': partyID, 'playerID':playerID});
     socket.close();
     console.log('Socket closed');
 });
