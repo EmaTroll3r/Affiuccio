@@ -97,6 +97,8 @@ contextMenu.addEventListener('click', async function(e) {
 });
 */
 
+
+
 playContext.addEventListener('click', function() {
     playCard(menu.getAttribute('selected-card'));
 });
@@ -556,6 +558,12 @@ function toggleFullScreen(elem) {
         } else if (elem.msRequestFullscreen) {
             elem.msRequestFullscreen();
         }
+
+        if (window.screen.orientation.lock) {
+            window.screen.orientation.lock('landscape');
+            console.log('Orientation locked');
+        }
+
     } else {
         if (document.cancelFullScreen) {
             document.cancelFullScreen();

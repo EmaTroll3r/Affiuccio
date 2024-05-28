@@ -553,6 +553,12 @@ function toggleFullScreen(elem) {
         } else if (elem.msRequestFullscreen) {
             elem.msRequestFullscreen();
         }
+
+        if (window.screen.orientation.lock) {
+            window.screen.orientation.lock('landscape');
+            console.log('Orientation locked');
+        }
+
     } else {
         if (document.cancelFullScreen) {
             document.cancelFullScreen();
