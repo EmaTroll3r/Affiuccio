@@ -259,8 +259,8 @@ def draw(data):
 
 
         if(partyManager.get_party(partyID).gameEndpoint == 'SosOnline'):
-            sosOnline.get_inGameCards(partyID,mtype,playerID,2)        
-        #emit('response-inGameCards', {'hand': partyManager.get_party(partyID).decks[handtype].watchNextCards(2*sosOnlineLimits['watchCards']), 'playerID':playerID, 'mtype': mtype,'playerID':playerID}, room=partyID)
+            sosOnline.get_inGameCards(partyID,mtype,playerID,n=2)        
+        #emit('response-inGameCards', {'hand': partyManager.get_party(partyID).decks[handtype].watchNextCards(2*sosOnlineLimits['watchCards']), 'playerID':playerID, 'mtype': mtype}, room=partyID)
 
 @socketio.on('get-playerList')
 def get_playerList(data):

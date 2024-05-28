@@ -21,7 +21,7 @@ def sosonline_inGameCards(data):
     mtype = int(data['mtype'])
     playerID = int(data['playerID'])
 
-    return sosOnline.get_inGameCards(partyID,mtype,playerID,1)
+    return sosOnline.get_inGameCards(partyID,mtype,playerID,playerID,1)
 
 @socketio.on('sosonline-change-turn')
 def sosonline_change_turn(data):

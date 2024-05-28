@@ -68,6 +68,7 @@ def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
                             party.raw_draw(player.mtype,'hint','hint')
                         newTurn = party.changeTurn(others['newTurn'],[1],needToPlay=needToPlay)        #cambia effettivamente il turno
                         emit('response-turn', {'response': {"status": 0, "message": "Success"},'playerID':player.id,'turn': newTurn}, room=party.partyID)
+                        get_inGameCards(party.partyID,player.mtype,player.id)
                 if(cards[1] < sosOnlineLimits['maxBlockCards']):        #se è una carta blocco
                     party.raw_draw(player.mtype,'action','action')
 
@@ -235,7 +236,7 @@ def start_game(partyID):
     emit('start-game',{'links': links}, room = partyID)
 
 
-def get_inGameCards(partyID,mtype,playerID,n=1):
+def get_inGameCards(partyID,mtype,playerID,targetPlayer = None,n=1):
     cards = []
     for card in partyManager.get_party(partyID).get_player(mtype).hands['hint'].cards:
         cards.append(card.card)
@@ -249,4 +250,7 @@ def get_inGameCards(partyID,mtype,playerID,n=1):
     #cards.extend([card.card for card in partyManager.get_party(partyID).decks['hint'].watchNextCards(3,'card')])
     cards.extend(partyManager.get_party(partyID).decks['hint'].watchNextCards(n * sosOnlineLimits['maxHintHand']))
     #p(cards)
-    emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype,'playerID':playerID,'targetPlayer':playerID}, room=partyID)
+    if(targetPlayer != None):
+        emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype,'targetPlayer':playerID}, room=partyID)
+    else:
+        emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype}, room=partyID)
