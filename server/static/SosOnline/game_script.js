@@ -104,18 +104,51 @@ playContext.addEventListener('click', function() {
 });
 
 noiseButton.addEventListener('click', async function() {
+
+    if(noisePoints == 0){
+        alert("Hai speso tutti i tuoi Noise Points")
+        return;
+    }
+
     let targetPlayer = await choosePlayer([parseInt(mtype)],turn)
     if (targetPlayer == null)
         return;
 
+    let noiseLevel = await Swal.fire({
+        title: '<span style="color: #fff;">Seleziona un livello</span>',
+        html: `<input type="range" id="noise-level" min="0" max="${noisePoints}" value="1" step="1">
+               <span id="slider-value">1</span>`,
+        showCancelButton: true,
+        background: '#333',
+        customClass: {
+            content: 'swal-content-custom'
+        },
+        didOpen: () => {
+            const input = Swal.getPopup().querySelector('#noise-level');
+            const valueSpan = Swal.getPopup().querySelector('#slider-value');
+            input.oninput = () => {
+                valueSpan.textContent = input.value;
+            };
+        },
+        preConfirm: () => {
+            return document.getElementById('noise-level').value;
+        }
+    });
+
+    if (noiseLevel.isConfirmed){
+        console.log('noiseLevel',parseInt(noiseLevel.value))
+        socket.emit('sosonline-noise', {'partyID':partyID, 'mtype':mtype, 'playerID':playerID, 'targetPlayer':targetPlayer, 'noiseLevel':parseInt(noiseLevel.value)});
+    }
+
+    /*
     inputOptions = {};
     for(let i=1;i<=noisePoints;i++){
         inputOptions[i] = i;
     }
-
+    
     let noiseLevel = await Swal.fire({
         //title: 'Seleziona un giocatore',
-        title: '<span style="color: #fff;">Seleziona un giocatore</span>',
+        title: '<span style="color: #fff;">Seleziona un livello di fastidio</span>',
         input: 'select',
         inputOptions: inputOptions,
         //inputPlaceholder: 'Seleziona un\'opzione',
@@ -131,6 +164,7 @@ noiseButton.addEventListener('click', async function() {
         console.log('noiseLevel',parseInt(noiseLevel.value))
         socket.emit('sosonline-noise', {'partyID':partyID, 'mtype':mtype, 'playerID':playerID, 'targetPlayer':targetPlayer, 'noiseLevel':parseInt(noiseLevel.value)});
     }
+    */
 });
 
 blockContext.addEventListener('click', function() {
