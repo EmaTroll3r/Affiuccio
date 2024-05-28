@@ -4,6 +4,10 @@ from flask import jsonify, request
 from global_vars import partyManager
 from server.classes import Deck, Party, Player
 
+
+with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
+    sosOnlineLimits = load(f)
+
 def hello():
     print("\n\n\n\nHello, World!\n\n\n")
     return "Hello, World!"
@@ -13,8 +17,8 @@ def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
     newTurn = -1
     end_response = None
     if(handtypes[0] != "wl"):     #se non è una carta occhiataccia
-        with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
-            sosOnlineLimits = load(f)
+        #with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
+        #    sosOnlineLimits = load(f)
         for i in range(len(cards)):
             if cards[i] == 0:
                 continue
@@ -119,8 +123,8 @@ def end(loser,partyID):
     return {'loser': loser}
 
 def join(partyID,playername):
-    with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
-        sosOnlineLimits = load(f)
+    #with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
+    #    sosOnlineLimits = load(f)
     
     if partyManager.get_party(partyID) is None:
         return "sorry no party found"
@@ -143,8 +147,8 @@ def join(partyID,playername):
 
 
 def host(test=False):
-    with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
-        sosOnlineLimits = load(f)
+    #with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
+    #    sosOnlineLimits = load(f)
 
     partyID = Party.create_party('SosOnline',test=test)
     partyManager.get_party(partyID).add_deck(Deck(sosOnlineLimits['maxHintCards']),'hint')
@@ -198,3 +202,51 @@ def get_noise(partyID,playerID,mtype):
     #print("get_noise")
     #print("player",partyManager.get_party(partyID).get_player(mtype).to_dict())
     emit('response-noise', {'playerID':playerID, 'mtype': mtype, 'noisePoints': partyManager.get_party(partyID).get_player(mtype).components['noisePoints']}, room=partyID)
+
+
+def start_game(partyID):
+    maxPlayersMtype = 0
+    real_mtype = 1
+
+    for player in partyManager.get_party(partyID).players:
+        if player.mtype > maxPlayersMtype:
+            maxPlayersMtype = player.mtype
+
+    links = [None] * (maxPlayersMtype + 1)
+    
+    for player in partyManager.get_party(partyID).players:
+
+        if player.mtype == 1:
+            links[player.mtype] = '/SosOnline/overlord?partyID='+str(partyID)+'&mtype='+str(real_mtype) + '&playerID=' + str(player.id)
+            player.mtype = real_mtype
+            real_mtype += 1
+            #print(links[player.mtype])
+            continue
+        links[player.mtype] = '/SosOnline/game?partyID='+str(partyID)+'&mtype='+str(real_mtype) + '&playerID=' + str(player.id)
+        player.mtype = real_mtype
+        real_mtype += 1
+        for i in range(sosOnlineLimits['maxHintHand']):
+            partyManager.get_party(partyID).raw_draw(player.mtype,'hint','hint')
+        for i in range(sosOnlineLimits['maxActionHand']):
+            partyManager.get_party(partyID).raw_draw(player.mtype,'action','action')
+
+
+    partyManager.get_party(partyID).turn = 2
+    emit('start-game',{'links': links}, room = partyID)
+
+
+def get_inGameCards(partyID,mtype,playerID,n=1):
+    cards = []
+    for card in partyManager.get_party(partyID).get_player(mtype).hands['hint'].cards:
+        cards.append(card.card)
+
+    for player in partyManager.get_party(partyID).players:
+        if player.mtype == mtype:
+            continue
+        for card in player.hands['hint'].cards:
+            cards.append(card.card)
+
+    #cards.extend([card.card for card in partyManager.get_party(partyID).decks['hint'].watchNextCards(3,'card')])
+    cards.extend(partyManager.get_party(partyID).decks['hint'].watchNextCards(n * sosOnlineLimits['maxHintHand']))
+    #p(cards)
+    emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype,'playerID':playerID,'targetPlayer':playerID}, room=partyID)

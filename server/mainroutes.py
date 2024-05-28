@@ -2,16 +2,15 @@ from flask import jsonify, render_template, request
 from flask_socketio import join_room, leave_room,emit
 import server.apps.SosOnline as sosOnline
 from global_vars import main, partyManager,socketio, test
-from .classes import Deck, Party, Player
-import json
-#from .classes import PartyNamespace
+#from .classes import Deck, Party, Player
 
-#from run import socketio
+#    -----------------------------------------------------------------------------
+#   |                                                                             |
+#   |   Quando si creano nuovi giochi aggiungere un if in play_card_endpoint()    |
+#   |           e in draw() con lo specifico endpoint del gioco                   |
+#   |                                                                             |
+#    -----------------------------------------------------------------------------
 
-#test = True
-
-with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
-    sosOnlineLimits = json.load(f)
 
 def p(*args):
     print("\n\n\n",*args,"\n\n\n")
@@ -131,45 +130,7 @@ def on_join(data):
 def handle_test(data):
     print('\n\n\n\n\nReceived message:', data['message'])
 
-#"""
-@socketio.on('sosonline-get-inGameCards')
-def sosonline_inGameCards(data):
-    partyID = int(data['partyID'])
-    mtype = int(data['mtype'])
-    playerID = int(data['playerID'])
 
-    cards = []
-    for card in partyManager.get_party(partyID).get_player(mtype).hands['hint'].cards:
-        cards.append(card.card)
-
-    for player in partyManager.get_party(partyID).players:
-        if player.mtype == mtype:
-            continue
-        for card in player.hands['hint'].cards:
-            cards.append(card.card)
-
-    #cards.extend([card.card for card in partyManager.get_party(partyID).decks['hint'].watchNextCards(3,'card')])
-    cards.extend(partyManager.get_party(partyID).decks['hint'].watchNextCards(sosOnlineLimits['maxHintHand']))
-    #p(cards)
-    emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype,'playerID':playerID,'targetPlayer':playerID}, room=partyID)
-#"""
-
-@socketio.on('sosonline-change-turn')
-def sosonline_change_turn(data):
-    #partyID = int(data['partyID'])
-    #playerID = int(data['playerID'])
-    #mtype = int(data['mtype'])
-    #turn = int(data['newTurn'])
-
-    return sosOnline.change_turn(int(data['partyID']),int(data['playerID']),int(data['mtype']),int(data['newTurn']))
-
-@socketio.on('sosonline-noise')
-def sosonline_noise(data):
-    return sosOnline.noise(int(data['partyID']),int(data['playerID']),int(data['mtype']),int(data['targetPlayer']),int(data['noiseLevel']))
-
-@socketio.on('sosonline-get-noise')
-def sosonline_get_noise(data):
-    return sosOnline.get_noise(int(data['partyID']),int(data['playerID']),int(data['mtype']))
 
 
 
@@ -293,14 +254,16 @@ def draw(data):
     
     emit('response-letDraw', {'response':response, 'playerID': playerID, 'targetPlayer':targetPlayer, 'targetHand':targetHand, 'handtype':handtype}, room=partyID)
     if(response['status'] == 0):
-        #emit('response-hand', {'playerID': partyManager.get_party(partyID).get_player(targetPlayer).id,'handtype':targetHand, 'hand': json.dumps(partyManager.get_party(partyID).get_player(targetPlayer).hands[targetHand].to_dict())}, room=partyID)
         hand = partyManager.get_party(partyID).get_player(targetPlayer).hands[targetHand].to_dict()
         emit('response-hand', {'playerID': partyManager.get_party(partyID).get_player(targetPlayer).id,'handtype':targetHand, 'hand': hand}, room=partyID)
-        #p(partyManager.get_party(partyID).decks[handtype].watchNextCards(sosOnlineLimits['watchCards']+1))
-        emit('response-inGameCards', {'hand': partyManager.get_party(partyID).decks[handtype].watchNextCards(2*sosOnlineLimits['watchCards']), 'playerID':playerID, 'mtype': mtype,'playerID':playerID}, room=partyID)
+
+
+        if(partyManager.get_party(partyID).gameEndpoint == 'SosOnline'):
+            sosOnline.get_inGameCards(partyID,mtype,playerID,2)        
+        #emit('response-inGameCards', {'hand': partyManager.get_party(partyID).decks[handtype].watchNextCards(2*sosOnlineLimits['watchCards']), 'playerID':playerID, 'mtype': mtype,'playerID':playerID}, room=partyID)
 
 @socketio.on('get-playerList')
-def draw(data):
+def get_playerList(data):
     partyID = int(data['partyID'])
     playerID = int(data['playerID'])
     mtype = int(data['mtype'])
@@ -333,63 +296,6 @@ def remove_player_from_lobby(data):
     emit('playerList', {'playerList': playerList, 'response':response}, room=partyID)
 
 
-@socketio.on('sosonline-ask-start-game')
-def sosonline_start_game(data):
-    partyID = int(data['partyID'])
-    maxPlayersMtype = 0
-    real_mtype = 1
-
-    for player in partyManager.get_party(partyID).players:
-        if player.mtype > maxPlayersMtype:
-            maxPlayersMtype = player.mtype
-
-    #links = [None] * (len(partyManager.get_party(partyID).players) + 1)
-    links = [None] * (maxPlayersMtype + 1)
-
-    #print("\n\n\n",partyManager.get_party(partyID).players[0].hands['hint'],"\n\n\n")
-    #with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
-    #    sosOnlineLimits = json.load(f)
-
-    """
-    for player in partyManager.get_party(partyID).players:
-
-        #p(player.mtype, player.name)
-
-        if player.mtype == 1:
-            links[player.mtype] = '/SosOnline/overlord?partyID='+str(partyID)+'&mtype='+str(player.mtype) + '&playerID=' + str(player.id)
-            #print(links[player.mtype])
-            continue
-        links[player.mtype] = '/SosOnline/game?partyID='+str(partyID)+'&mtype='+str(player.mtype) + '&playerID=' + str(player.id)
-        for i in range(sosOnlineLimits['maxHintHand']):
-            partyManager.get_party(partyID).raw_draw(player.mtype,'hint','hint')
-        for i in range(sosOnlineLimits['maxActionHand']):
-            partyManager.get_party(partyID).raw_draw(player.mtype,'action','action')
-    """
-
-    
-    for player in partyManager.get_party(partyID).players:
-
-        #p(player.mtype, player.name)
-
-        if player.mtype == 1:
-            links[player.mtype] = '/SosOnline/overlord?partyID='+str(partyID)+'&mtype='+str(real_mtype) + '&playerID=' + str(player.id)
-            player.mtype = real_mtype
-            real_mtype += 1
-            #print(links[player.mtype])
-            continue
-        links[player.mtype] = '/SosOnline/game?partyID='+str(partyID)+'&mtype='+str(real_mtype) + '&playerID=' + str(player.id)
-        player.mtype = real_mtype
-        real_mtype += 1
-        for i in range(sosOnlineLimits['maxHintHand']):
-            partyManager.get_party(partyID).raw_draw(player.mtype,'hint','hint')
-        for i in range(sosOnlineLimits['maxActionHand']):
-            partyManager.get_party(partyID).raw_draw(player.mtype,'action','action')
-
-
-    partyManager.get_party(partyID).turn = 2
-    p("start-game", links)
-    emit('start-game',{'links': links}, room = partyID)
-
 
 
 @main.route('/')
@@ -407,53 +313,7 @@ def get_player_list():
     return jsonify([player.to_dict() for player in players])
 
 @main.route('/home/parties')
-def sosonline_parties():
+def get_parties():
     return jsonify(partyManager.get_parties())
 
-
-@main.route('/SosOnline')
-def sosonline_index():
-    return render_template('SosOnline/index.html')
-
-@main.route('/SosOnline/host', methods=['POST'])
-def sosonline_host():
-    return sosOnline.host(test=test)
-    
-
-@main.route('/SosOnline/join', methods=['GET'])
-def sosonline_join():
-    
-    #with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
-    #    sosOnlineLimits = json.load(f)
-    
-    partyID = int(request.args.get('partyID'))
-    playername = request.args.get('player')
-    
-    return sosOnline.join(partyID,playername)
-
-@main.route('/SosOnline/game', methods=['GET'])
-def sosonline_game():
-    mtype = int(request.args.get('mtype'))
-    partyID = int(request.args.get('partyID'))  # Converti partyID in un intero
-    if partyManager.get_party(partyID) is None:
-        return "sorry no party found"
-    #sosOnline.run(partyID)
-    return render_template('SosOnline/game.html')
-
-@main.route('/SosOnline/overlord', methods=['GET'])
-def sosonline_overlord():
-    mtype = int(request.args.get('mtype'))
-    partyID = int(request.args.get('partyID'))  # Converti partyID in un intero
-    if partyManager.get_party(partyID) is None:
-        return "sorry no party found"
-    #sosOnline.run(partyID)
-    return render_template('SosOnline/overlord.html')
-
-@main.route('/SosOnline/lobby')
-def sosonline_lobby():
-    #partyID = request.args.get('partyID')
-    partyID = int(request.args.get('partyID'))
-    if partyManager.get_party(partyID) is None:
-        return "sorry no party found"
-    return render_template('SosOnline/lobby.html')
 

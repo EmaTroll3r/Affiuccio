@@ -2,7 +2,8 @@ import logging
 from flask import Flask
 
 from .mainroutes import main
-#from .apps.SosOnline.routes import sos_online
+from .apps.SosOnline.routes import sosonline
+
 
 #from global_vars import socketio
 
@@ -20,6 +21,7 @@ def create_app():
 
 
     app.register_blueprint(main)
+    app.register_blueprint(sosonline, url_prefix='/SosOnline')
     #app.register_blueprint(sos_online, url_prefix='/SosOnline')
     
     return app
