@@ -102,6 +102,53 @@ contextMenu.addEventListener('click', async function(e) {
 playContext.addEventListener('click', function() {
     playCard(menu.getAttribute('selected-card'));
 });
+/*
+interact('.card').draggable({
+    inertia: true,
+    modifiers: [
+        interact.modifiers.restrict({
+            restriction: 'parent',
+            endOnly: true,
+            elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+        })
+    ],
+    autoScroll: true,
+    onstart: function (event) {
+        event.target.style.cursor = 'default';
+        event.target.style.transform = 'scale(1.1)'; // Aumenta la scala della carta
+        event.target.style.boxShadow = '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)'; // Aggiungi un'ombra per dare un senso di elevazione
+    },
+    onmove: dragMoveListener,
+    onend: function (event) {
+        var target = event.target;
+        var y = parseFloat(target.getAttribute('data-y')) || 0;
+
+        if (y < -40) { // Se l'elemento è stato trascinato oltre 100px verso l'alto
+            console.log('goooo')
+            target.style.transform = 'translateY(-2000px) scale(1)'; // Continua a muovere l'elemento fuori dallo schermo e resetta la scala
+            target.style.transition = 'transform 2s ease-in'; // Regola la durata e l'andamento dell'animazione
+        } else {
+            target.style.transform = 'translateY(0) scale(1)'; // Resetta la posizione e la scala
+            target.style.transition = 'transform 500ms ease-out';
+        }
+
+        target.style.cursor = ''; // Reset the cursor style
+        target.style.boxShadow = ''; // Reset the box shadow
+    }
+});
+
+function dragMoveListener (event) {
+    var target = event.target,
+        y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+    target.style.webkitTransform =
+    target.style.transform =
+        'translateY(' + y + 'px) scale(1.1)'; // Mantieni la scala aumentata durante il trascinamento
+
+    target.setAttribute('data-y', y);
+}
+*/
+
 
 noiseButton.addEventListener('click', async function() {
 
@@ -286,6 +333,12 @@ images.forEach(function(image) {
             menu.setAttribute('selected-card', card);
         }
     });
+
+
+    image.addEventListener('contextmenu', function (event) {
+        // Prevenire l'apparizione del menu contestuale
+        event.preventDefault();
+      });
 });
 
 //document.addEventListener("click", () => contextMenu.style.visibility = "hidden");
