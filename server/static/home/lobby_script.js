@@ -113,7 +113,31 @@ socket.on('kicked-player', function(data){
     }
 });
 
+function alert(text,status = 1) {
+    var title = '<span style="color: #fff;">Attenzione!</span>';
+    var icon = 'warning'
+    if(status == 0){
+        title = '<span style="color: #fff;">Successo!</span>'
+        icon = 'success'
+    }
+    Swal.fire({
+        title: title,
+        html: '<span style="color: #fff;">' + text + '</span>',
+        icon: icon,
+        confirmButtonText: 'OK',
+        background: '#333',
+        customClass: {
+            content: 'swal-content-custom'
+        }
+    });
+}
+
 document.getElementById('start-game').addEventListener('click', function() {
+
+    if(players.length < 2) {
+        alert('Devi avere almeno 2 giocatori per iniziare il gioco');
+        return;
+    }
 
     socket.emit(gameEndpoint.toLowerCase()+"-ask-start-game", {'partyID': partyID})
     console.log("start-game emitted",partyID)

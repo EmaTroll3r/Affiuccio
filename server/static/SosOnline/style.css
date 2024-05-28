@@ -14,8 +14,8 @@ body {
 /* Stili per dispositivi mobili */
 @media (max-width: 767px) {
   body {
-      /*background-size: auto 100%;*/
-
+      background-size: auto 100vh;
+      background-repeat: no-repeat;
   }
 }
 
