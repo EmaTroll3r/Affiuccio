@@ -519,11 +519,16 @@ function showPlayedCard(card,handtype){
     letDrawButton.style.visibility = 'hidden';
 
     bigCard.style.display = 'block'; // Mostra bigCard
+    bigCard.classList.add('card-drop');
     //console.log('showPlayedCard',img);
 
 
     bigCard.addEventListener('click', handleBigCardClick);
 }
+
+bigCard.addEventListener('animationend', function() {
+    this.classList.remove('card-drop');
+  });
 
 function showHand(){
     //console.log(witheringLooks[turn])

@@ -563,11 +563,17 @@ socket.on('card-played', function(data) {
     if(data.response['status'] == 0){
         if(data.handtype[0] == "wl"){
             //console.log('wl ',card);
-            showPlayedCard(card,data.handtype[0]);
-
+            
+            if(data.others['victim'] == parseInt(mtype)){
+                showPlayedCard(card,data.handtype[0],1);
+            }else{
+                showPlayedCard(card,data.handtype[0]);
+            }
+            /*
             if(data.others['victim'] == parseInt(mtype)){
                 navigator.vibrate(750 * card)
             }
+            */
 
         }else{
             //console.log('card-played', card);
@@ -788,9 +794,10 @@ function handleBigCardClick() {
     bigCard.removeEventListener('click', handleBigCardClick); // Rimuovi il listener di eventi
 }
 
-function showPlayedCard(card,handtype){
+function showPlayedCard(card,handtype,vibration = 0){
     if(handtype == 'wl'){
         img = witheringLooksImages[card].src;
+
     }else{
         img = preloadedImages[card].src;
     }
@@ -805,11 +812,39 @@ function showPlayedCard(card,handtype){
     bigCard.src = img;
     contextMenu.style.visibility = 'hidden';
     bigCard.style.display = 'block'; // Mostra bigCard
+    if(handtype == 'wl'){
+        bigCard.classList.add('card-grow');
+        if(vibration == 1){
+            //bigCard.classList.add('vibration-'+card);
+            setTimeout(function() {
+                navigator.vibrate(1000 * card)
+                //navigator.vibrate(2000)
+            }, 1720);
+        }
+    }else{
+        bigCard.classList.add('card-drop');
+    }
     //console.log('showPlayedCard',img);
 
 
     bigCard.addEventListener('click', handleBigCardClick);
 }
+
+bigCard.addEventListener('animationend', function() {
+    this.classList.remove('card-grow');
+    this.classList.remove('card-drop');
+
+    //console.log('bigCard animationend');
+    /*
+    var vibrationClass = Array.from(this.classList).find(className => className.startsWith('vibration-'));
+    if (vibrationClass) {
+        var vibrationLevel = vibrationClass.replace('vibration-', '');
+        console.log('Il numero dopo "vibration-" è: ' + vibrationLevel);
+        navigator.vibrate(1000 * vibrationLevel)
+        this.classList.remove('vibration-' + vibrationLevel);
+    }
+    */
+});
 
 /*
 window.onload = function() {

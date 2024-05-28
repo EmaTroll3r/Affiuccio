@@ -237,6 +237,40 @@ button {
   background-color: rgba(208,127,10,255);
   border-radius: 10px;
 }
+
+@keyframes drop {
+  0% {
+    top: -100%;
+  }
+  100% {
+    top: 100;
+  }
+}
+
+.card-drop {
+  position: relative;
+  animation: drop 1s cubic-bezier(0.0, 0.0, 0.1, 1);
+}
+
+
+@keyframes grow {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.card-grow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  animation: grow 2s cubic-bezier(0.9, 0.5, 0.9,5);
+}
+
+
 /*
 .content .setting{
   display: flex;
