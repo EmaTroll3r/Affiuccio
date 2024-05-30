@@ -8,6 +8,7 @@ body {
     align-items: center;
     height: 100%;
     margin: 0;
+    /*overflow: hidden;*/
     /*padding-top: 50px;*/
 }
 
