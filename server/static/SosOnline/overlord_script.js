@@ -214,6 +214,11 @@ image.addEventListener('click', function(e) {
     }
 });
 
+image.addEventListener('contextmenu', function (event) {
+    // Prevenire l'apparizione del menu contestuale
+    event.preventDefault();
+});
+
 document.addEventListener('click', function(e) {    
 
     /*
