@@ -7,82 +7,87 @@
     <meta name="google" content="notranslate">
 </head>
 <body>
-    <!--<button id="drawButton">Draw</button>-->
-    <p id="playerTurn">Giocatore di turno:</p>
-    <img id="noise-image" src="{{ url_for('static', filename='SosOnline/images/noise.png') }}" alt="Noise" style="position: absolute; top: 15px; right: 40px; width: 50px; height: 50px;">
-    <hr>
-    <div id="game-images">
-        <img id="card1" class="card" src="">
-    </div>
     
-    <div id="BigCard">
-        <img id="showedCard" style="display: none;" src="{{ url_for('static', filename='SosOnline/images/0.png') }}">
-    </div>
-    
-    <!--
-    <select id="context-menu" class="context-menu" size="2" style="display: none; position: fixed;">
-        <option id="context-wl" class="contextMenu-option">Lancia occhiataccia</option>
-    </select>
-    -->
-
-    <div class="wrapper">
-        <div class="content">
-        <ul class="menu">
-            <li id="context-wl" class="item"><span>Lancia occhiataccia</span></li>
+    <div id="shakeable">
+        <!--<button id="drawButton">Draw</button>-->
+        <p id="playerTurn">Giocatore di turno:</p>
+        <img id="noise-image" src="{{ url_for('static', filename='SosOnline/images/noise.png') }}" alt="Noise" style="position: absolute; top: 15px; right: 40px; width: 50px; height: 50px;">
+        <hr>
+        <div id="game-images">
+            <img id="card1" class="card" src="">
         </div>
-    </div>
 
-    <!-- L'alert con dropdown -->
-    <div id="alertDropdown" style="display: none; position: fixed; width: 300px; height: 200px; background: white; border: 1px solid black; padding: 20px; z-index: 1000;">
-        <p>Messaggio di alert</p>
-        <select id="alertDropdownSelect">
-            <option value="1">Opzione 1</option>
-            <option value="2">Opzione 2</option>
-            <!-- Altre opzioni -->
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <div id="BigCard">
+                <img id="showedCard" style="display: none;" src="{{ url_for('static', filename='SosOnline/images/0.png') }}">
+            </div>
+            <button id="turnButton">Cambia Turno</button>
+            <button id="letDrawButton">Fai pescare</button>
+        </div>
+        
+        <!--
+        <select id="context-menu" class="context-menu" size="2" style="display: none; position: fixed;">
+            <option id="context-wl" class="contextMenu-option">Lancia occhiataccia</option>
         </select>
-        <button onclick="hideAlertDropdown()">OK</button>
-    </div>
-    
-    <select id="context-choosePlayer" class="context-menu" size="3" style="display: none; position: fixed;">
-    </select>
+        -->
 
-    <progress id="loadingBar" value="0" max="3" style="display: visible;"></progress>
-    
-    <button id="turnButton">Cambia Turno</button>
-    <button id="letDrawButton">Fai pescare</button>
-    <!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script> -->
-    <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+        <div class="wrapper">
+            <div class="content">
+            <ul class="menu">
+                <li id="context-wl" class="item"><span>Lancia occhiataccia</span></li>
+            </div>
+        </div>
 
-    <input type="hidden" id="scriptURL" value="{{ url_for('static', filename='SosOnline/overlord_script.js') }}" />
-    <script>
-      var script = document.createElement('script');
-      script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
-      document.body.appendChild(script);
-    </script>
-    <!--
-    <script>
+        <!-- L'alert con dropdown -->
+        <div id="alertDropdown" style="display: none; position: fixed; width: 300px; height: 200px; background: white; border: 1px solid black; padding: 20px; z-index: 1000;">
+            <p>Messaggio di alert</p>
+            <select id="alertDropdownSelect">
+                <option value="1">Opzione 1</option>
+                <option value="2">Opzione 2</option>
+                <!-- Altre opzioni -->
+            </select>
+            <button onclick="hideAlertDropdown()">OK</button>
+        </div>
+        
+        <select id="context-choosePlayer" class="context-menu" size="3" style="display: none; position: fixed;">
+        </select>
+
+        <progress id="loadingBar" value="0" max="3" style="display: visible;"></progress>
+
+        <!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script> -->
+        <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+        <input type="hidden" id="scriptURL" value="{{ url_for('static', filename='SosOnline/overlord_script.js') }}" />
+        <script>
         var script = document.createElement('script');
         script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
-        script.onload = function() {
-            var gameScript = document.createElement('script');
-            gameScript.src = "{{ url_for('static', filename='SosOnline/overlord_script.js') }}";
-            document.body.appendChild(gameScript);
-        };
         document.body.appendChild(script);
-    </script>
-    -->
-    <!--
-    <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
-    <script>
-        window.addEventListener('load', function() {
+        </script>
+        <!--
+        <script>
             var script = document.createElement('script');
-            script.src = "{{ url_for('static', filename='SosOnline/overlord_script.js') }}";
+            script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
+            script.onload = function() {
+                var gameScript = document.createElement('script');
+                gameScript.src = "{{ url_for('static', filename='SosOnline/overlord_script.js') }}";
+                document.body.appendChild(gameScript);
+            };
             document.body.appendChild(script);
-        });
-    </script>
-    -->
-    <!-- <script src="{{ url_for('static', filename='home/index_script.js') }}"></script> -->
+        </script>
+        -->
+        <!--
+        <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
+        <script>
+            window.addEventListener('load', function() {
+                var script = document.createElement('script');
+                script.src = "{{ url_for('static', filename='SosOnline/overlord_script.js') }}";
+                document.body.appendChild(script);
+            });
+        </script>
+        -->
+        <!-- <script src="{{ url_for('static', filename='home/index_script.js') }}"></script> -->
+    </div>
 </body>
 </html>

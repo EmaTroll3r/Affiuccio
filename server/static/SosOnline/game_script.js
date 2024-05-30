@@ -479,12 +479,44 @@ socket.on('receive-noise', function(data) {
         if(data.targetPlayer == parseInt(mtype)){
             console.log('receive-noise',data.noiseLevel);
             navigator.vibrate(1000 * data.noiseLevel)
+            shakeScreen(1000 * data.noiseLevel);
         }
     }
     if(data.playerID == playerID){
         alert(data.response['message'],data.response['status'])
     }
 });
+
+/*
+function shakeScreen(intensity, duration) {
+    var body = document.body;
+    var shakes = duration / 100;
+    var speed = 100; // quanto velocemente dovrebbe "shakare" lo schermo
+    var angle = intensity; // quanto dovrebbe ruotare lo schermo
+    var count = 0;
+
+    var shakeInterval = setInterval(function() {
+        if (count++ % 2 === 0) {
+            body.style.transform = 'rotate(' + angle + 'deg)';
+        } else {
+            body.style.transform = 'rotate(-' + angle + 'deg)';
+        }
+
+        if (count > shakes) {
+            clearInterval(shakeInterval);
+            body.style.transform = '';
+        }
+    }, speed);
+}
+*/
+
+function shakeScreen(time){
+    shakeable.classList.add('shake');
+    setTimeout(function() {
+        shakeable.classList.remove('shake');
+    }, time);
+}
+
 
 socket.on('response-noise', function(data) {
     //console.log('response-noise',data);
@@ -817,7 +849,8 @@ function showPlayedCard(card,handtype,vibration = 0){
         if(vibration == 1){
             //bigCard.classList.add('vibration-'+card);
             setTimeout(function() {
-                navigator.vibrate(1000 * card)
+                navigator.vibrate(2000 * card)
+                shakeScreen(2000 * card);
                 //navigator.vibrate(2000)
             }, 1720);
         }

@@ -375,12 +375,22 @@ socket.on('receive-noise', function(data) {
         if(data.targetPlayer == parseInt(mtype)){
             console.log('receive-noise',data.noiseLevel);
             navigator.vibrate(1000 * data.noiseLevel)
+            shakeScreen(1000 * data.noiseLevel);
         }
     }
     if(data.playerID == playerID){
         alert(data.response['message'],data.response['status'])
     }
 });
+
+
+
+function shakeScreen(time){
+    shakeable.classList.add('shake');
+    setTimeout(function() {
+        shakeable.classList.remove('shake');
+    }, time);
+}
 
 socket.on('response-noise', function(data) {
     //console.log('response-noise',data);

@@ -7,79 +7,81 @@
     <meta name="google" content="notranslate">
 </head>
 <body>
-    <!--<button id="drawButton">Draw</button>-->
-    <p id="playerTurn">Giocatore di turno:</p>
-    <img id="noise-image" src="{{ url_for('static', filename='SosOnline/images/noise.png') }}" alt="Noise" style="position: absolute; top: 15px; right: 40px; width: 50px; height: 50px;">
-    <hr>
-    <div id="game-images">
-        <img id="card1" class="card" src="">
-        <img id="card2" class="card">
-        <img id="card3" class="card">
-    </div>
-
-    <select id="context-choosePlayer" class="context-menu" size="3" style="display: none; position: fixed;">
-        <!-- <option id="context-player1">Giocatore 1</option> -->
-    </select>
-    
-    <div id="BigCard">
-        <img id="showedCard" style="display: none;" src="{{ url_for('static', filename='SosOnline/images/0.png') }}">
-    </div>
-
-    <!--
-    <select id="context-menu" class="context-menu" style="display: none; position: fixed; height: auto; overflow-y: auto;">
-        <option id="context-play" class="contextMenu-option">Gioca</option>
-        <option id="context-block" class="contextMenu-option">Blocca</option>
-        <option id="context-blame" class="contextMenu-option">Scaricabarile</option>
-    </select>
-    -->
-
-    <div class="wrapper">
-        <div class="content">
-          <ul class="menu">
-            <li id="context-play" class="item"><span>Gioca</span></li>
-            <li id="context-block" class="item"><span>Blocca</span></li>
-            <li id="context-blame" class="item"><span>Scaricabarile</span></li>
+    <div id="shakeable">
+        <!--<button id="drawButton">Draw</button>-->
+        <p id="playerTurn">Giocatore di turno:</p>
+        <img id="noise-image" src="{{ url_for('static', filename='SosOnline/images/noise.png') }}" alt="Noise" style="position: absolute; top: 15px; right: 40px; width: 50px; height: 50px;">
+        <hr>
+        <div id="game-images">
+            <img id="card1" class="card" src="">
+            <img id="card2" class="card">
+            <img id="card3" class="card">
         </div>
-    </div>
-    
-    <!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script> -->
-    
-    <progress id="loadingBar" value="0" max="3" style="display: visible;"></progress>
 
-    <!--<script src="{{ url_for('static', filename='home/contextmenu.js') }}"></script>-->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/interactjs@1.10.11/dist/interact.min.js"></script> -->
-    <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+        <select id="context-choosePlayer" class="context-menu" size="3" style="display: none; position: fixed;">
+            <!-- <option id="context-player1">Giocatore 1</option> -->
+        </select>
+        
+        <div id="BigCard">
+            <img id="showedCard" style="display: none;" src="{{ url_for('static', filename='SosOnline/images/0.png') }}">
+        </div>
 
-    <input type="hidden" id="scriptURL" value="{{ url_for('static', filename='SosOnline/game_script.js') }}" />
-    <script>
-      var script = document.createElement('script');
-      script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
-      document.body.appendChild(script);
-    </script>
-    <!--
-    <script>
+        <!--
+        <select id="context-menu" class="context-menu" style="display: none; position: fixed; height: auto; overflow-y: auto;">
+            <option id="context-play" class="contextMenu-option">Gioca</option>
+            <option id="context-block" class="contextMenu-option">Blocca</option>
+            <option id="context-blame" class="contextMenu-option">Scaricabarile</option>
+        </select>
+        -->
+
+        <div class="wrapper">
+            <div class="content">
+            <ul class="menu">
+                <li id="context-play" class="item"><span>Gioca</span></li>
+                <li id="context-block" class="item"><span>Blocca</span></li>
+                <li id="context-blame" class="item"><span>Scaricabarile</span></li>
+            </div>
+        </div>
+        
+        <!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script> -->
+        
+        <progress id="loadingBar" value="0" max="3" style="display: visible;"></progress>
+
+        <!--<script src="{{ url_for('static', filename='home/contextmenu.js') }}"></script>-->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/interactjs@1.10.11/dist/interact.min.js"></script> -->
+        <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+        <input type="hidden" id="scriptURL" value="{{ url_for('static', filename='SosOnline/game_script.js') }}" />
+        <script>
         var script = document.createElement('script');
         script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
-        script.onload = function() {
-            var gameScript = document.createElement('script');
-            gameScript.src = "{{ url_for('static', filename='SosOnline/game_script.js') }}";
-            document.body.appendChild(gameScript);
-        };
         document.body.appendChild(script);
-    </script>
-    -->
-    <!--
-    <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
-    <script>
-        window.addEventListener('load', function() {
+        </script>
+        <!--
+        <script>
             var script = document.createElement('script');
-            script.src = "{{ url_for('static', filename='SosOnline/game_script.js') }}";
+            script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
+            script.onload = function() {
+                var gameScript = document.createElement('script');
+                gameScript.src = "{{ url_for('static', filename='SosOnline/game_script.js') }}";
+                document.body.appendChild(gameScript);
+            };
             document.body.appendChild(script);
-        });
-    </script>
-    -->
-    <!-- <script src="{{ url_for('static', filename='home/index_script.js') }}"></script> -->
+        </script>
+        -->
+        <!--
+        <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
+        <script>
+            window.addEventListener('load', function() {
+                var script = document.createElement('script');
+                script.src = "{{ url_for('static', filename='SosOnline/game_script.js') }}";
+                document.body.appendChild(script);
+            });
+        </script>
+        -->
+        <!-- <script src="{{ url_for('static', filename='home/index_script.js') }}"></script> -->
+    </div>
 </body>
 </html>
