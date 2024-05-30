@@ -3,7 +3,7 @@ body {
     /*background-color: #add8e6;*/
     background-image: url('images/background.webp'); /* Aggiungi questa linea */
     background-size: cover; /* Questa linea fa in modo che l'immagine di sfondo copra l'intero elemento */
-    /*display: flex;*/
+    display: flex;
     flex-direction: column;
     align-items: center;
     height: 100%;
