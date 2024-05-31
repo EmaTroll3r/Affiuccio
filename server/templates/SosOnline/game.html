@@ -8,6 +8,7 @@
 </head>
 <body>
     <div id="shakeable">
+        <div id="big"></div>
         <!--<button id="drawButton">Draw</button>-->
         <p id="playerTurn">Giocatore di turno:</p>
         <img id="noise-image" src="{{ url_for('static', filename='SosOnline/images/noise.png') }}" alt="Noise" style="position: absolute; top: 15px; right: 40px; width: 50px; height: 50px;">
@@ -33,15 +34,6 @@
             <option id="context-blame" class="contextMenu-option">Scaricabarile</option>
         </select>
         -->
-
-        <div class="wrapper">
-            <div class="content">
-            <ul class="menu">
-                <li id="context-play" class="item"><span>Gioca</span></li>
-                <li id="context-block" class="item"><span>Blocca</span></li>
-                <li id="context-blame" class="item"><span>Scaricabarile</span></li>
-            </div>
-        </div>
         
         <!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script> -->
@@ -82,6 +74,16 @@
         </script>
         -->
         <!-- <script src="{{ url_for('static', filename='home/index_script.js') }}"></script> -->
+    </div>
+    
+
+    <div class="wrapper">
+        <div class="content">
+        <ul class="menu">
+            <li id="context-play" class="item"><span>Gioca</span></li>
+            <li id="context-block" class="item"><span>Blocca</span></li>
+            <li id="context-blame" class="item"><span>Scaricabarile</span></li>
+        </div>
     </div>
 </body>
 </html>

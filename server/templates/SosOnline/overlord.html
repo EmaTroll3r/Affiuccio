@@ -9,6 +9,7 @@
 <body>
     
     <div id="shakeable">
+        <div id="big"></div>
         <!--<button id="drawButton">Draw</button>-->
         <p id="playerTurn">Giocatore di turno:</p>
         <img id="noise-image" src="{{ url_for('static', filename='SosOnline/images/noise.png') }}" alt="Noise" style="position: absolute; top: 15px; right: 40px; width: 50px; height: 50px;">
@@ -37,15 +38,6 @@
             <option id="context-wl" class="contextMenu-option">Lancia occhiataccia</option>
         </select>
         -->
-
-        <div class="wrapper">
-            <div class="content">
-            <ul class="menu">
-                <li id="context-wl" class="item"><span>Lancia occhiataccia</span></li>
-                <li id="turnButton" class="item"><span>Cambia Turno</span></li>
-                <li id="letDrawButton" class="item"><span>Fai pescare</span></li>
-            </div>
-        </div>
 
         <!-- L'alert con dropdown -->
         <div id="alertDropdown" style="display: none; position: fixed; width: 300px; height: 200px; background: white; border: 1px solid black; padding: 20px; z-index: 1000;">
@@ -98,5 +90,15 @@
         -->
         <!-- <script src="{{ url_for('static', filename='home/index_script.js') }}"></script> -->
     </div>
+    
+    <div class="wrapper">
+        <div class="content">
+        <ul class="menu">
+            <li id="context-wl" class="item"><span>Lancia occhiataccia</span></li>
+            <li id="turnButton" class="item"><span>Cambia Turno</span></li>
+            <li id="letDrawButton" class="item"><span>Fai pescare</span></li>
+        </div>
+    </div>
+
 </body>
 </html>
