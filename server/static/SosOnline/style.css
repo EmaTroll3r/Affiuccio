@@ -8,7 +8,7 @@ body {
     align-items: center;
     height: 100%;
     margin: 0;
-    overflow: hidden;
+    /*overflow: hidden;
     /*padding-top: 50px;*/
 }
 
@@ -29,7 +29,7 @@ body {
 
 #shakeable {
   min-width: 100%;
-  height: 100vh; /* 100% della viewport height */
+  height: 100%; /* 100% della viewport height */
   position: absolute; /* Permette all'elemento di occupare l'intera pagina anche se ci sono altri elementi */
   top: 0;
   left: 0;
