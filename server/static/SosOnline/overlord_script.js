@@ -547,8 +547,8 @@ function playWl(wl,targetPlayer){
 function handleBigCardClick() {
     bigCard.style.display = 'none'; // Nascondi bigCard
     
-    turnButton.style.visibility = 'visible';
-    letDrawButton.style.visibility = 'visible';
+    //turnButton.style.visibility = 'visible';
+    //letDrawButton.style.visibility = 'visible';
     showHand();
     bigCard.removeEventListener('click', handleBigCardClick); // Rimuovi il listener di eventi
 }
@@ -564,8 +564,8 @@ function showPlayedCard(card,handtype){
     
     bigCard.src = img;
     contextMenu.style.visibility = 'hidden';
-    turnButton.style.visibility = 'hidden';
-    letDrawButton.style.visibility = 'hidden';
+    //turnButton.style.visibility = 'hidden';
+    //letDrawButton.style.visibility = 'hidden';
 
     bigCard.style.display = 'block'; // Mostra bigCard
     bigCard.classList.add('card-drop');

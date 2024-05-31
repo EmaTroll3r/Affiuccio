@@ -17,14 +17,21 @@
             <img id="card1" class="card" src="">
         </div>
 
-        <div style="display: flex; flex-direction: column; align-items: center;">
+        <div style="position: relative;">
             <div id="BigCard">
                 <img id="showedCard" style="display: none;" src="{{ url_for('static', filename='SosOnline/images/0.png') }}">
             </div>
-            <button id="turnButton">Cambia Turno</button>
-            <button id="letDrawButton">Fai pescare</button>
         </div>
-        
+        <!--
+        <div style="position: absolute; top: 40%; left: 0;">
+            <div>
+                <button id="turnButton" style="width: 15vw; height: 10vh; text-align: center;">Cambia Turno</button>
+            </div>
+            <div>
+                <button id="letDrawButton" style="width: 15vw; height: 10vh; text-align: center;">Fai pescare</button>
+            </div>
+        </div>
+        -->
         <!--
         <select id="context-menu" class="context-menu" size="2" style="display: none; position: fixed;">
             <option id="context-wl" class="contextMenu-option">Lancia occhiataccia</option>
@@ -35,6 +42,8 @@
             <div class="content">
             <ul class="menu">
                 <li id="context-wl" class="item"><span>Lancia occhiataccia</span></li>
+                <li id="turnButton" class="item"><span>Cambia Turno</span></li>
+                <li id="letDrawButton" class="item"><span>Fai pescare</span></li>
             </div>
         </div>
 
