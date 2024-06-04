@@ -61,11 +61,16 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
         <input type="hidden" id="scriptURL" value="{{ url_for('static', filename='SosOnline/overlord_script.js') }}" />
+        <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
+        
+        <!--
         <script>
         var script = document.createElement('script');
         script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
         document.body.appendChild(script);
         </script>
+        -->
+        
         <!--
         <script>
             var script = document.createElement('script');

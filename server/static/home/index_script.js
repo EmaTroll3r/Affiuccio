@@ -5,19 +5,25 @@
 
 //socket.emit('leave', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
 
+
+/*
 window.addEventListener('pageshow', function(event) {
     //console.log('Page show event',performance.getEntriesByType('navigation')[0].type);
     //location.reload();
 });
+*/
 
 let gameEndpoint = document.getElementById('gameEndpoint').value;
+let nickname = document.getElementById('nickname');
 
 document.getElementById('host-lobby').addEventListener('click', function() {
-    var playername = document.getElementById('nickname').value;
+    var playername = nickname.value;
     if (playername == '') {
         alert('Inserisci un nome valido');
         return;
     }
+    localStorage.setItem(gameEndpoint+'_playername', playername);
+
     fetch('/'+gameEndpoint+'/host', {
         method: 'POST',
         headers: {
@@ -45,10 +51,13 @@ document.getElementById('host-lobby').addEventListener('click', function() {
     
 });
 
+/*
 window.addEventListener('beforeunload', function(event) {
     //socket.close();
     console.log('Socket closed');
 });
+*/
+
 
 /*
 window.onunload = function() {
@@ -72,18 +81,23 @@ socket.on('player-joined', function(data) {
 */
 
 document.getElementById('join-lobby').addEventListener('click', function() {
-    var playername = document.getElementById('nickname').value;
+    var playername = nickname.value;
     if (playername == '') {
         alert('Inserisci un nome valido');
         return;
     }
+    
+    localStorage.setItem(gameEndpoint+'_playername', playername);
+
     var partyID = parseInt(prompt("Inserisci il partyID"));
     if (isNaN(partyID)) {
         //alert('Inserisci un partyID valido');
         return;
     }
-    var player = document.getElementById('nickname').value;
-    fetch(`/`+gameEndpoint+`/join?partyID=${partyID}&player=${player}`, {
+
+    var player = nickname.value;
+
+    fetch(`/`+gameEndpoint+`/join?partyID=${partyID}&player=${playername}`, {
         method: 'GET',
     })
     .then(response => response.json())
