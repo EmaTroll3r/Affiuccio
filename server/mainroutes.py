@@ -104,6 +104,16 @@ def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
             return response
 """
 
+
+@socketio.on('ping')
+def on_join(data):
+    partyID = int(data['partyID'])
+    playerID = int(data['playerID'])
+    
+    if playerID in partyManager.players:
+        print("Ping from player",playerID)
+        partyManager.get_player(playerID).active_level = 4
+
 @socketio.on('join')
 def on_join(data):
     partyID = int(data['partyID'])
@@ -121,6 +131,8 @@ def on_join(data):
 
     #print("\n\n\nJoined\n\n\n\n")
     join_room(partyID)
+    #partyManager.get_party(partyID).activePlayers.append(playerID)
+
     #emit('joined', room=partyID)
     #emit('player-joined', {'playerID': playerID, 'partyID': partyID, 'mtype': data['mtype'], 'playerName': partyManager.get_player(playerID).name}, room=partyID)
     emit('player-joined', {'playerID': playerID, 'partyID': partyID, 'mtype': partyManager.get_player(playerID).mtype, 'playerName': partyManager.get_player(playerID).name}, room=partyID)
@@ -315,5 +327,3 @@ def get_player_list():
 @main.route('/home/parties')
 def get_parties():
     return jsonify(partyManager.get_parties())
-
-

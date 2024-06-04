@@ -69,9 +69,12 @@ class Party:
         self.decks = decks
         self.players = []
         self.gameEndpoint = gameEndpoint
-        self.turn = -1
+        self.turn = 0
         self.last_mtype = 0
         self.homeLink = None
+        self.status = "Lobby"
+        #self.activePlayers = []
+
         """self.partynamespace = PartyNamespace('/'+str(partyID))
         from global_vars import socketio
         socketio.on_namespace(self.partynamespace)"""
@@ -85,6 +88,8 @@ class Party:
         self.turn = 0
         self.last_mtype = 0
         self.homeLink = None
+        self.status = "Lobby"
+        #self.activePlayers = []
 
     @staticmethod
     def create_party(gameEndpoint,test=False):
@@ -210,7 +215,6 @@ class Party:
                 return {"status": 0, "message": "Success"}
             else:
                 return {"status": 8, "message": "Generic error"}
-                
 
 class PartyManager:
 
@@ -221,6 +225,13 @@ class PartyManager:
     def add_party(self, partyID,gameEndpoint):
         self.parties[partyID] = Party(partyID,gameEndpoint)
         return self.parties[partyID]
+    
+    def remove_party(self, partyID):
+        if partyID in self.parties:
+            players_copy = self.parties[partyID].players.copy()
+            for player in players_copy:
+                del self.players[player.get_id()]
+            del self.parties[partyID]
 
     def get_party(self, partyID):
         try:
@@ -232,14 +243,16 @@ class PartyManager:
         return {partyID: party.to_dict() for partyID, party in self.parties.items()}
     
     def get_new_player_id(self):
-        return len(self.players) + 1
+        i = 1
+        while i in self.players:
+            i += 1
+        return i
     
     def add_player(self, player):
         self.players[player.get_id()] = player
 
     def get_player(self,playerID):
         return self.players[playerID]
-
 
 class Player:
     def __init__(self, name, party, maxHandCardDict):
@@ -251,8 +264,12 @@ class Player:
         self.party = party
         self.points = 0
         self.components = {}
+        self.active_level = 4
         partyManager.add_player(self)
         
+    def is_active(self):
+        return self.active_level > 0
+
     def get_id(self):
         return self.id
 

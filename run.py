@@ -1,6 +1,9 @@
 from server import create_app
 from global_vars import socketio, test
 from flask_cors import CORS
+from server.garbageColletor import garbageCollector
+
+
 
 app = create_app()
 CORS(app)
@@ -8,6 +11,10 @@ CORS(app)
 #socketio = SocketIO(app, cors_allowed_origins="*")
 
 socketio.init_app(app)
+
+if not test:
+    garbageCollector()
+
 
 #"""
 if __name__ == '__main__':

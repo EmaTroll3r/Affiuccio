@@ -13,6 +13,7 @@ document.getElementById('party-id').querySelector('span').textContent = partyID;
 var playerListElem = document.getElementById('player-list');
 var players = [];
 var playerList = [];
+let pingInterval;
 
 if (mtype == 1) {
     var buttons = document.querySelectorAll('.host-buttons');
@@ -60,6 +61,7 @@ socket.on('player-joined', function(data) {
         .catch(error => console.error('Error:', error));
     //console.log('A player joined with ID: ' + data.playerID);
 });
+
 
 socket.on('playerList', function(data) {
     if(data.response['status'] == 0){
@@ -213,6 +215,31 @@ window.onload = function() {
 }
 */
 
+function ping(){
+    console.log('ping', {'partyID':partyID, 'playerID':playerID})
+    socket.emit('ping', {'partyID':partyID, 'playerID':playerID});
+}
+
+
+function startPing() {
+    console.log('startPing')
+    pingInterval = setInterval(ping, 3000);
+}
+
+function stopPing() {
+    console.log('stopPing')
+    clearInterval(pingInterval);
+}
+
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        // La scheda è inattiva, interrompe l'invio di ping
+        //stopPing();
+    } else {
+        // La scheda è attiva, inizia a inviare ping
+        startPing();
+    }
+});
 
 function startingFunction() {
     var socket_data = {
@@ -221,11 +248,16 @@ function startingFunction() {
         mtype: mtype
     };
 
+    
     socket.emit('join', socket_data);
+    startPing() 
     //console.log('join', socket_data);
 }
 
+
 startingFunction()
+
+
 
 /*
 socket.on('plaer_joined', function(data) {

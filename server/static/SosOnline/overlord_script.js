@@ -415,6 +415,10 @@ socket.on('player-joined', function(data) {
     }
 });
 
+socket.on('ping', function(data) {
+    socket.emit('pong', {'partyID':partyID, 'playerID':playerID});
+});
+
 function getPlayer(mtype){
     for (let player of playerList) {
         if (player.mtype == mtype) {
@@ -705,6 +709,32 @@ function loadGeneralImages(){
     }
 }
 
+function ping(){
+    console.log('ping', {'partyID':partyID, 'playerID':playerID})
+    socket.emit('ping', {'partyID':partyID, 'playerID':playerID});
+}
+
+
+function startPing() {
+    console.log('startPing')
+    pingInterval = setInterval(ping, 3000);
+}
+
+function stopPing() {
+    console.log('stopPing')
+    clearInterval(pingInterval);
+}
+
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        // La scheda è inattiva, interrompe l'invio di ping
+        //stopPing();
+    } else {
+        // La scheda è attiva, inizia a inviare ping
+        startPing();
+    }
+});
+
 function startingFunction(){
     witheringLooksImages[1] = new Image();
     witheringLooksImages[1].src = '/static/SosOnline/images/wl1.png';
@@ -719,6 +749,7 @@ function startingFunction(){
         }
     });
     socket.emit('join', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
+    startPing();
     askFullScreen();
     loadGeneralImages();
     //loadAllImages();

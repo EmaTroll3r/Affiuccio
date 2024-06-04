@@ -121,6 +121,7 @@ def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
 
 
 def end(loser,partyID):
+    partyManager.get_party(partyID).status = 'End'
     return {'loser': loser}
 
 def join(partyID,playername):
@@ -233,6 +234,7 @@ def start_game(partyID):
 
 
     partyManager.get_party(partyID).turn = 2
+    partyManager.get_party(partyID).status = 'Game'
     emit('start-game',{'links': links}, room = partyID)
 
 

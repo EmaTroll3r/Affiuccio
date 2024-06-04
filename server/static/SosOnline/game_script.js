@@ -407,6 +407,7 @@ socket.on('response-inGameCards',async  function(data) {
     }
 });
 
+
 socket.on('response-hand', async function(data) {
     ///*
     while(canShowHand == false){
@@ -960,11 +961,38 @@ async function fakeLoading(){
     loadingBar.style.display = 'none';
 }
 
+function ping(){
+    console.log('ping', {'partyID':partyID, 'playerID':playerID})
+    socket.emit('ping', {'partyID':partyID, 'playerID':playerID});
+}
+
+
+function startPing() {
+    console.log('startPing')
+    pingInterval = setInterval(ping, 3000);
+}
+
+function stopPing() {
+    console.log('stopPing')
+    clearInterval(pingInterval);
+}
+
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        // La scheda è inattiva, interrompe l'invio di ping
+        //stopPing();
+    } else {
+        // La scheda è attiva, inizia a inviare ping
+        startPing();
+    }
+});
+
 function startingFunction() {
     
     //loadAllImages();
     ///*
     socket.emit('join', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
+    startPing();
     askFullScreen();
     loadGeneralImages();
     //*/
@@ -983,6 +1011,7 @@ async function f(){
     }
     showHand();
 }
+
 
 
 //f()     /*
