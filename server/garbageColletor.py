@@ -6,8 +6,8 @@ if test:
     partyRemoverTime = 5        #seconds
     playerRemoverTime = 10      #seconds
 else:
-    partyRemoverTime = 604800      #seconds
-    playerRemoverTime = 86400     #seconds
+    partyRemoverTime = 604800      #1 week in seconds 
+    playerRemoverTime = 86400     #1 day in seconds
 
 
 def p(*args):
