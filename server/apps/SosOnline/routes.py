@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request
-from flask_socketio import emit
 from global_vars import partyManager,socketio, test
 from server.apps import SosOnline as sosOnline
 from json import load
@@ -65,7 +64,8 @@ def sosonline_game():
     mtype = int(request.args.get('mtype'))
     partyID = int(request.args.get('partyID'))  # Converti partyID in un intero
     if partyManager.get_party(partyID) is None:
-        return "sorry no party found"
+        #return "sorry no party found"        
+        return render_template('SosOnline/404.html')
     #sosOnline.run(partyID)
     return render_template('SosOnline/game.html')
 
@@ -74,7 +74,9 @@ def sosonline_overlord():
     mtype = int(request.args.get('mtype'))
     partyID = int(request.args.get('partyID'))  # Converti partyID in un intero
     if partyManager.get_party(partyID) is None:
-        return "sorry no party found"
+        #return "sorry no party found"
+        
+        return render_template('SosOnline/404.html')
     #sosOnline.run(partyID)
     return render_template('SosOnline/overlord.html')
 
@@ -83,6 +85,17 @@ def sosonline_lobby():
     #partyID = request.args.get('partyID')
     partyID = int(request.args.get('partyID'))
     if partyManager.get_party(partyID) is None:
-        return "sorry no party found"
+        #return "sorry no party found"
+        return render_template('SosOnline/404.html')
     return render_template('SosOnline/lobby.html')
+
+
+@sosonline.app_errorhandler(404)
+def handle_404(e):
+    return render_template('SosOnline/404.html'), 404
+
+@sosonline.app_errorhandler(TypeError)
+def handle_type_error(e):
+    return render_template('SosOnline/404.html'), 404
+
 

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>404 - Pagina non trovata</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+        <meta name="google" content="notranslate">
+        <div class="content">
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='SosOnline/style.css') }}">
+        </div>
+    </head>
+<body>
+    <p></p>
+    <h1 class="write">404 - Pagina non trovata</h1>
+    <p></p>
+    <p class="write">Siamo spiacenti, ma la pagina che stai cercando non esiste.</p>
+    <p></p>
+    <button id="home-button" onclick="location.href='/SosOnline'">Torna alla Home</button>
+
+    <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
+</body>
+</html>
