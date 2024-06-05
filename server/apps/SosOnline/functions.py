@@ -8,10 +8,6 @@ from server.classes import Deck, Party, Player
 with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
     sosOnlineLimits = load(f)
 
-def hello():
-    print("\n\n\n\nHello, World!\n\n\n")
-    return "Hello, World!"
-
 def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
     response = {"status": -1,"message": ""}
     newTurn = -1

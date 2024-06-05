@@ -138,11 +138,6 @@ def on_join(data):
     emit('player-joined', {'playerID': playerID, 'partyID': partyID, 'mtype': partyManager.get_player(playerID).mtype, 'playerName': partyManager.get_player(playerID).name}, room=partyID)
     
 
-@socketio.on('test')
-def handle_test(data):
-    print('\n\n\n\n\nReceived message:', data['message'])
-
-
 
 
 
@@ -251,7 +246,7 @@ def draw(data):
             else:
                 response = {"status": 5, "message": "Generic error"}
     except Exception as e:
-        p("Error in draw",e)
+        #p("Error in draw",e)
         response = {"status": 5, "message": "Generic error"}
 
     """
