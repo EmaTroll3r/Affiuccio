@@ -216,7 +216,7 @@ window.onload = function() {
 */
 
 function ping(){
-    console.log('ping', {'partyID':partyID, 'playerID':playerID})
+    //console.log('ping', {'partyID':partyID, 'playerID':playerID})
     socket.emit('ping', {'partyID':partyID, 'playerID':playerID});
 }
 

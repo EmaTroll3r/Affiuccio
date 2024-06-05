@@ -111,7 +111,7 @@ def on_join(data):
     playerID = int(data['playerID'])
     
     if playerID in partyManager.players:
-        print("Ping from player",playerID)
+        #print("Ping from player",playerID)
         partyManager.get_player(playerID).active_level = 4
 
 @socketio.on('join')
