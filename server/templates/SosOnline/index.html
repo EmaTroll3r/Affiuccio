@@ -10,6 +10,7 @@
     </head>
 <body>
     
+    <div id="shakeableIndex">
     <!--
     <select id="context-menu" class="context-menu" size="3" style="display: none; position: fixed; height: auto; overflow-y: auto;">
         <option id="context-play" class="contextMenu-option">Gioca</option>
@@ -102,6 +103,7 @@
 
     <input type="hidden" id="scriptURL" value="{{ url_for('static', filename='home/index_script.js') }}" />
     <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
+    <script src="{{ url_for('static', filename='SosOnline/index_frontend.js') }}"></script>
     <!--
     <script>
       var script = document.createElement('script');
@@ -137,5 +139,6 @@
     </script>
     -->
     <!-- <script src="{{ url_for('static', filename='home/index_script.js') }}"></script> -->
+    </div>
 </body>
 </html>
