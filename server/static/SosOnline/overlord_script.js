@@ -15,6 +15,8 @@ var maxHintCards = 2;
 var witheringLooksImages = [];
 var preloadedImages = [];
 var turn = 0;
+var end = {'end':false, 'loser':0};
+var bigCardCanDisappear = false;
 var playerList = [];
 
 var urlParams = new URLSearchParams(window.location.search);
@@ -541,6 +543,8 @@ socket.on('card-played', function(data) {
 
 socket.on('game-end', function(data) {
     console.log('game-end', data);
+    end = {'end':true, 'loser':data['loser']};
+    endGame(end['loser']);
 });
 
 function playWl(wl,targetPlayer){
@@ -548,13 +552,48 @@ function playWl(wl,targetPlayer){
     socket.emit('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'cards': [wl], 'handtype':['wl'],others:{'victim':targetPlayer}, 'askHand':0} );
 }
 
+
 function handleBigCardClick() {
-    bigCard.style.display = 'none'; // Nascondi bigCard
+    if(bigCardCanDisappear == true){
+        bigCard.style.display = 'none'; // Nascondi bigCard
+        bigCardActive = false;
+        //console.log('ShowHand -------- handleBigCardClick');
+        showHand();
+        bigCard.removeEventListener('click', handleBigCardClick); // Rimuovi il listener di eventi
+        bigCardCanDisappear = false;
+    }
+}
+
+
+async function endGame(loser) {
+
     
-    //turnButton.style.visibility = 'visible';
-    //letDrawButton.style.visibility = 'visible';
-    showHand();
-    bigCard.removeEventListener('click', handleBigCardClick); // Rimuovi il listener di eventi
+    image.style.display = 'none';
+
+    var result = await Swal.fire({
+        title: '<span style="color: #fff;">Partita terminata!</span>',
+        //html: '<span style="color: #fff;">Il Signore Oscuro ha fatto molto male a '+getPlayer(loser).name+'</span>',
+        html: '<span style="color: #fff;">Hai finalmente trovato il colpevole!<br>Goblin '+getPlayer(loser).name+' passerà un brutto quarto d\'ora</span>',
+        icon: 'success',
+        confirmButtonText: 'Torna alla home',
+        background: '#333',
+        width: '600px',
+        customClass: {
+            //content: 'swal-content-custom'
+            popup: 'end-game-animation'
+        },
+        willOpen: function () {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        }
+    });
+
+    if (result.isConfirmed) {
+        window.location.href = '/SosOnline';
+    }
 }
 
 function showPlayedCard(card,handtype){
@@ -581,7 +620,8 @@ function showPlayedCard(card,handtype){
 
 bigCard.addEventListener('animationend', function() {
     this.classList.remove('card-drop');
-  });
+    bigCardCanDisappear = true;
+});
 
 function showHand(){
     //console.log(witheringLooks[turn])

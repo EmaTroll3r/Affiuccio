@@ -20,6 +20,8 @@ var hand = {'hint':[], 'action':[]};
 var preloadedImages = [];
 var witheringLooksImages = []
 var turn = 0;
+var end = {'end':false, 'loser':0};
+var bigCardCanDisappear = false;
 var bigCardActive = false;
 var playerList = [];
 var witheringLooks = [];
@@ -515,6 +517,7 @@ function shakeScreen(time){
     shakeable.classList.add('shake');
     setTimeout(function() {
         shakeable.classList.remove('shake');
+        bigCardCanDisappear = true;
     }, time);
 }
 
@@ -630,12 +633,17 @@ socket.on('card-played', function(data) {
 
 socket.on('game-end', function(data) {
     console.log('game-end', data);
-    endGame(data['loser']);
+    end = {'end':true, 'loser':data['loser']};
 });
 
-function endGame(loser) {
+async function endGame(loser) {
+    
+    images.forEach(function(image) {
+        image.style.display = 'none';
+    });
+
     if(loser != mtype){
-        Swal.fire({
+        var result = await Swal.fire({
             title: '<span style="color: #fff;">Partita terminata!</span>',
             //html: '<span style="color: #fff;">Il Signore Oscuro ha fatto molto male a '+getPlayer(loser).name+'</span>',
             html: '<span style="color: #fff;">Sei riuscito a sopravvivere all\'ira (giusta) dell\'Oscuro Signore <br>Goblin '+getPlayer(loser).name+' non è stato così fortunato</span>',
@@ -656,9 +664,9 @@ function endGame(loser) {
             }
         });
     }else{
-        Swal.fire({
+        var result = await Swal.fire({
             title: '<span style="color: #fff;">Partita terminata!</span>',
-            html: '<span style="color: #fff;">Sei un fallimento! E infatti sei (giustamente) schiattato male</span>',
+            html: '<span style="color: #fff;">Sei un fallimento! E infatti sei schiattato male</span>',
             icon: 'error',
             confirmButtonText: 'Torna alla home',
             background: '#333',
@@ -669,9 +677,10 @@ function endGame(loser) {
         });
     }
     
-    images.forEach(function(image) {
-        image.style.display = 'none';
-    });
+
+    if (result.isConfirmed) {
+        window.location.href = '/SosOnline';
+    }
 }
 
 function alert(text,status = 1) {
@@ -861,11 +870,17 @@ function showHand(){
 }
 
 function handleBigCardClick() {
-    bigCard.style.display = 'none'; // Nascondi bigCard
-    bigCardActive = false;
-    //console.log('ShowHand -------- handleBigCardClick');
-    showHand();
-    bigCard.removeEventListener('click', handleBigCardClick); // Rimuovi il listener di eventi
+    if(bigCardCanDisappear == true){
+        bigCard.style.display = 'none'; // Nascondi bigCard
+        bigCardActive = false;
+        //console.log('ShowHand -------- handleBigCardClick');
+        showHand();
+        bigCard.removeEventListener('click', handleBigCardClick); // Rimuovi il listener di eventi
+        bigCardCanDisappear = false;
+        if(end['end'] == true){
+            endGame(end['loser']);
+        }
+    }
 }
 
 function showPlayedCard(card,handtype,vibration = 0){
@@ -908,6 +923,10 @@ function showPlayedCard(card,handtype,vibration = 0){
 bigCard.addEventListener('animationend', function() {
     this.classList.remove('card-grow');
     this.classList.remove('card-drop');
+
+    if (!shakeable.classList.contains('shake')){
+        bigCardCanDisappear = true;
+    }
 
     //console.log('bigCard animationend');
     /*
