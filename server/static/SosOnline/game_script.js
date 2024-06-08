@@ -630,8 +630,49 @@ socket.on('card-played', function(data) {
 
 socket.on('game-end', function(data) {
     console.log('game-end', data);
-    
+    endGame(data['loser']);
 });
+
+function endGame(loser) {
+    if(loser != mtype){
+        Swal.fire({
+            title: '<span style="color: #fff;">Partita terminata!</span>',
+            //html: '<span style="color: #fff;">Il Signore Oscuro ha fatto molto male a '+getPlayer(loser).name+'</span>',
+            html: '<span style="color: #fff;">Sei riuscito a sopravvivere all\'ira (giusta) dell\'Oscuro Signore <br>Goblin '+getPlayer(loser).name+' non è stato così fortunato</span>',
+            icon: 'success',
+            confirmButtonText: 'Torna alla home',
+            background: '#333',
+            width: '600px',
+            customClass: {
+                //content: 'swal-content-custom'
+                popup: 'end-game-animation'
+            },
+            willOpen: function () {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+        });
+    }else{
+        Swal.fire({
+            title: '<span style="color: #fff;">Partita terminata!</span>',
+            html: '<span style="color: #fff;">Sei un fallimento! E infatti sei (giustamente) schiattato male</span>',
+            icon: 'error',
+            confirmButtonText: 'Torna alla home',
+            background: '#333',
+            width: '600px',
+            customClass: {
+                popup: 'end-game-animation'
+            }
+        });
+    }
+    
+    images.forEach(function(image) {
+        image.style.display = 'none';
+    });
+}
 
 function alert(text,status = 1) {
     var title = '<span style="color: #fff;">Attenzione!</span>';

@@ -77,6 +77,7 @@ body {
   display: flex;
 }
 
+
 @keyframes fadeIn {
   0% {opacity: 0;}
   100% {opacity: 1;}
@@ -85,6 +86,9 @@ body {
 #endGame {
   display: none;
 }
+
+
+
 
 .end-game-animation {
   animation: endGameAnimation 2s ease-in-out;
