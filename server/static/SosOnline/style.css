@@ -88,7 +88,9 @@ body {
 }
 
 
-
+.swal-input-custom {
+  color: #fff;
+}
 
 .end-game-animation {
   animation: endGameAnimation 2s ease-in-out;

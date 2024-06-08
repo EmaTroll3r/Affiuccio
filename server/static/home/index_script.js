@@ -80,7 +80,7 @@ socket.on('player-joined', function(data) {
 });
 */
 
-document.getElementById('join-lobby').addEventListener('click', function() {
+document.getElementById('join-lobby').addEventListener('click', async function() {
     var playername = nickname.value;
     if (playername == '') {
         alert('Inserisci un nome valido');
@@ -89,13 +89,46 @@ document.getElementById('join-lobby').addEventListener('click', function() {
     
     localStorage.setItem(gameEndpoint+'_playername', playername);
 
-    var partyID = parseInt(prompt("Inserisci il partyID"));
+    //var partyID = parseInt(prompt("Inserisci il partyID"));
+    const swalWithInput = Swal.mixin({
+        input: 'tel',
+        inputPlaceholder: '1234',
+        background: '#333',
+        width: '400px',
+        customClass: {
+            content: 'swal-content-custom',
+            input: 'swal-input-custom'
+        },
+        inputAttributes: {
+            pattern: "[0-9]*",
+            inputmode: "numeric"
+        },
+        onOpen: () => {
+            Swal.getInput().addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                if (e.target.value.length > 4) {
+                    e.target.value = e.target.value.slice(0, 4);
+                }
+            });
+        }
+    });
+
+    const result = await swalWithInput.fire({
+        title: '<span style="color: #fff;">Inserisci il partyID</span>',
+    });
+
+    if (result.isConfirmed) {
+        var partyID = parseInt(result.value);
+    }else{
+        return;
+    }
+
     if (isNaN(partyID)) {
         //alert('Inserisci un partyID valido');
         return;
     }
 
-    var player = nickname.value;
+    //var player = nickname.value;
 
     fetch(`/`+gameEndpoint+`/join?partyID=${partyID}&player=${playername}`, {
         method: 'GET',
@@ -103,11 +136,13 @@ document.getElementById('join-lobby').addEventListener('click', function() {
     .then(response => response.json())
     .then(data => {
         //console.log(data);
+        /*
         var socket_data = {
             playerID: data.playerID,
             partyID: data.partyID,
             mtype: data.mtype
         };
+        */
 
         //socket.emit('join', socket_data);
         window.location.href = `/`+gameEndpoint+`/lobby?mtype=${data.mtype}&partyID=${data.partyID}&playerID=${data.playerID}`
