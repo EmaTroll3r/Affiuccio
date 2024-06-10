@@ -103,7 +103,7 @@ document.getElementById('join-lobby').addEventListener('click', async function()
             pattern: "[0-9]*",
             inputmode: "numeric"
         },
-        onOpen: () => {
+        didOpen: () => {
             Swal.getInput().addEventListener('input', (e) => {
                 e.target.value = e.target.value.replace(/[^0-9]/g, '');
                 if (e.target.value.length > 4) {
