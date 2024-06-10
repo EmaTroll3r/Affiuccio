@@ -110,7 +110,7 @@ def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
         
 
         if(victim.points >= 3):
-            end_response = end(player.mtype,party.partyID)
+            end_response = end(victim.mtype,party.partyID)
 
         response.update({"status": 0, "message": "Success"})
         return response,end_response
