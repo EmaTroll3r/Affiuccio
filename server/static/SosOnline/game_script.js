@@ -597,9 +597,7 @@ socket.on('response-playerList', function(data) {
 socket.on('card-played', function(data) {
     card = parseInt(data.cards[0]);
     if(data.response['status'] == 0){
-        if(data.handtype[0] == "wl"){
-            //console.log('wl ',card);
-            
+        if(data.handtype[0] == "wl"){            
             if(data.others['victim'] == parseInt(mtype)){
                 showPlayedCard(card,data.handtype[0],1);
             }else{
@@ -883,7 +881,7 @@ function handleBigCardClick() {
     }
 }
 
-function showPlayedCard(card,handtype,vibration = 0){
+async function showPlayedCard(card,handtype,vibration = 0){
     if(handtype == 'wl'){
         img = witheringLooksImages[card].src;
 
@@ -902,12 +900,13 @@ function showPlayedCard(card,handtype,vibration = 0){
     contextMenu.style.visibility = 'hidden';
     bigCard.style.display = 'block'; // Mostra bigCard
     if(handtype == 'wl'){
+        await waitForVisibility()
+
         bigCard.classList.add('card-grow');
         if(vibration == 1){
-            //bigCard.classList.add('vibration-'+card);
             setTimeout(function() {
                 navigator.vibrate(2000 * card)
-                shakeScreen(2000 * card);
+                shakeScreen(2000 * card)
                 //navigator.vibrate(2000)
             }, 1720);
         }
@@ -918,6 +917,17 @@ function showPlayedCard(card,handtype,vibration = 0){
 
 
     bigCard.addEventListener('click', handleBigCardClick);
+}
+
+function waitForVisibility() {
+    return new Promise(resolve => {
+        const intervalId = setInterval(() => {
+            if (!document.hidden) {
+                clearInterval(intervalId);
+                resolve();
+            }
+        }, 100); // controlla ogni 100 ms
+    });
 }
 
 bigCard.addEventListener('animationend', function() {
