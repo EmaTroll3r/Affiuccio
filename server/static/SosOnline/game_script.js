@@ -888,9 +888,11 @@ function handleBigCardClick() {
         bigCardActive = false;
         //console.log('ShowHand -------- handleBigCardClick');
         
-        document.getElementById("wl" + witheringLooks[parseInt(mtype)].toString() + "Counter").style.visibility = "visible";
-        document.getElementById("wlCounter").innerText = "x" + witheringLooks[parseInt(mtype)].toString();
-        document.getElementById("wlCounter").style.visibility = "visible";
+        if(witheringLooks[parseInt(mtype)] > 0){
+            document.getElementById("wl" + witheringLooks[parseInt(mtype)].toString() + "Counter").style.visibility = "visible";
+            document.getElementById("wlCounter").innerText = "x" + witheringLooks[parseInt(mtype)].toString();
+            document.getElementById("wlCounter").style.visibility = "visible";
+        }
 
         showHand();
         bigCard.removeEventListener('click', handleBigCardClick); // Rimuovi il listener di eventi
