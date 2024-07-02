@@ -13,6 +13,12 @@
             <!--<button id="drawButton">Draw</button>-->
             <p id="playerTurn">Giocatore di turno:</p>
             <img id="noise-image" src="{{ url_for('static', filename='SosOnline/images/noise.png') }}" alt="Noise" style="position: absolute; top: 15px; right: 40px; width: 50px; height: 50px;">
+            <div id="wlCounterDiv" style="position: absolute; top: 1.5%; right: 14%; width: 200px; height: 10vh;">
+                <img id="wl1Counter" src="{{ url_for('static', filename='SosOnline/images/wl1.png') }}" alt="wl1" style="position: absolute; left: 0%; height: 100%; visibility: hidden;">
+                <img id="wl2Counter" src="{{ url_for('static', filename='SosOnline/images/wl2.png') }}" alt="wl2" style="position: absolute; left: 8%; height: 100%; visibility: hidden;">
+                <img id="wl3Counter" src="{{ url_for('static', filename='SosOnline/images/wl3.png') }}" alt="wl3" style="position: absolute; left: 16%; height: 100%; visibility: hidden;">
+                <div id="wlCounter" class="write" style="position: absolute; top: 20%; left:40%; height: 80%; font-size: 26px; visibility: hidden;">x2</div>
+            </div>
             <hr>
             <div id="game-images">
                 <img id="card1" class="card" src="">

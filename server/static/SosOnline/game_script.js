@@ -566,6 +566,19 @@ socket.on('player-joined', function(data) {
 socket.on('response-playerList', function(data) {
     playerList = data.playerList;
     witheringLooks = new Array(playerList.length).fill(null);
+    playerList.forEach((player, i) => {
+        witheringLooks[player.mtype] = player.points;
+    });
+
+    if(witheringLooks[parseInt(mtype)] > 0){
+        for (var i = 1; i < witheringLooks[parseInt(mtype)] + 1; i++) {
+            console.log("wl" + i.toString() + "Counter")
+            document.getElementById("wl" + i.toString() + "Counter").style.visibility = "visible";
+        }
+        document.getElementById("wlCounter").innerText = "x" + witheringLooks[parseInt(mtype)].toString();
+        document.getElementById("wlCounter").style.visibility = "visible";
+    }
+
     socket.emit('get-turn', {'partyID':partyID, 'playerID':playerID});
     /*
     // Rimuovi tutte le opzioni esistenti
@@ -594,12 +607,14 @@ socket.on('response-playerList', function(data) {
     */
 });
 
+
 socket.on('card-played', function(data) {
     card = parseInt(data.cards[0]);
     if(data.response['status'] == 0){
         if(data.handtype[0] == "wl"){            
             if(data.others['victim'] == parseInt(mtype)){
-                showPlayedCard(card,data.handtype[0],1);
+                showPlayedCard(card,data.handtype[0],1);                
+                witheringLooks[parseInt(mtype)] ++;
             }else{
                 showPlayedCard(card,data.handtype[0]);
             }
@@ -872,6 +887,11 @@ function handleBigCardClick() {
         bigCard.style.display = 'none'; // Nascondi bigCard
         bigCardActive = false;
         //console.log('ShowHand -------- handleBigCardClick');
+        
+        document.getElementById("wl" + witheringLooks[parseInt(mtype)].toString() + "Counter").style.visibility = "visible";
+        document.getElementById("wlCounter").innerText = "x" + witheringLooks[parseInt(mtype)].toString();
+        document.getElementById("wlCounter").style.visibility = "visible";
+
         showHand();
         bigCard.removeEventListener('click', handleBigCardClick); // Rimuovi il listener di eventi
         bigCardCanDisappear = false;
@@ -883,8 +903,7 @@ function handleBigCardClick() {
 
 async function showPlayedCard(card,handtype,vibration = 0){
     if(handtype == 'wl'){
-        img = witheringLooksImages[card].src;
-
+        img = witheringLooksImages[card].src;        
     }else{
         img = preloadedImages[card].src;
     }
@@ -906,10 +925,11 @@ async function showPlayedCard(card,handtype,vibration = 0){
         if(vibration == 1){
             setTimeout(function() {
                 navigator.vibrate(2000 * card)
-                shakeScreen(2000 * card)
+                shakeScreen(2000 * card);
                 //navigator.vibrate(2000)
             }, 1720);
         }
+
     }else{
         bigCard.classList.add('card-drop');
     }
@@ -917,6 +937,7 @@ async function showPlayedCard(card,handtype,vibration = 0){
 
 
     bigCard.addEventListener('click', handleBigCardClick);
+
 }
 
 function waitForVisibility() {

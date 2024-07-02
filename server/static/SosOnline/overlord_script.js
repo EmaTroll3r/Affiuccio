@@ -69,18 +69,21 @@ contextMenu.addEventListener('click',async function(e) {
 */
 
 wlContext.addEventListener('click', async function() {
-    targetPlayer = await choosePlayer([1],turn);
+    targetPlayer = await choosePlayer([1],turn,true);
     if (targetPlayer == null) 
         return;
     console.log('wl',targetPlayer);
     playWl(witheringLooks[targetPlayer] + 1,targetPlayer);
 });
 
-async function choosePlayer(foreignPlayers,defaultChoice = null) {
+async function choosePlayer(foreignPlayers,defaultChoice = null,isForWitheringLooks = false) {
     let inputOptions = {};
     for (let player of playerList) {
         if (!foreignPlayers.includes(player.mtype)) {
             inputOptions[player.mtype] = player.name;
+            if(isForWitheringLooks){
+                inputOptions[player.mtype] = player.name + ' (' + witheringLooks[player.mtype] + ')';
+            }
         }
     }
 
