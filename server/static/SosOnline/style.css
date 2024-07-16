@@ -378,6 +378,37 @@ button {
   animation-iteration-count: infinite;
 }
 
+button {
+  font-size: 1em;
+  padding: 15px 30px; /* Aumenta il padding per un pulsante più grande */
+  color: white;
+  background-color: transparent;
+  border: 2px solid white;
+  border-radius: 15px; /* Aumenta il raggio del bordo per un bordo più arrotondato */
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+button:hover {
+  color: #333;
+  background-color: white;
+}
+
+
+#nickname {
+    background: rgba(0, 0, 0, 0.4); /* Nero semi-trasparente */
+    color: white; /* Testo bianco */
+    padding: 10px;
+    border: none; /* Nessun bordo */
+    outline: none; /* Rimuove l'outline quando l'elemento è in focus */
+    text-align: center; /* Centra il testo */
+    width: 200px; /* Larghezza della casella di testo */
+}
+
+#nickname:focus {
+    border: none; /* Assicura che non ci sia bordo quando l'elemento è in focus */
+    outline: none; /* Rimuove l'outline quando l'elemento è in focus */
+}
 
 /*
 .content .setting{
