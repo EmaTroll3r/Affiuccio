@@ -16,7 +16,7 @@ window.addEventListener('pageshow', function(event) {
 let gameEndpoint = document.getElementById('gameEndpoint').value;
 let nickname = document.getElementById('nickname');
 
-document.getElementById('host-lobby').addEventListener('click', function() {
+document.getElementById('host-lobby').addEventListener('click', function(event) {
     var playername = nickname.value;
     if (playername == '') {
         alert('Inserisci un nome valido');
@@ -43,6 +43,7 @@ document.getElementById('host-lobby').addEventListener('click', function() {
         //socket.emit('join', socket_data);
         window.location.href = `/`+gameEndpoint+`/lobby?mtype=${data.mtype}&partyID=${data.partyID}&playerID=${data.playerID}`
         console.log('Socket connected to partyID: ' + data.partyID);
+        //event.target.blur();
     })
     .catch((error) => {
         console.error('Error:', error);
