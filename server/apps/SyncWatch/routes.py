@@ -8,5 +8,5 @@ syncwatch = Blueprint('syncwatch', __name__)
 
 @syncwatch.route('/create-party', methods=['GET'])
 def syncwatch_create_party():
-    partyID = partyManager.create_party()
-    return partyID
+    #partyID = partyManager.create_party()
+    return 7#partyID
