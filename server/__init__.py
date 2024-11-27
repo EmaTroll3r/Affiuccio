@@ -3,6 +3,7 @@ from flask import Flask
 
 from .mainroutes import main
 from .apps.SosOnline.routes import sosonline
+from .apps.SyncWatch.routes import syncwatch
 
 
 #from global_vars import socketio
@@ -22,6 +23,7 @@ def create_app():
 
     app.register_blueprint(main)
     app.register_blueprint(sosonline, url_prefix='/SosOnline')
+    app.register_blueprint(syncwatch, url_prefix='/SyncWatch')
     #app.register_blueprint(sos_online, url_prefix='/SosOnline')
     
     return app

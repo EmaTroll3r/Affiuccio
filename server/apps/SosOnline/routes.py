@@ -75,7 +75,6 @@ def sosonline_overlord():
     partyID = int(request.args.get('partyID'))  # Converti partyID in un intero
     if partyManager.get_party(partyID) is None:
         #return "sorry no party found"
-        
         return render_template('SosOnline/404.html')
     #sosOnline.run(partyID)
     return render_template('SosOnline/overlord.html')
