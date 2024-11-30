@@ -12,7 +12,7 @@ syncwatch = Blueprint('syncwatch', __name__)
 def syncwatch_create_party():
     #partyID = Party.create_party('SyncWatch',test=test)
     partyID = syncWatch.syncwatch_create_party()
-    return jsonify({"result": partyID,"state":0,"error": "no error"})
+    return jsonify({"result": partyID,"state":0, "error": "no error"})
 
 
 @syncwatch.route('/play-pause', methods=['POST'])
