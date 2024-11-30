@@ -16,10 +16,9 @@ if not test:
 
 if __name__ == '__main__':
 
-    
     #Only need for test in local
     if test == True:
-        socketio.run(app, host='0.0.0.0', port=80)
+        socketio.run(app, host='0.0.0.0', port=5000)
 
     #Only need for test in server
     elif test == False:
