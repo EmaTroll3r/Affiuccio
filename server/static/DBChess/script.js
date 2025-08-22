@@ -312,8 +312,8 @@ function addBackButtonIfNecessary() {
         var folderView = document.getElementById('folder-view');
         document.body.insertBefore(backButton, folderView);
         var folderView = document.getElementById('folder-view');
-        folderView.style.marginTop = '40px';
-        folderView.style.marginLeft = '30px';
+        // folderView.style.marginTop = '40px';
+        // folderView.style.marginLeft = '30px';
         
     }
 }
