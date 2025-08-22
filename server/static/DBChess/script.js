@@ -330,10 +330,12 @@ document.getElementById('submenu-import-pgn').addEventListener('click', importPG
 
 async function getLichessPGN(gameId) {
     const url = `https://lichess.org/game/export/${gameId}?tags=false&clocks=false&evals=false`;
+    console.log("url",url);
     try {
         const response = await fetch(url);
         var pgn = await response.text();
         pgn = pgn.toString();
+        console.log("pgn",pgn);
         return pgn;
     } catch (error) {
         console.error(error);
@@ -349,11 +351,11 @@ function importPGN() {
     const containsChessMove = /\d+\.\s?[a-h][1-8]/.test(pgn);
 
     if(pgn.startsWith('https://lichess.org/')){
-        getLichessPGN(pgn.split('/')[3]).then(pgn => {
+        getLichessPGN(pgn.split('/')[3].split('#')[0]).then(pgn => {
             processPGN(pgn);
         });
     }else if (isAlphanumeric && !containsChessMove) {
-        getLichessPGN(pgn).then(pgn => {
+        getLichessPGN(pgn.split('#')[0]).then(pgn => {
             processPGN(pgn);
         });
     } else if (containsChessMove) {
@@ -382,7 +384,7 @@ function processPGN(pgn) {
     //console.log("pgnArray",pgnArray.slice(0, n+1));
     //console.log("pgn",pgn.split(' ')[n+2]);
     showToast("Added from " + pgnArray.slice(2, n+1).join('-') + " <br> First new folder " + pgn.split(' ')[n+2].toString() + " to the database");
-    importSuggestion(pgnArray.slice(n+1).join('-'),pgnArray.slice(0, n+1));
+    importSuggestion(pgnArray.slice(n+1).join('-'),pgnArray.slice(0, n+1),silent=true);
     
     //var url = currPage + "?path=" + encodeURIComponent(pgnArray.slice(1,n+1).join('/').replace(/O-O-O/g, "O_O_O").replace(/O-O/g, "O_O").replace(/\//g, '-'));
     //console.log("url",url)
@@ -439,7 +441,7 @@ function exportPGN() {
     return pgn;
 }
 
-function importSuggestion(content = null, path = null) {
+function importSuggestion(content = null, path = null, silent = false) {
     //var n=1;
     var preview = null;
     var match = null;
@@ -480,7 +482,7 @@ function importSuggestion(content = null, path = null) {
             showToast(e);
         }
     });
-    saveFileSystemToServer();
+    saveFileSystemToServer(silent);
     displayFileSystem();
 }
 
@@ -771,7 +773,8 @@ function exportStructure() {
 function showToast(message) {
     var toast = document.createElement('div');
     toast.className = 'toast';
-    toast.textContent = message;
+    // toast.textContent = message;
+    toast.innerHTML = message;
     document.body.appendChild(toast);
 
     setTimeout(function() {
@@ -1335,7 +1338,7 @@ function saveFileSystemToGit() {
     //console.log(JSON.stringify(fileSystem));
 }
 
-function saveFileSystemToServer() {
+function saveFileSystemToServer(silent=false) {
     fetch('/DBChess/save_filesystem', {
         method: 'POST',
         headers: {
@@ -1346,7 +1349,9 @@ function saveFileSystemToServer() {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            showToast('File system saved!');
+            if (!silent) {
+                showToast('File system saved!');
+            }
         } else {
             showToast('Error saving file system: ' + data.message);
         }
