@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>DB Chess</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='DBChess/styles.css') }}">
+</head>
+<body>
+    <div id="empty-space-context-menu" class="context-menu">
+        <div id="new-folder-context">New folder</div>
+        <!--<div id="new-file-context">New file</div>-->
+        <div id="new-suggestion-context">New Suggestion</div>
+        <div id="new-link-context">New Link</div>
+        <div id="advanced-context">Advanced</div>
+    </div>
+
+    <div id="advanced-submenu" class="context-menu">
+        <div id="export-structure">Export Structure</div>
+        <div id="import-structure">Import Structure</div>
+        <!--<div id="import-suggestion">Import Suggestion</div>-->
+        <div id="submenu-export-pgn">Export PGN</div>
+        <div id="submenu-import-pgn">Import PGN</div>
+        <div id="rec">Rec</div>
+        <div id="stop-rec" style="display: none;">Stop</div>
+        <!-- <div id="db-import-structure">Import from DB</div> -->
+    </div>
+
+    <div id="in-file-context-menu" class="context-menu">
+        <!-- <div id="append-context">Append</div> -->
+        <div id="import-file-context">Import Content</div>
+        <div id="write-context">Write</div>
+        <div onclick="goBack()">Back</div>
+    </div>
+
+    <div id="writing-context-menu" class="context-menu">
+        <div id="save-context">Save</div>
+        <div id="no-save-context">Don't Save</div>
+    </div>
+
+    <div id="folder-context-menu" class="context-menu">
+        <div id="rename-context">Rename</div>
+        <div id="delete-context">Delete</div>
+    </div>
+
+    <div id="file-context-menu" class="context-menu">
+        <div id="file-rename-context">Rename</div>
+        <div id="re-preview-context">Change Preview</div>
+        <div id="file-export-pgn"">Export PGN</div>
+        <!--<div id="get-info">Get Info</div>-->
+        <div id="file-delete-context">Delete</div>
+    </div>
+
+    <div id="path-display"></div>
+    <!--<button onclick="goBack()">Indietro</button> -->
+    <!--<button onclick="createFolder()">Nuova Cartella</button> -->
+    <!--<button onclick="createFile()">Crea File</button> -->
+    <!-- <button onclick="deleteFile()">Elimina File</button> -->
+    <!-- <button onclick="deleteall()">Delete all</button> -->
+    <!-- <button id="show">show</button> -->
+
+    <!-- <div id="back-button" onclick="goBack()"></div></br></br> -->
+                
+    <div id="folder-view" style="width: 55%;" >
+        <div class="folder-icon"></div>
+    </div>
+
+    <table id="chessBoard"></table>
+
+    <!--<button id="move">Move a piece</button>-->
+    <!--
+    <table id="chessBoard">
+        <tr><td id="a8" class="white"><div class="chess-piece rook-black"></div></td><td id="b8" class="black"><div class="chess-piece knight-black"></div></td><td id="c8" class="white"><div class="chess-piece bishop-black"></div></td><td id="d8" class="black"><div class="chess-piece queen-black"></div></td><td id="e8" class="white"><div class="chess-piece king-black"></div></td><td id="f8" class="black"><div class="chess-piece bishop-black"></div></td><td id="g8" class="white"><div class="chess-piece knight-black"></div></td><td id="h8" class="number black"><div class="chess-piece rook-black"></div>8</td></tr>
+        <tr><td id="a7" class="black"><div class="chess-piece pawn-black"></div></td><td id="b7" class="white"><div class="chess-piece pawn-black"></div></td><td id="c7" class="black"><div class="chess-piece pawn-black"></div></td><td id="d7" class="white"><div class="chess-piece pawn-black"></div></td><td id="e7" class="black"><div class="chess-piece pawn-black"></div></td><td id="f7" class="white"><div class="chess-piece pawn-black"></div></td><td id="g7" class="black"><div class="chess-piece pawn-black"></div></td><td id="h7" class="number white"><div class="chess-piece pawn-black"></div>7</td></tr>
+        <tr><td id="a6" class="white"></td><td id="b6" class="black"></td><td id="c6" class="white"></td><td id="d6" class="black"></td><td id="e6" class="white"></td><td id="f6" class="black"></td><td id="g6" class="white"></td><td id="h6" class="number black">6</td></tr>
+        <tr><td id="a5" class="black"></td><td id="b5" class="white"></td><td id="c5" class="black"></td><td id="d5" class="white"></td><td id="e5" class="black"></td><td id="f5" class="white"></td><td id="g5" class="black"></td><td id="h5" class="number white">5</td></tr>
+        <tr><td id="a4" class="white"></td><td id="b4" class="black"></td><td id="c4" class="white"></td><td id="d4" class="black"></td><td id="e4" class="white"></td><td id="f4" class="black"></td><td id="g4" class="white"></td><td id="h4" class="number black">4</td></tr>
+        <tr><td id="a3" class="black"></td><td id="b3" class="white"></td><td id="c3" class="black"></td><td id="d3" class="white"></td><td id="e3" class="black"></td><td id="f3" class="white"></td><td id="g3" class="black"></td><td id="h3" class="number white">3</td></tr>
+        <tr><td id="a2" class="white"><div class="chess-piece pawn-white"></div></td><td id="b2" class="black"><div class="chess-piece pawn-white"></div></td><td id="c2" class="white"><div class="chess-piece pawn-white"></div></td><td id="d2" class="black"><div class="chess-piece pawn-white"></div></td><td id="e2" class="white"><div class="chess-piece pawn-white"></div></td><td id="f2" class="black"><div class="chess-piece pawn-white"></div></td><td id="g2" class="white"><div class="chess-piece pawn-white"></div></td><td id="h2" class="number black">2<div class="chess-piece pawn-white"></div></td></tr>
+        <tr><td id="a1" class="letter black">a<div class="chess-piece rook-white"></div></td><td id="b1" class="letter white">b<div class="chess-piece knight-white"></div></td><td id="c1" class="letter black">c<div class="chess-piece bishop-white"></div></td><td id="d1" class="letter white">d<div class="chess-piece queen-white"></div></td><td id="e1" class="letter black">e<div class="chess-piece king-white"></div></td><td id="f1" class="letter white">f<div class="chess-piece bishop-white"></div></td><td id="g1" class="letter black">g<div class="chess-piece knight-white"></div></td><td id="h1" class="letter white"><div class="chess-piece rook-white"></div> <div class="number-one">1</div>h</td></tr>       
+    </table>
+    -->
+
+    <script src="{{ url_for('static', filename='DBChess/script.js') }}"></script>
+</body>
+</html>

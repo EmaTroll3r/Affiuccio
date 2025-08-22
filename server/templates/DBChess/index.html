@@ -1,0 +1,45 @@
+<html><head>
+    <meta charset="UTF-8">
+    <title>DB Chess</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='DBChess/styles.css') }}">
+</head>
+<body style="background-color: rgb(255, 255, 255);">
+    <div id="path-display"></div>
+    <!--<button onclick="goBack()">Indietro</button> -->
+    <!--<button onclick="createFolder()">Nuova Cartella</button> -->
+    <!--<button onclick="createFile()">Crea File</button> -->
+    <!-- <button onclick="deleteFile()">Elimina File</button> -->
+    <!-- <button onclick="deleteall()">Delete all</button> -->
+    <!-- <button id="show">show</button> -->
+
+    <!-- <div id="back-button" onclick="goBack()"></div></br></br> -->
+    <div id="back-button" style="display: none;">
+        <br><br>
+    </div>
+    <div id="folder-view" style="margin-top: 40px; margin-left: 30px;">
+        <a href="folders?path=White">
+            <div class="folder-special-white">
+                <div class="special-folder-name">White</div>
+            </div>
+        </a>
+        <a href="folders?path=Black">
+            <div class="folder-special-black">
+                <div class="special-folder-name">Black</div>
+            </div>
+        </a>
+        <!--
+        <div class="folder-special-white">
+            <a href="folders?color=White" class="folder-name">White</a>
+        </div>
+        <div class="folder-special-black">
+            <a href="folders?color=Black" class="folder-name">Black</a>
+        </div>
+        -->
+        <!--
+        <div class="folder-special-white"><div class="folder-name">White</div></div>
+        <div class="folder-special-black"><div class="folder-name">Black</div></div>
+        -->
+    </div>      
+    
+
+</body></html>

@@ -22,7 +22,8 @@ if __name__ == '__main__':
 
     #Only need for test in server
     elif test == False:
-        context = ('/etc/letsencrypt/live/affiuccio.duckdns.org/fullchain.pem', '/etc/letsencrypt/live/affiuccio.duckdns.org/privkey.pem')
-        socketio.run(app, host='0.0.0.0', port=443, ssl_context=context)
+        # context = ('/etc/letsencrypt/live/affiuccio.duckdns.org/fullchain.pem', '/etc/letsencrypt/live/affiuccio.duckdns.org/privkey.pem')
+        socketio.run(app, host='127.0.0.1', port=5000)
+        # socketio.run(app, host='0.0.0.0', port=443, ssl_context=context)
         
 
