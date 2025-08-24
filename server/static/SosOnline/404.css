@@ -1,0 +1,245 @@
+/* CSS per pagina 404 - Stile coerente con SosOnline */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('images/background.webp');
+    background-size: cover;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    position: relative;
+}
+
+/* Overlay semi-trasparente per migliorare la leggibilità */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: -1;
+}
+
+h1.write {
+    font-size: 72px;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 20px 0;
+    font-family: Arial, sans-serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.write {
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.write > span {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.error-container {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 40px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+#home-button {
+    font-size: 1em;
+    padding: 15px 30px;
+    color: white;
+    background-color: transparent;
+    border: 2px solid white;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    margin-top: 30px;
+    text-shadow: none;
+}
+
+#home-button:hover {
+    color: #333;
+    background-color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#home-button:active {
+    transform: translateY(0);
+}
+
+/* Game card decoration effect */
+.game-decoration {
+    position: absolute;
+    width: 80px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    opacity: 0.3;
+    z-index: -1;
+}
+
+.game-decoration.card1 {
+    top: 15%;
+    left: 10%;
+    transform: rotate(-15deg);
+}
+
+.game-decoration.card2 {
+    top: 20%;
+    right: 15%;
+    transform: rotate(10deg);
+}
+
+.game-decoration.card3 {
+    bottom: 20%;
+    left: 15%;
+    transform: rotate(20deg);
+}
+
+.game-decoration.card4 {
+    bottom: 25%;
+    right: 10%;
+    transform: rotate(-10deg);
+}
+
+/* Responsive design */
+@media (max-width: 767px) {
+    body {
+        background-size: auto 100vh;
+        background-repeat: no-repeat;
+        padding: 20px;
+    }
+    
+    h1.write {
+        font-size: 48px;
+    }
+    
+    .error-container {
+        margin: 20px auto;
+        padding: 20px;
+    }
+    
+    .write > span {
+        font-size: 18px;
+    }
+    
+    #home-button {
+        padding: 12px 24px;
+        font-size: 14px;
+    }
+    
+    .game-decoration {
+        width: 60px;
+        height: 90px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .error-container {
+        padding: 50px;
+    }
+    
+    .write > span {
+        font-size: 22px;
+    }
+}
+
+/* Animazione di entrata */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+h1.write {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.error-container {
+    animation: fadeInUp 1s ease-out 0.2s both;
+}
+
+#home-button {
+    animation: fadeInUp 1.2s ease-out 0.4s both;
+}
+
+.game-decoration.card1,
+.game-decoration.card3 {
+    animation: slideInLeft 1.5s ease-out 0.6s both;
+}
+
+.game-decoration.card2,
+.game-decoration.card4 {
+    animation: slideInRight 1.5s ease-out 0.8s both;
+}
+
+/* Effetto particelle fluttuanti */
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(1deg); }
+    66% { transform: translateY(5px) rotate(-1deg); }
+}
+
+.game-decoration {
+    animation: float 6s ease-in-out infinite;
+}
+
+.game-decoration.card2 {
+    animation: float 6s ease-in-out infinite 1s;
+}
+
+.game-decoration.card3 {
+    animation: float 6s ease-in-out infinite 2s;
+}
+
+.game-decoration.card4 {
+    animation: float 6s ease-in-out infinite 3s;
+}

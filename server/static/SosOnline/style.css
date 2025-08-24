@@ -125,9 +125,17 @@ hr {
   border-radius: 5px;
 }
 
+
 .write {
     /*color: #333;*/
     color : #ffffff;
+    text-align: center;
+    font-size: 20px;
+}
+
+#sorry-message {
+  display: block;
+  margin-bottom: 10px;
 }
 
 button {

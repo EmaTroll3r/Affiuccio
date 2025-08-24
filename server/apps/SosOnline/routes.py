@@ -89,12 +89,3 @@ def sosonline_lobby():
     return render_template('SosOnline/lobby.html')
 
 
-@sosonline.app_errorhandler(404)
-def handle_404(e):
-    return render_template('SosOnline/404.html'), 404
-
-@sosonline.app_errorhandler(TypeError)
-def handle_type_error(e):
-    return render_template('SosOnline/404.html'), 404
-
-

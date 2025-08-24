@@ -43,4 +43,3 @@ def get_filesystem():
         return data, 200, {'Content-Type': 'text/plain; charset=utf-8'}
     except Exception as e:
         return str(e), 500
-
