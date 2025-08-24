@@ -5,7 +5,7 @@ from .mainroutes import main
 from .apps.SosOnline.routes import sosonline
 from .apps.SyncWatch.routes import syncwatch
 from .apps.DBChess.routes import dbchess
-
+from .errors import global_error_handler
 
 #from global_vars import socketio
 
@@ -31,40 +31,15 @@ def create_app():
     # Error handler globale che determina il CSS in base al path
     @app.errorhandler(404)
     def handle_404_global(e):
-        path = request.path
-        print(f'404 error for path: {path}')
-        
-        if path.startswith('/SosOnline'):
-            css_url = 'SosOnline/404.css'
-            home_url = '/SosOnline'
-            print('Loading SosOnline CSS for 404')
-        elif path.startswith('/DBChess'):
-            css_url = 'DBChess/404.css'
-            home_url = '/DBChess'
-            print('Loading DBChess CSS for 404')
-        else:
-            css_url = 'home/404.css'
-            home_url = '/'
-            print('Loading default CSS for 404')
-        
-        return render_template('home/404.html', css_url=css_url, home_url=home_url), 404
-    
+        return global_error_handler(e, 404)
+
     @app.errorhandler(500)
     def handle_500_global(e):
-        path = request.path
-        print(f'500 error for path: {path}')
-        
-        if path.startswith('/SosOnline'):
-            css_url = 'SosOnline/404.css'
-            home_url = '/SosOnline'
-        elif path.startswith('/DBChess'):
-            css_url = 'DBChess/styles.css'
-            home_url = '/DBChess'
-        else:
-            css_url = 'home/404.css'
-            home_url = '/'
-        
-        return render_template('home/404.html', css_url=css_url, home_url=home_url), 500
+        return global_error_handler(e, 500)
+    
+    @app.errorhandler(TypeError)
+    def handle_type_error_global(e):
+        return global_error_handler(e, 500)
     
     return app
 
