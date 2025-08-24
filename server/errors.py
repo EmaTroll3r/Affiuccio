@@ -7,16 +7,11 @@ def global_error_handler(e, error_code):
         
         if error_code == 404 or error_code == 500:
             if path.startswith('/SosOnline'):
-                css_url = 'SosOnline/404.css'
-                home_url = '/SosOnline'
                 print('Loading SosOnline CSS for 404')
+                return render_template('SosOnline/404.html'), error_code
             elif path.startswith('/DBChess'):
-                css_url = 'DBChess/404.css'
-                home_url = '/DBChess'
                 print('Loading DBChess CSS for 404')
+                return render_template('DBChess/404.html'), error_code
             else:
-                css_url = 'home/404.css'
-                home_url = '/'
                 print('Loading default CSS for 404')
-
-        return render_template('home/404.html', css_url=css_url, home_url=home_url), error_code
+                return render_template('home/404.html'), error_code

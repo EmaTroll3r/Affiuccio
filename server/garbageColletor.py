@@ -38,9 +38,8 @@ def tryRemoveParty(party):
     for player in party.players:
         if player.is_active():
             return False
-    print("Deleting party ",party.partyID," succeeded")
-    partyManager.remove_party(party.partyID)
-    return True
+    #print("Deleting party ",party.partyID," succeeded")
+    return partyManager.remove_party(party.partyID)
 
 def playerRemover():
     for party in partyManager.parties.values():
