@@ -228,10 +228,15 @@ class PartyManager:
     
     def remove_party(self, partyID):
         if partyID in self.parties:
-            players_copy = self.parties[partyID].players.copy()
-            for player in players_copy:
-                del self.players[player.get_id()]
-            del self.parties[partyID]
+            if self.parties[partyID].status == "Blocked":
+                return False
+            else:
+                players_copy = self.parties[partyID].players.copy()
+                for player in players_copy:
+                    del self.players[player.get_id()]
+                del self.parties[partyID]
+                return True
+            
 
     def get_party(self, partyID):
         try:
