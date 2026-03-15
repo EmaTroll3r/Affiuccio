@@ -91,6 +91,26 @@ class Party:
         self.status = "Lobby"
         #self.activePlayers = []
 
+    def convert_identifiers(self, identifier, collection):
+
+        """
+        identifier: int o str
+        collection: il dizionario (self.decks, self.hands, ecc.)
+        """
+
+        if isinstance(identifier, int):
+            if identifier >= len(collection) or identifier < 0:
+                return None            
+            return list(collection.keys())[identifier]
+        
+        elif isinstance(identifier, str):
+            if identifier not in collection:
+                return None
+            
+            return identifier
+        else:
+            return None
+
     @staticmethod
     def create_party(gameEndpoint,test=False):
         from random import Random
@@ -112,34 +132,49 @@ class Party:
     def __str__(self):
         return str(self.partyID) + " " + str(self.players)
     
-    def pickCard(self,deckNumber=0):
-        return self.decks[deckNumber].draw()
-    
-    def raw_draw(self,mtype,handNumber=0,deckNumber=0):
+    def pickCard(self,deckName=0):
+
+        deckName = self.convert_identifiers(deckName, self.decks)
         
-        card = self.pickCard(deckNumber)
-        if self.get_player(mtype).hands[handNumber].addCard(card) == True:
+        if deckName not in self.decks:
+            return None
+        
+        return self.decks[deckName].draw()
+        
+    def raw_draw(self,mtype,handName=0,deckName=0):
+
+        deckName = self.convert_identifiers(deckName, self.decks)
+        handName = self.convert_identifiers(handName, self.get_player(mtype).hands)
+
+        card = self.pickCard(deckName)
+        if self.get_player(mtype).hands[handName].addCard(card) == True:
             return card
         return None
 
-    def draw(self,mtype,handNumber=0,deckNumber=0):
+    def draw(self,mtype,handName=0,deckName=0):
+       
+
+        deckName = self.convert_identifiers(deckName, self.decks)
+        handName = self.convert_identifiers(handName, self.get_player(mtype).hands)
+
         if mtype > len(self.players) or mtype <= 0:
             return -2
-        if isinstance(handNumber, int):
-            if handNumber >= len(self.get_player(mtype).hands) or handNumber < 0:
+        
+        if isinstance(handName, int):
+            if handName >= len(self.get_player(mtype).hands) or handName < 0:
                 return -3
         else:
-            if handNumber not in self.get_player(mtype).hands:
+            if handName not in self.get_player(mtype).hands:
                 return -3
             
-        if isinstance(deckNumber, int):
-            if deckNumber >= len(self.decks) or deckNumber < 0:
+        if isinstance(deckName, int):
+            if deckName >= len(self.decks) or deckName < 0:
                 return -4
         else:
-            if deckNumber not in self.decks:
+            if deckName not in self.decks:
                 return -4
 
-        card = self.raw_draw(mtype,handNumber,deckNumber)
+        card = self.raw_draw(mtype,handName,deckName)
         if card == None:
             return -1
         return card.card
@@ -258,6 +293,7 @@ class PartyManager:
 
     def get_player(self,playerID):
         return self.players[playerID]
+    
 
 class Player:
     def __init__(self, name, party, maxHandCardDict):
@@ -292,15 +328,21 @@ class Player:
             'components': self.components if self.components else None
         }
 
-    def play(self, card_id, handNumber=0):
-        for card in self.hands[handNumber].cards:
+    def play(self, card_id, handName=0):
+
+        handName = self.convert_identifiers(handName, self.hands)
+
+        for card in self.hands[handName].cards:
             if card.card == card_id:
-                self.hands[handNumber].cards.remove(card)
+                self.hands[handName].cards.remove(card)
                 return True
         return False
     
-    def can_play(self,card_id,handNumber=0):
-        for card in self.hands[handNumber].cards:
+    def can_play(self,card_id,handName=0):
+        
+        handName = self.convert_identifiers(handName, self.hands)
+
+        for card in self.hands[handName].cards:
             if card.card == card_id:
                 return True
         return False

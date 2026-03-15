@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+		<meta charset="UTF-8">
+		<title>The Mind</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+		<meta name="google" content="notranslate">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='TheMind/style_index.css') }}">
+		<link rel="icon" type="image/png" href="{{ url_for('static', filename='TheMind/images/favicon.png') }}">
+    </head>
+
+	<style>
+        body {
+            background-image: url("{{ url_for('static', filename='TheMind/images/background.jpg') }}");
+        }
+    </style>
+	<body>
+		<div id="mainWrapper">
+			<div id="shakeableIndex">
+
+				<div id="mainContent">
+					<h1 class="title-text" id="game-title">The Mind</h1>
+					<button class="index-button" id="host-lobby">Host a lobby</button>
+					<button class="index-button" id="join-lobby">Join a lobby</button>
+					<input type="text" id="nickname" placeholder="Insert your nickname">
+
+					<input type="hidden" id="gameEndpoint" value="TheMind"/>
+				</div>
+
+				<script>
+				document.getElementById('nickname').value = localStorage.getItem( document.getElementById('gameEndpoint').value+'_playername');
+				</script>
+
+				<script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
+				<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+				<input type="hidden" id="scriptURL" value="{{ url_for('static', filename='home/index_script.js') }}" />
+				<script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
+				<script src="{{ url_for('static', filename='home/index_frontend.js') }}"></script>
+				
+			</div>
+		</div>
+	</body>
+</html>

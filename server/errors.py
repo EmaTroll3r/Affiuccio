@@ -12,6 +12,9 @@ def global_error_handler(e, error_code):
             elif path.startswith('/DBChess'):
                 print('Loading DBChess CSS for 404')
                 return render_template('DBChess/404.html'), error_code
+            elif path.startswith('/TheMind'):
+                print('Loading TheMind CSS for 404')
+                return render_template('TheMind/404.html'), error_code
             else:
                 print('Loading default CSS for 404')
                 return render_template('home/404.html'), error_code

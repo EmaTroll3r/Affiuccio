@@ -313,6 +313,7 @@ def home_index():
 @main.route('/home/playerList', methods=['GET'])
 def get_player_list():
     partyID = int(request.args.get('partyID'))
+    # print("\n\n\nRicevuto richiesta player list per partyID",partyID,"\n\n\n")
     #print("\n\n\n",partyID,"\n\n\n")
     if partyManager.get_party(partyID) is None:
         return {'message':"sorry no party found", 'status': 1}

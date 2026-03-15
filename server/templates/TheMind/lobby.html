@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+		<meta charset="UTF-8">
+		<title>The Mind</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+		<meta name="google" content="notranslate">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='TheMind/style_index.css') }}">
+		<link rel="icon" type="image/png" href="{{ url_for('static', filename='TheMind/images/favicon.png') }}">
+    </head>
+
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='TheMind/images/background.jpg') }}");
+        }
+    </style>
+    <body> 
+        <div id="mainContent">
+            <h1 class="title-text">Lobby</h1>
+            <h3 class="title-text" id="party-id">Codice della lobby: <span></span></h3>
+            <h2 class="title-text">Giocatori:</h2>
+            <h3 class="players-list"><ul  class="title-text" id="player-list"></ul></h3>
+            <button id="remove-player" class="host-buttons index-button" style="display: none;">Remove Player</button>
+            <button id="start-game" class="host-buttons index-button" style="display: none;">Start Game</button>
+        </div>
+        
+        <input type="hidden" id="gameEndpoint" value="TheMind" />
+        <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+        <input type="hidden" id="scriptURL" value="{{ url_for('static', filename='home/lobby_script.js') }}" />
+        <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
+        
+    </body>
+</html>

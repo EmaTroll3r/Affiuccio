@@ -22,6 +22,7 @@ document.getElementById('host-lobby').addEventListener('click', function(event) 
         alert('Inserisci un nome valido');
         return;
     }
+    
     localStorage.setItem(gameEndpoint+'_playername', playername);
 
     fetch('/'+gameEndpoint+'/host', {
@@ -95,6 +96,7 @@ document.getElementById('join-lobby').addEventListener('click', async function()
         input: 'tel',
         inputPlaceholder: '1234',
         background: '#333',
+        color: 'white',
         width: '400px',
         customClass: {
             content: 'swal-content-custom',
@@ -102,7 +104,8 @@ document.getElementById('join-lobby').addEventListener('click', async function()
         },
         inputAttributes: {
             pattern: "[0-9]*",
-            inputmode: "numeric"
+            inputmode: "numeric",
+            style: "color: white"
         },
         didOpen: () => {
             Swal.getInput().addEventListener('input', (e) => {

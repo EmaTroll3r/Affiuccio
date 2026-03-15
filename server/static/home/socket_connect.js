@@ -1,6 +1,15 @@
 var domain = "http://localhost"
 var socket;
 
+function isLocalOrigin(hostname) {
+    return hostname === 'localhost'
+        || hostname === '127.0.0.1'
+        || hostname === '0.0.0.0'
+        || hostname.startsWith('192.168.')
+        || hostname.startsWith('10.')
+        || /^172\.(1[6-9]|2\d|3[0-1])\./.test(hostname);
+}
+
 async function getDoamin() {
     try {
         const response = await fetch('/static/server_stats.json');
@@ -12,12 +21,18 @@ async function getDoamin() {
 }
 
 async function socket_connect() {
-    domain = await getDoamin();
-    //console.log('Connecting to: ' + ip_address);
-    //socket = io.connect('http://'+ip_address);
-    
+    const fetchedDomain = await getDoamin();
+    const socketDomain = isLocalOrigin(window.location.hostname)
+        ? window.location.origin
+        : (fetchedDomain || window.location.origin);
+    const socketOptions = socketDomain.startsWith('https://') ? {secure: true} : {};
+
+    domain = socketDomain;
     console.log('Connecting to: ' + domain);
-    socket = io.connect(domain, {secure: true})
+    socket = io.connect(domain, socketOptions);
+    socket.on('connect_error', function(error) {
+        console.error('Socket connect error:', error);
+    });
     console.log('Socket connected to: ' + domain);
 }
 

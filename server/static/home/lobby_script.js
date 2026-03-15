@@ -15,6 +15,28 @@ var players = [];
 var playerList = [];
 let pingInterval;
 
+function refreshPlayerList() {
+    fetch('/home/playerList?partyID=' + partyID)
+        .then(response => response.json())
+        .then(playerss => {
+            while (playerListElem.firstChild) {
+                playerListElem.removeChild(playerListElem.firstChild);
+            }
+
+            playerList = [];
+            players = [];
+
+            playerss.forEach(player => {
+                var li = document.createElement('li');
+                players.push(player.name);
+                playerList.push({name: player.name, mtype: player.mtype, playerID: player.playerID});
+                li.textContent = player.name;
+                playerListElem.appendChild(li);
+            });
+        })
+        .catch(error => console.error('Error:', error));
+}
+
 if (mtype == 1) {
     var buttons = document.querySelectorAll('.host-buttons');
     for (var i = 0; i < buttons.length; i++) {
@@ -33,32 +55,7 @@ window.addEventListener('beforeunload', function(event) {
 socket.on('player-joined', function(data) {
     //if (data.playerID != playerID)
         //alert('A player joined with ID: ' + data.playerName);
-    fetch('/home/playerList?partyID=' + partyID)
-        .then(response => response.json())
-        .then(playerss => {
-            
-
-            // Rimuovere tutti i figli precedenti
-            while (playerListElem.firstChild) {
-                playerListElem.removeChild(playerListElem.firstChild);
-                playerList = [];
-                players = [];
-            }
-
-            // Aggiungere un nuovo elemento <li> per ogni giocatore
-            //console.log(playerss)
-            playerss.forEach(player => {
-                var li = document.createElement('li');
-                players.push(player.name);
-                //console.log(player)
-                playerList.push({name: player.name, mtype: player.mtype, playerID: player.playerID});
-                li.textContent = player.name;
-                playerListElem.appendChild(li);
-            //console.log(players);
-            });
-            //console.log(playerList);
-        })
-        .catch(error => console.error('Error:', error));
+    refreshPlayerList();
     //console.log('A player joined with ID: ' + data.playerID);
 });
 
@@ -142,7 +139,7 @@ document.getElementById('start-game').addEventListener('click', function() {
     }
 
     socket.emit(gameEndpoint.toLowerCase()+"-ask-start-game", {'partyID': partyID})
-    console.log("start-game emitted",partyID)
+    console.log("start-game emitted to",partyID)
     /*
     fetch(`/SosOnline/game?mtype=${mtype}&partyID=${partyID}`, {
         method: 'GET',
@@ -250,6 +247,7 @@ function startingFunction() {
 
     
     socket.emit('join', socket_data);
+    refreshPlayerList();
     startPing() 
     //console.log('join', socket_data);
 }
