@@ -528,8 +528,8 @@ socket.on('card-played', function(data) {
 
     if(data.response['status'] == 0){
         if(data.handtype[0] == "wl"){
-            witheringLooks[data.others.victim] = card;
-            //console.log('wlLevel ',card, ' to player ', data.others.victim);
+            witheringLooks[data.options.victim] = card;
+            //console.log('wlLevel ',card, ' to player ', data.options.victim);
             alert("Occhiataccia lanciata con successo!",data.response['status'])
             showHand();
         }else{
@@ -551,8 +551,8 @@ socket.on('game-end', function(data) {
 });
 
 function playWl(wl,targetPlayer){
-    //console.log('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'cards': [wl], 'handtype':['wl'],others:{'victim':mtype}});
-    socket.emit('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'cards': [wl], 'handtype':['wl'],others:{'victim':targetPlayer}, 'askHand':0} );
+    //console.log('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'cards': [wl], 'handtype':['wl'],options:{'victim':mtype}});
+    socket.emit('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'cards': [wl], 'handtype':['wl'],options:{'victim':targetPlayer}, 'askHand':0} );
 }
 
 

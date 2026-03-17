@@ -1,0 +1,66 @@
+body {
+    font-family: Arial, sans-serif;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Stili per dispositivi mobili */
+@media (max-width: 767px) {
+    body {
+        background-size: auto 100vh;
+        background-repeat: no-repeat;
+    }
+}
+
+/*desktop*/
+@media (min-width: 1024px) {
+    #mainContent {
+        width: 35%;
+        margin-top: 10%;
+    }
+}
+
+#shakeable {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+}
+
+
+#shakeableIndex {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    display: flex;
+}
+
+.shake {
+	animation: shake 0.5s; 
+	animation-iteration-count: infinite;
+}
+
+
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}

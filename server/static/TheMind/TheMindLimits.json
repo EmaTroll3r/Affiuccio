@@ -1,1 +1,1 @@
-{"maxHand": 12, "maxCards": 100, "noiseForHost": 10, "noiseForClients": 10}
+{"maxHand": 12, "maxCards": 100, "noiseForHost": 10, "noiseForClients": 10,"maxNumberCards": 100}

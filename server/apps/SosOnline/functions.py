@@ -8,7 +8,7 @@ from server.classes import Deck, Party, Player
 with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
     sosOnlineLimits = load(f)
 
-def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
+def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
     response = {"status": -1,"message": ""}
     newTurn = -1
     end_response = None
@@ -36,7 +36,7 @@ def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
             return response,end_response
         
         if(cards[1] >= sosOnlineLimits['maxBlockCards']):       #se è uno scaricabarile vede se può cambiare il turno
-            newTurn = party.changeTurn(others['newTurn'],forbittenPlayers = [1],needToPlay=False)   #vedw se può cambiare il turno ma non lo cambia effettivamente
+            newTurn = party.changeTurn(options['newTurn'],forbittenPlayers = [1],needToPlay=False)   #vedw se può cambiare il turno ma non lo cambia effettivamente
             #print("newTurn",newTurn)
             if newTurn == -1:
                 response.update({"status": 5, "message": "No player with that mtype"})
@@ -62,7 +62,7 @@ def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
                     if newTurn > 0:
                         for i in range(sosOnlineLimits['maxHintHand'] - len(party.players[player.mtype-1].hands['hint'])):  #pesca hint card fino ad arrivare a maxHintHand
                             party.raw_draw(player.mtype,'hint','hint')
-                        newTurn = party.changeTurn(others['newTurn'],[1],needToPlay=needToPlay)        #cambia effettivamente il turno
+                        newTurn = party.changeTurn(options['newTurn'],[1],needToPlay=needToPlay)        #cambia effettivamente il turno
                         emit('response-turn', {'response': {"status": 0, "message": "Success"},'playerID':player.id,'turn': newTurn}, room=party.partyID)
                         get_inGameCards(party.partyID,player.mtype,player.id)
                 if(cards[1] < sosOnlineLimits['maxBlockCards']):        #se è una carta blocco
@@ -75,7 +75,7 @@ def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
         return response,end_response
     
     elif(handtypes[0] == "wl"):     #se è una carta occhiataccia
-        victim = party.get_player(others['victim'])
+        victim = party.get_player(options['victim'])
         if(victim == None):
             response.update({"status": 5, "message": "No player with that mtype"})
             return response,end_response

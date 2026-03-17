@@ -87,7 +87,7 @@ contextMenu.addEventListener('click', async function(e) {
                         newTurn = await choosePlayer([1,parseInt(mtype)]);
                         if (newTurn == null) 
                             return;
-                        playCard(contextMenu.getAttribute('selected-card'),hand['action'][i],others = {'newTurn':newTurn});
+                        playCard(contextMenu.getAttribute('selected-card'),hand['action'][i],options = {'newTurn':newTurn});
 
                         return;
                     }
@@ -104,6 +104,7 @@ contextMenu.addEventListener('click', async function(e) {
 playContext.addEventListener('click', function() {
     playCard(menu.getAttribute('selected-card'));
 });
+
 /*
 interact('.card').draggable({
     inertia: true,
@@ -235,7 +236,7 @@ blameContext.addEventListener('click', async function() {
             newTurn = await choosePlayer([1,parseInt(mtype)]);
             if (newTurn == null) 
                 return;
-            playCard(menu.getAttribute('selected-card'),hand['action'][i],others = {'newTurn':newTurn});
+            playCard(menu.getAttribute('selected-card'),hand['action'][i],options = {'newTurn':newTurn});
 
             return;
         }
@@ -378,6 +379,8 @@ socket.on('response-inGameCards', function(data) {
     //socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'action'});
 });
 */
+
+
 socket.on('response-inGameCards',async  function(data) {
     console.log('response-inGameCards',data.hand);
 
@@ -612,14 +615,14 @@ socket.on('card-played', function(data) {
     card = parseInt(data.cards[0]);
     if(data.response['status'] == 0){
         if(data.handtype[0] == "wl"){            
-            if(data.others['victim'] == parseInt(mtype)){
+            if(data.options['victim'] == parseInt(mtype)){
                 showPlayedCard(card,data.handtype[0],1);                
                 witheringLooks[parseInt(mtype)] ++;
             }else{
                 showPlayedCard(card,data.handtype[0]);
             }
             /*
-            if(data.others['victim'] == parseInt(mtype)){
+            if(data.options['victim'] == parseInt(mtype)){
                 navigator.vibrate(750 * card)
             }
             */
@@ -724,10 +727,10 @@ function getPlayer(mtype){
     return null;
 }
 
-function playCard(card,actionCard = 0,others=null){
+function playCard(card,actionCard = 0,options=null){
     console.log('playCard',card);
-    //console.log('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'cards':[parseInt(card),parseInt(actionCard)], 'handtype':['hint','action'],'others':others})
-    socket.emit('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'cards':[parseInt(card),parseInt(actionCard)], 'handtype':['hint','action'],'others':others});
+    //console.log('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'cards':[parseInt(card),parseInt(actionCard)], 'handtype':['hint','action'],'options':options})
+    socket.emit('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'cards':[parseInt(card),parseInt(actionCard)], 'handtype':['hint','action'],'options':options});
     /*
     if(actionCard != 0){
         socket.emit('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'card':actionCard, 'handtype':'action', 'askHand':1});

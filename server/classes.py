@@ -330,7 +330,7 @@ class Player:
 
     def play(self, card_id, handName=0):
 
-        handName = self.convert_identifiers(handName, self.hands)
+        handName = self.party.convert_identifiers(handName, self.hands)
 
         for card in self.hands[handName].cards:
             if card.card == card_id:
@@ -340,7 +340,7 @@ class Player:
     
     def can_play(self,card_id,handName=0):
         
-        handName = self.convert_identifiers(handName, self.hands)
+        handName = self.party.convert_identifiers(handName, self.hands)
 
         for card in self.hands[handName].cards:
             if card.card == card_id:

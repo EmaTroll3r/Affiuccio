@@ -71,8 +71,41 @@ def start_game(partyID):
         real_mtype += 1
 
         partyManager.get_party(partyID).raw_draw(player.mtype)
+        # print("\n\n\n" + str(partyManager.get_party(partyID).players[player.mtype -1].hands['hand']) + "\n\n\n")
 
 
-    partyManager.get_party(partyID).turn = 2
+    partyManager.get_party(partyID).turn = -1
     partyManager.get_party(partyID).status = 'Game'
     emit('start-game',{'links': links}, room = partyID)
+
+
+def play_card(card,options=None):
+    response = {"status": -1,"message": ""}
+
+    return jsonify(response)
+
+def get_inGameCards(partyID,mtype,playerID,targetPlayer = None,n=1):
+
+    cards = []
+    cardsInHand = 0
+    for card in partyManager.get_party(partyID).get_player(mtype).hands['hand'].cards:
+        cards.append(card.card)
+        cardsInHand += 1
+
+    for player in partyManager.get_party(partyID).players:
+        if player.mtype == mtype:
+            continue
+        for card in player.hands['hand'].cards:
+            cards.append(card.card)
+
+    # cards.extend(partyManager.get_party(partyID).decks['deck'].watchNextCards(n * limits['maxHand']))
+    
+    if(targetPlayer != None):
+        emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype,'targetPlayer':playerID, 'cardsInHand': cardsInHand}, room=partyID)
+    else:
+        emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype, 'cardsInHand': cardsInHand}, room=partyID)
+
+
+
+def get_noise(partyID,playerID,mtype):
+    emit('response-noise', {'playerID':playerID, 'mtype': mtype, 'noisePoints': partyManager.get_party(partyID).get_player(mtype).components['noisePoints']}, room=partyID)

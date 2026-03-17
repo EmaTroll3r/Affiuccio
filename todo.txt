@@ -1,0 +1,6 @@
+TheMind
+
+aggiungere a functions.py:get_inGameCards() di caricare le carte già giocate sul tavolo nel caso ce ne fossero
+aggiungere  la game-pile e gli aiuti
+in settings.js:showHand() forse cardImage[i].setAttribute('used', 'false'); è ridondante dato che abbiamo la class played-card (aggiunta da script_game.js)
+rivedere i nomi di settings.js e script_game.js per renderli meno confusionari 

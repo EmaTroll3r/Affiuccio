@@ -1,0 +1,158 @@
+#hr-separator {
+  border-color: #000000;
+  border-width: 2px;
+  width: auto;
+  margin-left: 4%;
+  margin-right: 4%;
+  border-radius: 5px;
+}
+
+#top {
+    margin-top: 2%;
+    margin-bottom: 2%;
+    /* background-color: aqua; */
+}
+
+#game-area {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    /* background-color: green; */
+
+}
+
+#hand-area {
+    display: flex;
+    height: 50%;
+    justify-content: center;
+    align-items: center;
+    /* background-color: rgb(255, 0, 0); */
+    padding: 10px 10px 20px 10px;
+    flex-wrap: wrap;
+}
+
+#table-area {
+    display: flex;
+    flex-grow: 1;
+    width: 100%;
+    height: auto;
+    align-items: center;
+    justify-content: center;
+    /* background-color: blue; */
+    position: relative;
+}
+
+#table-area .card {
+    position: absolute;
+    
+    margin: 0;
+
+    transform-origin: center center; 
+}
+
+
+#table-area .card:nth-child(10n + 2) { transform: rotate(2deg); }
+#table-area .card:nth-child(10n + 3) { transform: rotate(-2deg); }
+#table-area .card:nth-child(10n + 4) { transform: rotate(4deg); }
+#table-area .card:nth-child(10n + 5) { transform: rotate(-4deg); }
+#table-area .card:nth-child(10n + 6) { transform: rotate(6deg); }
+#table-area .card:nth-child(10n + 7) { transform: rotate(2deg); }
+#table-area .card:nth-child(10n + 8) { transform: rotate(-2deg); }
+#table-area .card:nth-child(10n + 9) { transform: rotate(4deg); }
+#table-area .card:nth-child(10n + 10) { transform: rotate(-4deg); }
+#table-area .card:nth-child(10n + 11) { transform: rotate(-6deg); }
+
+
+
+
+.card {
+    width: 12vw;
+    min-width: 60px;
+    height: auto;
+    margin: 0 -20px;
+
+    /* Assicura che l'ombra o il bordo siano fighi */
+    box-shadow: -5px 0 10px rgba(0,0,0,0.5);
+    border-radius: 8px;
+
+    /* Blocca la selezione e il trascinamento */
+    -webkit-user-select: none; 
+    -ms-user-select: none; 
+    user-select: none; 
+    -webkit-user-drag: none;
+    
+    /*Animazioni fluide */
+    /* transition: transform 0.2s ease-out, box-shadow 0.2s ease-out; */
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    
+    transform-origin: center bottom;
+}
+
+#hand-area .card:hover {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.8) !important; 
+    z-index: 10 !important;
+    transform: scale(1.2) translateY(-20px)!important;
+}
+
+
+.card.is-playing {
+    z-index: 100 !important;
+    box-shadow: 0 20px 30px rgba(0,0,0,0.6);
+    transform: translate(var(--target-x), var(--target-y)) rotate(0deg) scale(1.2) !important;
+    pointer-events: none;
+}
+
+.game-pile{
+    width: 12vw;
+    min-width: 60px;
+    height: auto;
+    transform: scale(1.2);
+
+    /* Blocca la selezione del testo/elemento */
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+
+    /* Blocca il trascinamento dell'immagine nei browser WebKit (Chrome, Safari, Edge) */
+    -webkit-user-drag: none;
+}
+
+
+
+.context-menu{
+    visibility: hidden;
+    position: absolute;
+    border-radius: 10px;
+    background: #fff;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.1);
+    padding: 0px 12px;
+    z-index: 100;
+}
+
+.context-menu .item{
+    font-size: 1.2em;
+    list-style: none;
+    height: 40px;
+    display: flex;
+    width: 150px;
+    cursor: pointer;
+    align-items: center;
+    border-radius: 5px;
+    margin-bottom: 1px;
+    padding: 0 5px 0 10px;
+}
+.context-menu .item:hover{
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.context-menu .item span{
+    font-size: 1em;
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.context-menu .menu{
+    padding-inline-start: 0px;
+}

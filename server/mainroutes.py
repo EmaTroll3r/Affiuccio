@@ -1,6 +1,7 @@
 from flask import jsonify, render_template, request
 from flask_socketio import join_room, leave_room,emit
 import server.apps.SosOnline as sosOnline
+import server.apps.TheMind as theMind
 from global_vars import main, partyManager,socketio, test
 #from .classes import Deck, Party, Player
 
@@ -16,7 +17,7 @@ def p(*args):
     print("\n\n\n",*args,"\n\n\n")
 
 """
-def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
+def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
     response = {"status": -1,"message": ""}
     newTurn = -1
     if(party.gameEndpoint == 'SosOnline'):
@@ -44,7 +45,7 @@ def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
                 return response
             
             if(cards[1] >= sosOnlineLimits['maxBlockCards']):       #se è uno scaricabarile vede se può cambiare il turno
-                newTurn = party.changeTurn(others['newTurn'],[1],needToPlay=False)   #vedw se può cambiare il turno ma non lo cambia effettivamente
+                newTurn = party.changeTurn(options['newTurn'],[1],needToPlay=False)   #vedw se può cambiare il turno ma non lo cambia effettivamente
                 #print("newTurn",newTurn)
                 if newTurn == -1:
                     response.update({"status": 5, "message": "No player with that mtype"})
@@ -70,7 +71,7 @@ def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
                         if newTurn > 0:
                             for i in range(sosOnlineLimits['maxHintHand'] - len(party.players[player.mtype-1].hands['hint'])):  #pesca hint card fino ad arrivare a maxHintHand
                                 party.raw_draw(player.mtype,'hint','hint')
-                            newTurn = party.changeTurn(others['newTurn'],[1],needToPlay=True)        #cambia effettivamente il turno
+                            newTurn = party.changeTurn(options['newTurn'],[1],needToPlay=True)        #cambia effettivamente il turno
                             emit('response-turn', {'turn': newTurn}, room=party.partyID)
                     if(cards[1] < sosOnlineLimits['maxBlockCards']):        #se è una carta blocco
                         party.raw_draw(player.mtype,'action','action')
@@ -80,7 +81,7 @@ def play_card(cards,handtypes,player,party,others=None,needToPlay=True):
             return response
         
         elif(handtypes[0] == "wl"):     #se è una carta occhiataccia
-            victim = party.players[others['victim']]
+            victim = party.players[options['victim']]
             if(player.mtype != 1):
                 response.update({"status": 8, "message": "You are not the overlord"})
                 return response
@@ -138,9 +139,6 @@ def on_join(data):
     emit('player-joined', {'playerID': playerID, 'partyID': partyID, 'mtype': partyManager.get_player(playerID).mtype, 'playerName': partyManager.get_player(playerID).name}, room=partyID)
     
 
-
-
-
 @socketio.on('play-card')
 def play_card_endpoint(data):
     partyID = int(data['partyID'])
@@ -148,12 +146,14 @@ def play_card_endpoint(data):
     cards = data['cards']
     handtypes = data['handtype']
     playerID = int(data['playerID'])
-    others = data.get('others', None)
+    options = data.get('options', None)
     askHand = data.get('askHand', 1)
     
-    #response = play_card(cards,handtypes,partyManager.get_player(playerID),partyManager.get_party(partyID),others=others)
+    #response = play_card(cards,handtypes,partyManager.get_player(playerID),partyManager.get_party(partyID),options=options)
     if(partyManager.get_party(partyID).gameEndpoint == 'SosOnline'):
-        response,end_response = sosOnline.play_card(cards,handtypes,partyManager.get_player(playerID),partyManager.get_party(partyID),others=others)
+        response,end_response = sosOnline.play_card(cards,handtypes,partyManager.get_player(playerID),partyManager.get_party(partyID),options=options)
+    if(partyManager.get_party(partyID).gameEndpoint == 'TheMind'):
+        response,end_response = theMind.play_card(cards,handtypes,partyManager.get_player(playerID),partyManager.get_party(partyID),options=options)
     
     
     if (response['status'] == 0):
@@ -167,7 +167,7 @@ def play_card_endpoint(data):
                 #p('response-hand', {'playerID': playerID,'handtype':handtype, 'hand': json.dumps(partyManager.get_party(partyID).players[mtype-1].hands[handtype].to_dict())})
 
     
-    emit('card-played', {'response': response, 'playerID': playerID, 'cards': cards, 'handtype': handtypes, 'partyID':partyID, 'mtype':mtype,'others':others }, room=partyID)
+    emit('card-played', {'response': response, 'playerID': playerID, 'cards': cards, 'handtype': handtypes, 'partyID':partyID, 'mtype':mtype,'options':options }, room=partyID)
 
     if(end_response != None):
         emit('game-end', end_response, room=partyID)
@@ -193,6 +193,15 @@ def get_turn(data):
     #print("\n\n\nRicevuto ask hand",json.dumps(partyManager.get_party(partyID).players[int(data['mtype'])-1].hands[data['hand']].to_dict()),"\n\n\n")
     #print("\n\n\nRicevuto ask hand\n\n\n")
     emit('response-turn', {'response': {"status": 0, "message": "Success"},'playerID':playerID,'turn': partyManager.get_party(partyID).turn, 'requestType':'request'}, room=partyID)
+
+
+@socketio.on('get-noise')
+def get_noise(data):
+    partyID = int(data['partyID'])
+    playerID = int(data['playerID'])
+    mtype = int(data['mtype'])
+    emit('response-noise', {'playerID':playerID, 'mtype': mtype, 'noisePoints': partyManager.get_party(partyID).get_player(mtype).components['noisePoints']}, room=partyID)
+
 
 @socketio.on('get-all-points')
 def get_allPoints(data):
@@ -266,7 +275,9 @@ def draw(data):
 
 
         if(partyManager.get_party(partyID).gameEndpoint == 'SosOnline'):
-            sosOnline.get_inGameCards(partyID,mtype,playerID,n=2)        
+            sosOnline.get_inGameCards(partyID,mtype,playerID,n=2)
+        if(partyManager.get_party(partyID).gameEndpoint == 'TheMind'):
+            theMind.get_inGameCards(partyID,mtype,playerID,n=2)
         #emit('response-inGameCards', {'hand': partyManager.get_party(partyID).decks[handtype].watchNextCards(2*sosOnlineLimits['watchCards']), 'playerID':playerID, 'mtype': mtype}, room=partyID)
 
 @socketio.on('get-playerList')
