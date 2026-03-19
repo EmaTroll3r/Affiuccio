@@ -22,23 +22,27 @@
                 <div id="top">c</div>
                 <hr id="hr-separator">
                 <div id="game-area">
+                    <div id="otherPlayershand-area">
+                        <!-- <img id="card100" style="height: 200px;" src="{{ url_for('static', filename='TheMind/images/3.png') }}"> -->
+                    </div>
                     <div id="table-area">
-                        <img id="card1" class="game-pile" src="{{ url_for('static', filename='TheMind/images/game pile.png') }}">
+                        <img id="game-pile-img" class="game-pile" src="{{ url_for('static', filename='TheMind/images/game pile.png') }}">
                     </div>
                     <div id="hand-area">
-                        <img id="card1" class="card" src="{{ url_for('static', filename='TheMind/images/0.png') }}">
-                        <img id="card2" class="card" style="display: none;">
-                        <img id="card3" class="card" style="display: none;">
-                        <img id="card4" class="card" style="display: none;">
-                        <img id="card5" class="card" style="display: none;">
-                        <img id="card6" class="card" style="display: none;">
-                        <img id="card7" class="card" style="display: none;">
-                        <img id="card8" class="card" style="display: none;">
-                        <img id="card9" class="card" style="display: none;">
-                        <img id="card10" class="card" style="display: none;">
-                        <img id="card11" class="card" style="display: none;">
-                        <img id="card12" class="card" style="display: none;">
+                        <img id="card1" class="card hidden">
+                        <img id="card2" class="card hidden">
+                        <img id="card3" class="card hidden">
+                        <img id="card4" class="card hidden">
+                        <img id="card5" class="card hidden">
+                        <img id="card6" class="card hidden">
+                        <img id="card7" class="card hidden">
+                        <img id="card8" class="card hidden">
+                        <img id="card9" class="card hidden">
+                        <img id="card10" class="card hidden">
+                        <img id="card11" class="card hidden">
+                        <img id="card12" class="card hidden">
                     </div>
+                    
                 </div>
             </div>
 
@@ -55,16 +59,15 @@
 
         <progress id="loadingBar" value="0" max="1" style="display: visible;"></progress>
 
-        <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.3"></script>
+        <script defer src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.3"></script>
 
         
-        <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
-        <script src="{{ url_for('static', filename='TheMind/settings.js') }}"></script>
-        <script src="{{ url_for('static', filename='home/game_common.js') }}"></script>
-        <script src="{{ url_for('static', filename='TheMind/script_contextMenu.js') }}"></script>
-        <script src="{{ url_for('static', filename='TheMind/script_game.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='TheMind/script_game.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='TheMind/script_contextMenu.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='home/game_common.js') }}"></script>
     </body>
 
 </html>

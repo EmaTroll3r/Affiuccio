@@ -49,6 +49,9 @@ body {
 	animation-iteration-count: infinite;
 }
 
+.hidden {
+  display: none !important;
+}
 
 
 @keyframes shake {

@@ -136,6 +136,7 @@ def on_join(data):
 
     #emit('joined', room=partyID)
     #emit('player-joined', {'playerID': playerID, 'partyID': partyID, 'mtype': data['mtype'], 'playerName': partyManager.get_player(playerID).name}, room=partyID)
+    # print('join', {'playerID': playerID, 'partyID': partyID, 'mtype': mtype, 'playerName': partyManager.get_player(playerID).name})
     emit('player-joined', {'playerID': playerID, 'partyID': partyID, 'mtype': partyManager.get_player(playerID).mtype, 'playerName': partyManager.get_player(playerID).name}, room=partyID)
     
 
@@ -170,7 +171,7 @@ def play_card_endpoint(data):
     emit('card-played', {'response': response, 'playerID': playerID, 'cards': cards, 'handtype': handtypes, 'partyID':partyID, 'mtype':mtype,'options':options }, room=partyID)
 
     if(end_response != None):
-        emit('game-end', end_response, room=partyID)
+        emit('end-game', end_response, room=partyID)
 
 @socketio.on('get-hand')
 def ask_hand(data):

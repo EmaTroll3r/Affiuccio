@@ -1,7 +1,6 @@
 const contextMenu = document.querySelector(".context-menu");
 const cardsImages = document.querySelectorAll('.card');
 const playOption = document.getElementById('context-play');
-const tableArea = document.querySelector('#table-area');
 
 let timeoutHideMenu;
 
@@ -94,7 +93,5 @@ contextMenu.addEventListener('mouseleave', function() {
 
 playOption.addEventListener('click', function() {
     let selectedCard = contextMenu.getAttribute('selected-card');
-    console.log('Gioca carta:', selectedCard);
-    // playCardAnimation(fromCardToElem(selectedCard));
     playCard(selectedCard);
 });

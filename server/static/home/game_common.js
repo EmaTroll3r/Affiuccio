@@ -20,7 +20,7 @@ socket.on('player-joined', function(data) {
     if(data.playerID == playerID){
         socket.emit(lowerEndpoint + '-get-inGameCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
         for (let handtype of handtypes) {
-            socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':handtype});
+            requestHand(partyID, playerID, mtype, handtype);
         }
         socket.emit('get-playerList', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
 
@@ -37,6 +37,7 @@ socket.on('response-inGameCards',async  function(data) {
         let loadingBar = document.getElementById('loadingBar');
         //loadingBar.style.display = 'block';
         loadingBar.value = 0;
+        console.log('maxCardsInHand',data.cardsInHand);
         maxCardsInHand = data.cardsInHand
         loadingBar.max = maxCardsInHand;
 
@@ -51,7 +52,7 @@ socket.on('response-inGameCards',async  function(data) {
                     // Aggiorna il valore della barra di caricamento
                     loadingBar.value++;
                     // Se tutte le immagini sono state caricate, nascondi la barra di caricamento
-                    if (loadingBar.value === maxCardsInHand) {
+                    if (loadingBar.value === maxCardsInHand || loadingBar.value > maxCardsInHand) {
                         loadingBar.style.display = 'none';
                         canShowHand = true;
                     }
@@ -121,6 +122,27 @@ window.addEventListener('beforeunload', async function(event) {
 });
 
 
+socket.on('card-played', function(data) {
+    if(data.response['status'] == 0){
+        onCardPlayed(data);
+    }
+    if(data.playerID == playerID && data.response['status'] != 0){
+        alert(data.response['message'])
+    }
+
+});
+
+socket.on('end-game', function(data) {
+    end(data);
+
+    if (data.message)
+        alert(data.message);
+    
+    stopPing();
+    setTimeout(function() {
+        window.location.href = '/';
+    }, 3000);
+});
 
 function ping(){
     //console.log('ping', {'partyID':partyID, 'playerID':playerID})
@@ -137,6 +159,10 @@ function stopPing() {
     clearInterval(pingInterval);
 }
 
+
+function requestHand(partyID, playerID, mtype, handtype){
+    socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':handtype});
+}
 
 async function askFullScreen() {
     Swal.fire({
@@ -194,21 +220,30 @@ function toggleFullScreen(elem) {
 
 function loadGeneralImages(){
 
-    preloadedImages[0] = new Image();
-    preloadedImages[0].src = '/static/home/images/0.png';
-
     loadSpecificGeneralImages();
 
 }
 
-function alert(text,status = 1) {
-    var title = '<span style="color: #fff;">Attenzione!</span>';
-    var icon = 'warning'
+function alert(text,status = 1,title = '') {
+
+    let real_title = ''
+    if (title == '')
+        real_title = '<span style="color: #fff;">Attenzione!</span>';
+    else
+        real_title = '<span style="color: #fff;">' + title + '</span>';
+    
+    let icon = 'warning'
+
+
     if(status == 0){
-        title = '<span style="color: #fff;">Successo!</span>'
+        if(title == '')
+            title = '<span style="color: #fff;">Successo!</span>'
+        else
+            title = '<span style="color: #fff;">' + title + '</span>';
+
         icon = 'success'
     }
-    Swal.fire({
+    return Swal.fire({
         title: title,
         html: '<span style="color: #fff;">' + text + '</span>',
         icon: icon,

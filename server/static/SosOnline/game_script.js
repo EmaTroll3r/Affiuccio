@@ -555,7 +555,7 @@ socket.on('response-turn', function(data) {
 
 
 socket.on('player-joined', function(data) {
-    //console.log('join', data);
+    console.log('join', data);
     if(data.playerID == playerID){
         socket.emit('sosonline-get-inGameCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
         socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'hint'});
@@ -647,8 +647,8 @@ socket.on('card-played', function(data) {
     */
 });
 
-socket.on('game-end', function(data) {
-    console.log('game-end', data);
+socket.on('end-game', function(data) {
+    console.log('end-game', data);
     end = {'end':true, 'loser':data['loser']};
 });
 

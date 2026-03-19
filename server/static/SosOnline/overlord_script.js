@@ -544,8 +544,8 @@ socket.on('card-played', function(data) {
     
 });
 
-socket.on('game-end', function(data) {
-    console.log('game-end', data);
+socket.on('end-game', function(data) {
+    console.log('end-game', data);
     end = {'end':true, 'loser':data['loser']};
     endGame(end['loser']);
 });

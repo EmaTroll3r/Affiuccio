@@ -20,7 +20,7 @@ def themind_inGameCards(data):
     mtype = int(data['mtype'])
     playerID = int(data['playerID'])
 
-    return theMind.get_inGameCards(partyID,mtype,playerID,playerID,1)
+    return theMind.get_inGameCards(partyID,mtype,playerID,playerID,2)
 
 @socketio.on('themind-change-turn')
 def themind_change_turn(data):

@@ -1,3 +1,6 @@
+from flask import jsonify
+
+
 class Card:
     def __init__(self, card):
         self.card = card
@@ -61,10 +64,31 @@ class Deck:
 
     def __len__(self):
         return len(self.cards)
+    
+
+class Pile(Deck):
+    def __init__(self):
+        super().__init__(1000)
+        self.cards = []
+
+    def addCard(self, card):
+        self.cards.append(card)
+        return True
+    
+    def clear(self):
+        self.cards = []
+
+    def shuffle_into_deck(self, deck, shuffle=True):
+        for card in self.cards:
+            deck.addCard(card)
+        self.clear()
+        if shuffle:
+            deck.shuffle()
+    
 
 class Party:
 
-    def __init__(self, partyID,decks,gameEndpoint):
+    def __init__(self, partyID, decks, gameEndpoint,variables={}):
         self.partyID = partyID
         self.decks = decks
         self.players = []
@@ -73,13 +97,14 @@ class Party:
         self.last_mtype = 0
         self.homeLink = None
         self.status = "Lobby"
+        self.variables = variables
         #self.activePlayers = []
 
         """self.partynamespace = PartyNamespace('/'+str(partyID))
         from global_vars import socketio
         socketio.on_namespace(self.partynamespace)"""
     
-    def __init__(self, partyID,gameEndpoint):
+    def __init__(self, partyID,gameEndpoint,variables={}):
         self.partyID = partyID
         self.players = []
         self.decks = {}
@@ -89,6 +114,7 @@ class Party:
         self.last_mtype = 0
         self.homeLink = None
         self.status = "Lobby"
+        self.variables = variables
         #self.activePlayers = []
 
     def convert_identifiers(self, identifier, collection):
@@ -141,6 +167,7 @@ class Party:
         
         return self.decks[deckName].draw()
         
+    
     def raw_draw(self,mtype,handName=0,deckName=0):
 
         deckName = self.convert_identifiers(deckName, self.decks)
@@ -150,6 +177,7 @@ class Party:
         if self.get_player(mtype).hands[handName].addCard(card) == True:
             return card
         return None
+    
 
     def draw(self,mtype,handName=0,deckName=0):
        
@@ -250,6 +278,15 @@ class Party:
                 return {"status": 0, "message": "Success"}
             else:
                 return {"status": 8, "message": "Generic error"}
+            
+    def setVariable(self,variable, value):
+        self.variables[variable] = value
+
+    def getVariable(self,variable):
+        return self.variables.get(variable, None)
+    
+    def end(self):
+        self.status = 'End'
 
 class PartyManager:
 
