@@ -161,8 +161,14 @@ def play_card_endpoint(data):
         if(askHand == 1):
             for handtype in handtypes:                
                 
+                
+                if (partyManager.get_party(partyID).gameEndpoint == 'TheMind'):
+                    continue
+
                 hand = partyManager.get_party(partyID).get_player(mtype).hands[handtype].to_dict()
                 emit('response-hand', {'playerID': playerID,'handtype':handtype, 'hand': hand}, room=partyID)
+
+
                 #emit('response-inGameCards', {'hand': [partyManager.get_party(partyID).decks[handtype].watchNextCards().card], 'playerID':playerID, 'mtype': mtype,'playerID':playerID}, room=partyID)
                 #emit('response-hand', {'playerID': playerID,'handtype':handtype, 'hand': json.dumps(partyManager.get_party(partyID).players[mtype-1].hands[handtype].to_dict())}, room=partyID)
                 #p('response-hand', {'playerID': playerID,'handtype':handtype, 'hand': json.dumps(partyManager.get_party(partyID).players[mtype-1].hands[handtype].to_dict())})
@@ -278,7 +284,7 @@ def draw(data):
         if(partyManager.get_party(partyID).gameEndpoint == 'SosOnline'):
             sosOnline.get_inGameCards(partyID,mtype,playerID,n=2)
         if(partyManager.get_party(partyID).gameEndpoint == 'TheMind'):
-            theMind.get_inGameCards(partyID,mtype,playerID,n=2)
+            theMind.get_inGameCards(partyID,mtype,playerID,n= 2)
         #emit('response-inGameCards', {'hand': partyManager.get_party(partyID).decks[handtype].watchNextCards(2*sosOnlineLimits['watchCards']), 'playerID':playerID, 'mtype': mtype}, room=partyID)
 
 @socketio.on('get-playerList')

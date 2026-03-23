@@ -13,12 +13,42 @@ let mtype = urlParams.get('mtype');
 
 
 
+class mutex {
+    constructor() {
+        this.locked = false;
+        this.queue = [];
+    }
+
+    // Richiede il lucchetto. Se è già preso, aspetta in coda.
+    async lock() {
+        return new Promise(resolve => {
+            if (!this.locked) {
+                this.locked = true; // Prende il lucchetto
+                resolve();
+            } else {
+                this.queue.push(resolve); // Si mette in coda
+            }
+        });
+    }
+
+    // Rilascia il lucchetto e fa passare il prossimo in coda (se c'è)
+    unlock() {
+        if (this.queue.length > 0) {
+            const nextResolve = this.queue.shift();
+            nextResolve(); // Sblocca il prossimo della fila
+        } else {
+            this.locked = false; // Nessuno in coda, apre il lucchetto
+        }
+    }
+}
+
+alertMutex = new mutex();
 
 
 socket.on('player-joined', function(data) {
     console.log('join', data);
     if(data.playerID == playerID){
-        socket.emit(lowerEndpoint + '-get-inGameCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
+        get_InGameCards();
         for (let handtype of handtypes) {
             requestHand(partyID, playerID, mtype, handtype);
         }
@@ -82,6 +112,7 @@ socket.on('response-hand', async function(data) {
 
     if(data.playerID == playerID){
         hand[data.handtype] = data.hand;
+        // console.log('Received hand:', data.handtype, data.hand);
         showHand();
         
     }
@@ -132,16 +163,14 @@ socket.on('card-played', function(data) {
 
 });
 
-socket.on('end-game', function(data) {
+socket.on('end-game', async function(data) {
     end(data);
 
     if (data.message)
-        alert(data.message);
+        await alert(data.message);
     
     stopPing();
-    setTimeout(function() {
-        window.location.href = '/';
-    }, 3000);
+    window.location.href = '/';
 });
 
 function ping(){
@@ -159,6 +188,9 @@ function stopPing() {
     clearInterval(pingInterval);
 }
 
+function get_InGameCards(){
+    socket.emit(lowerEndpoint + '-get-inGameCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype})
+}
 
 function requestHand(partyID, playerID, mtype, handtype){
     socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':handtype});
@@ -224,7 +256,7 @@ function loadGeneralImages(){
 
 }
 
-function alert(text,status = 1,title = '') {
+async function alert(text,status = 1,title = '') {
 
     let real_title = ''
     if (title == '')
@@ -243,17 +275,28 @@ function alert(text,status = 1,title = '') {
 
         icon = 'success'
     }
-    return Swal.fire({
-        title: title,
-        html: '<span style="color: #fff;">' + text + '</span>',
-        icon: icon,
-        confirmButtonText: 'OK',
-        background: '#333',
-        customClass: {
-            content: 'swal-content-custom'
-        }
-    });
+    
+    console.log('Waiting for alert mutex...');
+    await alertMutex.lock();
+    console.log('Alert mutex acquired');
+
+    try {
+        return await Swal.fire({
+            title: title,
+            html: '<span style="color: #fff;">' + text + '</span>',
+            icon: icon,
+            confirmButtonText: 'OK',
+            background: '#333',
+            customClass: {
+                content: 'swal-content-custom'
+            }
+        });
+    } finally {
+        alertMutex.unlock();
+        console.log('Alert mutex released.');
+    }
 }
+
 
 function startingFunction() {
     

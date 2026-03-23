@@ -65,6 +65,26 @@ class Deck:
     def __len__(self):
         return len(self.cards)
     
+    def createCopy(self):
+        new_deck = Deck(self.maxCards)
+        new_deck.cards = self.cards.copy()
+        return new_deck
+    
+    def copy_from(self, deck):
+        self.cards = deck.cards.copy()
+        return deck
+    
+    def removeCard(self, card):
+        
+        if isinstance(card, Card):
+            card = card.card
+
+        for c in self.cards:
+            if c.card == card:
+                self.cards.remove(c)
+                return True
+        return False
+    
 
 class Pile(Deck):
     def __init__(self):

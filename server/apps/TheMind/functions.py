@@ -35,6 +35,12 @@ def host(test=False):
     partyID = Party.create_party('TheMind',test=test)
     party = partyManager.get_party(partyID)
     party.add_deck(Deck(limits['maxCards']),'deck')
+
+    copyDeck = Deck(limits['maxCards'])
+    copyDeck.copy_from(party.decks['deck'])
+    copyDeck.shuffle()
+    party.add_deck(copyDeck,'copyDeck')
+
     party.add_deck(Pile(),'gamePile')
     party.setVariable('lives', limits['lives'])
     party.setVariable('shurikens', limits['shurikens'])
@@ -95,7 +101,7 @@ def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
         if cards[i] == 0:                       #è stato usato il caso di più carte solo per generalizzare, questo gioco prevede di giocare una sola carta per volta
             continue
         if(not player.can_play(cards[i],handtypes[i])):
-            response.update({"status": 1, "message": "card " + cards[i] + " not in hand " + handtypes[i]})
+            response.update({"status": 1, "message": "card " + str(cards[i]) + " not in hand " + str(handtypes[i])})
             return response,end_response
     
     if(needToPlay == True):
@@ -103,22 +109,26 @@ def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
         party.decks['gamePile'].addCard(card)
         higher_cards = {}
         left_lives = 0
-        cards_in_game = 0
+        cards_in_game = 0          
+        print("\n\n\n")
         for p in party.players:
-            higher_cards[p.name] = []              
-            for c in p.hands[handtype].cards:
+            higher_cards[p.name] = []
+            for c in p.hands[handtype].cards[:]:
                 cards_in_game += 1
                 if card > c.card:
                     higher_cards[p.name].append(c)
-                    left_lives += 1        
+                    p.hands[handtype].removeCard(c)
+                    left_lives += 1   
+            if len(higher_cards[p.name]) == 0:
+                del higher_cards[p.name]    
 
-        print("\n\n\nPlayed card: " + str(card) + "\ncards_in_game: " + str(cards_in_game) + "\nLeft lives to lose: " + str(left_lives) + "\n\n\n")
+        # print("\n\n\nPlayed card: " + str(card) + "\ncards_in_game: " + str(cards_in_game) + "\nLeft lives to lose: " + str(left_lives) + "\n\n\n")
 
         party.setVariable('lives', party.getVariable('lives') - left_lives)
         if left_lives > 0:
             if limits['difficulty'] == 'normal':
                 left_lives = 1
-            notifyLeftLives(party.partyID, left_lives, higher_cards)
+            notifyLeftLives(party.partyID, left_lives, higher_cards, card)
 
         if party.getVariable('lives') <= 0:
             end_response = end(0, party.partyID)
@@ -132,8 +142,9 @@ def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
     
     return response,end_response
 
-def get_inGameCards(partyID,mtype,playerID,targetPlayer = None,n=1):
+def get_inGameCards(partyID,mtype,playerID,targetPlayer = None,n=1, ShuffleCopyDeck = False):
 
+    
     cards = []
     cardsInHand = 0
     for card in partyManager.get_party(partyID).get_player(mtype).hands['hand'].cards:
@@ -146,10 +157,18 @@ def get_inGameCards(partyID,mtype,playerID,targetPlayer = None,n=1):
         for card in player.hands['hand'].cards:
             cards.append(card.card)
 
-    # cards.extend(partyManager.get_party(partyID).decks['deck'].watchNextCards(n * len(partyManager.get_party(partyID).players)))
+
+    # also add cards already played
+    for card in partyManager.get_party(partyID).decks['gamePile'].cards:
+        cards.append(card)
+
+
+    if ShuffleCopyDeck:
+        partyManager.get_party(partyID).decks['copyDeck'].shuffle()
+    cards.extend(partyManager.get_party(partyID).decks['copyDeck'].watchNextCards(n * len(partyManager.get_party(partyID).players)))
     # print("\n\n\nplayers " + str(len(partyManager.get_party(partyID).players)) + "n" + str(n) + " loading..." + str(cards) + "\n\n\n")
 
-
+    # print("\n\n\nCards in game: " + str(cards) + "\n\n\n")
     if(targetPlayer != None):
         emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype,'targetPlayer':playerID, 'cardsInHand': cardsInHand}, room=partyID)
     else:
@@ -176,12 +195,30 @@ def end(outcome, partyID):
     return data
 
 
-def notifyLeftLives(partyID, left_lives, higher_cards):
+def notifyLeftLives(partyID, left_lives, higher_cards, played_card):
     lives = partyManager.get_party(partyID).getVariable('lives')
     message = "The team lost " + str(left_lives) + " lives. Only " + str(lives) + " lives remain.<br>The higher cards were:"
     for name, cards in higher_cards.items():
         message += "<br>Player " + str(name) + " has " + ", ".join(str(c.card) for c in cards) + " left in hand."
-    emit('notify-left-lives', {'leftLives': left_lives, 'lives': lives, 'message': message}, room=partyID)
+    emit('notify-left-lives', {'leftLives': left_lives, 'lives': lives, 'playedCard': played_card, 'message': message}, room=partyID)
+
+
+def received_left_lives(partyID, playerID, mtype):
+    party = partyManager.get_party(partyID)
+
+    cards_in_hands = 0
+    for player in party.players:
+        cards_in_hands += len(player.hands['hand'])
+
+    if cards_in_hands == 0:
+        next_level(partyID)
+
+
+def get_gamePile(partyID, playerID, mtype):
+    pile_cards = []
+    for card in partyManager.get_party(partyID).decks['gamePile'].cards:
+        pile_cards.append(card)
+    emit('response-gamePile', {'gamePile': pile_cards, 'targetPlayerID': playerID}, room=partyID)
 
 
 def next_level(partyID):
@@ -189,14 +226,21 @@ def next_level(partyID):
     party.setVariable('level', party.getVariable('level') + 1)
     current_level = party.getVariable('level')
 
-    party.decks['gamePile'].shuffle_into_deck(party.decks['deck'], shuffle=True)
+    # party.decks['gamePile'].shuffle_into_deck(party.decks['deck'], shuffle=True)
+    # Instead of shuffling the game pile back into the deck, get_inGameCards already function shuffled a copy of the original deck with all cards 
+    # In this way we can predict the next cards to be drawn and preload them on the client side to reduce waiting times and improve user experience
+    # So we just need to copy the shuffled copyDeck into the game deck and clear the game pile
+    party.decks['gamePile'].clear()
+    party.decks['deck'].copy_from(party.decks['copyDeck'])
 
     for p in party.players:
         for i in range(current_level):
             party.raw_draw(p.mtype, handName='hand', deckName='deck')
+            print("\n\n\nDealt card to player " + str(p.name) + ": " + str(p.hands['hand']) + "\n\n\n")
 
-    if current_level != limits['maxLevel']:
-        get_inGameCards(party.partyID,1,1,n=current_level + 1)
+    # calculate the next cards to be drawn (on next level) for each player and send them to the clients to preload them and reduce waiting times at the start of the next level
+    get_inGameCards(partyID, party.players[0].mtype, party.players[0].id, None, n = (current_level + 1), ShuffleCopyDeck = True)
 
-    print("\n\n\nStarting level " + str(current_level) + "\n\n\n")
     emit('next-level', {'level': current_level}, room=partyID)
+    print("\n\n\nStarting level " + str(current_level) + "\n\n\n")
+

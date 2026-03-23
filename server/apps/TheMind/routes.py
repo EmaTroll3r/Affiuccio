@@ -20,7 +20,7 @@ def themind_inGameCards(data):
     mtype = int(data['mtype'])
     playerID = int(data['playerID'])
 
-    return theMind.get_inGameCards(partyID,mtype,playerID,playerID,2)
+    return theMind.get_inGameCards(partyID,mtype,playerID, playerID, partyManager.get_party(partyID).getVariable('level') + 1)
 
 @socketio.on('themind-change-turn')
 def themind_change_turn(data):
@@ -35,6 +35,14 @@ def themind_get_noise(data):
     return theMind.get_noise(int(data['partyID']),int(data['playerID']),int(data['mtype']))
 
 
+@socketio.on('themind-received-left-lives')
+def themind_received_left_lives(data):
+    return theMind.received_left_lives(int(data['partyID']),int(data['playerID']),int(data['mtype']))
+
+
+@socketio.on('themind-get-gamePile')
+def themind_get_gamePile(data):
+    return theMind.get_gamePile(int(data['partyID']),int(data['playerID']),int(data['mtype']))
 
 #-------------------------------------------------------------------------------------------
 
