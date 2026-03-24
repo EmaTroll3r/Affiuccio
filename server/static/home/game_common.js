@@ -163,6 +163,7 @@ socket.on('card-played', function(data) {
 
 });
 
+
 socket.on('end-game', async function(data) {
     end(data);
 
@@ -172,6 +173,7 @@ socket.on('end-game', async function(data) {
     stopPing();
     window.location.href = '/';
 });
+
 
 function ping(){
     //console.log('ping', {'partyID':partyID, 'playerID':playerID})

@@ -170,3 +170,53 @@
 .context-menu .menu{
     padding-inline-start: 0px;
 }
+
+#info-leftPanel {
+    left: 2.5%;
+}
+
+.info-panel {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    top: 20%;
+    z-index: 100;
+}
+
+.info-container{
+    display: flex;
+    align-items: center;
+}
+
+.info-icon {
+    width: 18%;
+    height: 18%;
+    margin-right: 8%;
+}
+
+.info-text {
+    font-family: "Bodoni MT", "Didot", "Times New Roman", serif;
+    font-size: 3em;
+    color: #c0c0c0;
+}
+
+.info-text[data-text]::after {
+    content: attr(data-text);
+}
+
+.info-numberOfCardsInHand[data-numberOfCardsInHand]::after {
+    content: "(" attr(data-numberOfCardsInHand) ")";
+}
+
+#info-rightPanel{
+    right: 2.5%;
+}
+
+#info-rightPanel .info-container{
+    justify-content: flex-end;
+}
+
+.info-playerName {
+    margin-right: 15px;
+}

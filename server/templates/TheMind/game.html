@@ -5,6 +5,7 @@
 		<title>The Mind</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
         <meta name="google" content="notranslate">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home/styles.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='TheMind/styles.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='TheMind/style_game.css') }}">
 		<link rel="icon" type="image/png" href="{{ url_for('static', filename='TheMind/images/favicon.png') }}">
@@ -22,6 +23,28 @@
                 <div id="top">c</div>
                 <hr id="hr-separator">
                 <div id="game-area">
+                    <div id="info-area">
+                        <div id="info-leftPanel" class="info-panel unselectable">
+                            <div id="info-level" class="info-container">
+                                <img id="level-icon" class="info-icon" src="{{ url_for('static', filename='TheMind/images/lvl_gray_icon.png') }}">
+                                <div id="level-text" class="info-text"></div>
+                            </div>
+                            
+                            <div id="info-lives" class="info-container">
+                                <img id="lives-icon" class="info-icon" src="{{ url_for('static', filename='TheMind/images/life_icon.png') }}">
+                                <div id="lives-text" class="info-text"></div>
+                            </div>
+                            
+                            <div id="info-shurikens" class="info-container">
+                                <img id="shurikens-icon" class="info-icon" src="{{ url_for('static', filename='TheMind/images/shuriken_icon.png') }}">
+                                <div id="shurikens-text" class="info-text"></div>
+                            </div>
+                        </div>
+                        
+                        <div id="info-rightPanel" class="info-panel unselectable">
+                            
+                        </div>
+                    </div>
                     <div id="otherPlayershand-area">
                         <!-- <img id="card100" style="height: 200px;" src="{{ url_for('static', filename='TheMind/images/3.png') }}"> -->
                     </div>

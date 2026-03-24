@@ -44,6 +44,11 @@ def themind_received_left_lives(data):
 def themind_get_gamePile(data):
     return theMind.get_gamePile(int(data['partyID']),int(data['playerID']),int(data['mtype']))
 
+
+@socketio.on('themind-get-otherInitialInformations')
+def themind_get_otherInitialInformations(data):
+    return theMind.get_otherInitialInformations(int(data['partyID']),int(data['playerID']),int(data['mtype']))
+
 #-------------------------------------------------------------------------------------------
 
 

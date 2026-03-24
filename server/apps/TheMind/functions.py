@@ -196,11 +196,15 @@ def end(outcome, partyID):
 
 
 def notifyLeftLives(partyID, left_lives, higher_cards, played_card):
-    lives = partyManager.get_party(partyID).getVariable('lives')
-    message = "The team lost " + str(left_lives) + " lives. Only " + str(lives) + " lives remain.<br>The higher cards were:"
+    party = partyManager.get_party(partyID)
+    lives = party.getVariable('lives')
+    message = "The team lost " + str(left_lives) + " lives. Only " + str(lives) + " lives remain.<br><br>The higher cards were:<br>"
     for name, cards in higher_cards.items():
         message += "<br>Player " + str(name) + " has " + ", ".join(str(c.card) for c in cards) + " left in hand."
-    emit('notify-left-lives', {'leftLives': left_lives, 'lives': lives, 'playedCard': played_card, 'message': message}, room=partyID)
+
+    handsTracker = calc_updated_hands_tracker(partyID)    
+
+    emit('notify-left-lives', {'leftLives': left_lives, 'lives': lives, 'playedCard': played_card, 'handsTracker': handsTracker, 'message': message}, room=partyID)
 
 
 def received_left_lives(partyID, playerID, mtype):
@@ -218,7 +222,21 @@ def get_gamePile(partyID, playerID, mtype):
     pile_cards = []
     for card in partyManager.get_party(partyID).decks['gamePile'].cards:
         pile_cards.append(card)
-    emit('response-gamePile', {'gamePile': pile_cards, 'targetPlayerID': playerID}, room=partyID)
+    emit('response-gamePile', {'gamePile': pile_cards, 'targetPlayer': playerID}, room=partyID)
+
+
+def get_otherInitialInformations(partyID, playerID, mtype):
+    party = partyManager.get_party(partyID)
+    handsTracker = calc_updated_hands_tracker(partyID)
+    emit('response-otherInitialInformations', {'lives': party.getVariable('lives'), 'level': party.getVariable('level'), 'shurikens': party.getVariable('shurikens'), 'handsTracker': handsTracker, 'targetPlayer': playerID}, room=partyID)
+
+
+def calc_updated_hands_tracker(partyID):
+    party = partyManager.get_party(partyID)
+    handsTracker = []
+    for player in party.players:
+        handsTracker.append({'mtype': player.mtype, 'name': player.name, 'numberOfCardsInHand': len(player.hands['hand'])})
+    return handsTracker
 
 
 def next_level(partyID):
@@ -241,6 +259,8 @@ def next_level(partyID):
     # calculate the next cards to be drawn (on next level) for each player and send them to the clients to preload them and reduce waiting times at the start of the next level
     get_inGameCards(partyID, party.players[0].mtype, party.players[0].id, None, n = (current_level + 1), ShuffleCopyDeck = True)
 
-    emit('next-level', {'level': current_level}, room=partyID)
-    print("\n\n\nStarting level " + str(current_level) + "\n\n\n")
+    
+    handsTracker = calc_updated_hands_tracker(partyID)
+
+    emit('next-level', {'level': current_level, 'handsTracker': handsTracker}, room=partyID)
 

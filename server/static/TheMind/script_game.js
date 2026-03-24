@@ -16,7 +16,8 @@ function onChangeTurn(){}
 function additionalInitialRequests(){    
     // socket.emit('get-noise', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
     socket.emit('themind-get-gamePile', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
-    console.log('additionalInitialRequests: get game pile');
+    socket.emit('themind-get-otherInitialInformations', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
+    // console.log('additionalInitialRequests: get game pile');
 }
 
 function end(data){}
@@ -34,6 +35,7 @@ function onCardPlayed(data){
     }
     else{
         // console.log('played '+card+' by player '+data.playerID);
+        updatePlayerHandTracker(data.mtype, document.querySelector(`.info-container#player-${data.mtype} .info-numberOfCardsInHand`).getAttribute('data-numberOfCardsInHand') - 1);
         playedCardAnimation(card)
     }
 }
@@ -83,6 +85,10 @@ function playCard(card,options=null){
 const otherPlayershandArea = document.getElementById('otherPlayershand-area');
 const tableArea = document.querySelector('#table-area');
 const handArea = document.querySelector('#hand-area');
+const levelElement = document.getElementById('level-text');
+const livesElement = document.getElementById('lives-text');
+const shurikensElement = document.getElementById('shurikens-text');
+const infoRightPanel = document.getElementById('info-rightPanel');
 let gamePile = [];
 
 
@@ -145,9 +151,10 @@ function playedCardAnimation(card) {
 }
 
 socket.on('next-level', async function(data) {
-    console.log('next-level',data);
     await alert('Congratulations! You have reached level ' + data.level, 0, 'Level Up!');
-    console.log('Alert closed, proceeding to next level...');
+    levelElement.setAttribute('data-text', data.level.toString());
+
+    updateAllPlayerHandTrackers(data.handsTracker);
 
     clearGamePile();
 
@@ -182,8 +189,13 @@ socket.on('notify-left-lives', async function(data) {
         if (card < data.playedCard){
             const cardElement = fromCardToElem(card);
             cardElement.classList.add('hidden');
+            hand['hand'].splice(i, 1);
         }
     }
+
+    updateAllPlayerHandTrackers(data.handsTracker);
+
+    livesElement.setAttribute('data-text', data.lives.toString());
 
     if (mtype == 1)
         console.log('Requesting game pile after losing a life');
@@ -193,13 +205,52 @@ socket.on('notify-left-lives', async function(data) {
 });
 
 socket.on('response-gamePile', function(data) {
-    if (data.targetPlayerID == playerID){
+    if (data.targetPlayer == playerID){
         console.log('response-gamePile', data);
         gamePile = data.gamePile;
         showGamePile();
     }
 });
 
+socket.on('response-otherInitialInformations', function(data) {
+    if (data.targetPlayer == playerID){
+        
+        levelElement.setAttribute('data-text', data.level.toString());
+        livesElement.setAttribute('data-text', data.lives.toString());
+        shurikensElement.setAttribute('data-text', data.shurikens.toString());
+
+        console.log('response-otherInitialInformations', data.handsTracker, data.handsTracker.length);
+        for (let i = 0; i < data.handsTracker.length; i++) {
+            const playerInfo = data.handsTracker[i];
+
+            if (playerInfo.mtype == parseInt(mtype))
+                continue;
+
+            console.log('Creating info container for player:', playerInfo);
+            const container = document.createElement('div');
+            container.id = `player-${playerInfo.mtype}`;
+            container.classList.add('info-container');
+
+            const icon = document.createElement('img');
+            icon.classList.add('info-icon');
+            icon.src = '/static/TheMind/images/player_icon.png'; 
+
+            const nameDiv = document.createElement('div');
+            nameDiv.classList.add('info-text', 'info-playerName');
+            nameDiv.textContent = playerInfo.name;
+
+            const countDiv = document.createElement('div');
+            countDiv.classList.add('info-text', 'info-numberOfCardsInHand');
+            countDiv.setAttribute('data-numberOfCardsInHand', playerInfo.numberOfCardsInHand.toString());
+
+            container.appendChild(icon);
+            container.appendChild(nameDiv);
+            container.appendChild(countDiv);
+
+            infoRightPanel.appendChild(container);
+        }
+    }
+});
 
 function showGamePile(){
     clearGamePile();
@@ -218,6 +269,22 @@ function showGamePile(){
     }
 }
 
+
+function updatePlayerHandTracker(mtype, numberOfCardsInHand){
+    let nCardsInHandElem = document.querySelector(`.info-container#player-${mtype} .info-numberOfCardsInHand`);
+    nCardsInHandElem.setAttribute('data-numberOfCardsInHand', numberOfCardsInHand.toString());
+}
+
+
+function updateAllPlayerHandTrackers(handsTracker){
+    console.log('updateAllPlayerHandTrackers');
+    handsTracker.forEach(playerInfo => {
+        console.log('Updating hand tracker for player:', playerInfo.mtype, parseInt(mtype));    
+        if (playerInfo.mtype != parseInt(mtype)){
+            updatePlayerHandTracker(playerInfo.mtype, playerInfo.numberOfCardsInHand);
+        }
+    });
+}
 
 function removeCardFromHand(card){
     const index = hand['hand'].indexOf(card); // Remove card from hand
