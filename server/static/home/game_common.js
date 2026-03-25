@@ -174,6 +174,9 @@ socket.on('end-game', async function(data) {
     window.location.href = '/';
 });
 
+socket.on('error', function(data) {
+    alert(data.message, title='Error');
+});
 
 function ping(){
     //console.log('ping', {'partyID':partyID, 'playerID':playerID})
@@ -219,7 +222,6 @@ async function askFullScreen() {
     });
 }
 
-
 function toggleFullScreen(elem) {
     // ## The below if statement seems to work better ## if ((document.fullScreenElement && document.fullScreenElement !== null) || (document.msfullscreenElement && document.msfullscreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
     if ((document.fullScreenElement !== undefined && document.fullScreenElement === null) || (document.msFullscreenElement !== undefined && document.msFullscreenElement === null) || (document.mozFullScreen !== undefined && !document.mozFullScreen) || (document.webkitIsFullScreen !== undefined && !document.webkitIsFullScreen)) {
@@ -258,41 +260,52 @@ function loadGeneralImages(){
 
 }
 
-async function alert(text,status = 1,title = '') {
+async function alert(text, status = 1, title = '', YesNo = false) {
 
-    let real_title = ''
-    if (title == '')
-        real_title = '<span style="color: #fff;">Attenzione!</span>';
-    else
-        real_title = '<span style="color: #fff;">' + title + '</span>';
-    
-    let icon = 'warning'
-
-
-    if(status == 0){
-        if(title == '')
-            title = '<span style="color: #fff;">Successo!</span>'
-        else
-            title = '<span style="color: #fff;">' + title + '</span>';
-
-        icon = 'success'
-    }
-    
     console.log('Waiting for alert mutex...');
     await alertMutex.lock();
     console.log('Alert mutex acquired');
 
     try {
-        return await Swal.fire({
-            title: title,
+        // Configurazione base di SweetAlert2
+        let swalConfig = {
             html: '<span style="color: #fff;">' + text + '</span>',
-            icon: icon,
-            confirmButtonText: 'OK',
             background: '#333',
             customClass: {
                 content: 'swal-content-custom'
             }
-        });
+        };
+
+        // Se YesNo è true, mostriamo i pulsanti Sì/No
+        if (YesNo) {
+            swalConfig.showCancelButton = true;
+            swalConfig.confirmButtonText = 'Sì';
+            swalConfig.cancelButtonText = 'No';
+        } else {
+            // Altrimenti mostriamo il classico OK
+            swalConfig.confirmButtonText = 'OK';
+        }
+
+            // Gestione del titolo e dell'icona in base allo status
+        if (status === 0) {
+            swalConfig.icon = 'success';
+            finalTitle = title === '' ? 'Success!' : title;
+        }else if (status === 1) {
+            swalConfig.icon = 'warning';
+            finalTitle = title === '' ? 'Warning!' : title;
+        }else if (status === 2) {
+            swalConfig.icon = 'error';
+            finalTitle = title === '' ? 'Error!' : title;
+        }else if (status === -1) {
+            finalTitle = title === '' ? 'Info' : title;
+        }
+
+        swalConfig.title = '<span style="color: #fff;">' + finalTitle + '</span>';
+
+
+        // Restituisce il risultato (utile per capire cosa ha cliccato l'utente)
+        return await Swal.fire(swalConfig);
+
     } finally {
         alertMutex.unlock();
         console.log('Alert mutex released.');

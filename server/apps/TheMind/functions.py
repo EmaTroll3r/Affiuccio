@@ -42,9 +42,10 @@ def host(test=False):
     party.add_deck(copyDeck,'copyDeck')
 
     party.add_deck(Pile(),'gamePile')
-    party.setVariable('lives', limits['lives'])
-    party.setVariable('shurikens', limits['shurikens'])
+    party.setVariable('lives', limits['starting_lives'])
+    party.setVariable('shurikens', limits['starting_shurikens'])
     party.setVariable('level', 1)
+    party.setVariable('shurikenVotes', {})
 
     print("\n\n\nCreated Deck with "+str(limits['maxCards'])+ " cards\n" + str(party.decks['deck'].cards)+ "\n\n\n")
 
@@ -64,8 +65,7 @@ def host(test=False):
     return jsonify(response)
 
 
-
-def start_game(partyID):
+def start_game(partyID, settings=None):
     maxPlayersMtype = 0
     real_mtype = 1
 
@@ -142,6 +142,7 @@ def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
     
     return response,end_response
 
+
 def get_inGameCards(partyID,mtype,playerID,targetPlayer = None,n=1, ShuffleCopyDeck = False):
 
     
@@ -173,7 +174,6 @@ def get_inGameCards(partyID,mtype,playerID,targetPlayer = None,n=1, ShuffleCopyD
         emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype,'targetPlayer':playerID, 'cardsInHand': cardsInHand}, room=partyID)
     else:
         emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype, 'cardsInHand': cardsInHand}, room=partyID)
-
 
 
 def get_noise(partyID,playerID,mtype):
@@ -239,6 +239,64 @@ def calc_updated_hands_tracker(partyID):
     return handsTracker
 
 
+def use_shuriken(partyID, playerID, mtype):
+    party = partyManager.get_party(partyID)
+    if party.getVariable('shurikens') > 0:
+        party.setVariable('shurikens', party.getVariable('shurikens') - 1)
+        removed_cards = []
+        for player in party.players:
+            card = player.hands['hand'].getLowestCard()
+            if card is not None:
+                player.hands['hand'].removeCard(card)
+                removed_cards.append(card.card)
+
+        handsTracker = calc_updated_hands_tracker(partyID)
+
+        emit('used-shuriken', {'mtype': mtype, 'playerID': playerID, 'handsTracker': handsTracker, 'shurikens': party.getVariable('shurikens'), 'removedCards': removed_cards}, room=partyID)
+
+        cards_in_game = 0
+        for player in party.players:
+            cards_in_game += len(player.hands['hand'])
+        if cards_in_game == 0:
+            next_level(partyID)
+
+    else:
+        emit('error', {'mtype': mtype, 'playerID': playerID, 'handsTracker': None, 'shurikens': 0}, room=partyID)
+
+
+def propose_votation_for_shuriken(partyID, playerID, mtype):
+    party = partyManager.get_party(partyID)
+    shuriken_votes = {}
+    for player in party.players:
+        shuriken_votes[player.mtype] = None
+    
+    shuriken_votes[mtype] = 1
+    party.setVariable('shurikenVotes', shuriken_votes)
+    emit('vote-for-shuriken', {'mtype': mtype, 'playerID': playerID}, room=partyID)
+
+def shuriken_vote(partyID, playerID, mtype, vote):
+    party = partyManager.get_party(partyID)
+    shuriken_votes = party.getVariable('shurikenVotes')
+    shuriken_votes[mtype] = vote
+    party.setVariable('shurikenVotes', shuriken_votes)
+
+    disagree_votes = []
+    for current_player_mtype, v in shuriken_votes.items():
+        if v is None:
+            return
+        elif v == 0:
+            disagree_votes.append(current_player_mtype)
+
+
+    if len(disagree_votes) == 0:
+        emit('shuriken-votation-result', {'result': 1}, room=partyID)
+        use_shuriken(partyID, playerID, mtype)
+    else:
+        emit('shuriken-votation-result', {'result': 0, 'disagreeVotes': disagree_votes}, room=partyID)
+
+        
+        
+
 def next_level(partyID):
     party = partyManager.get_party(partyID)
     party.setVariable('level', party.getVariable('level') + 1)
@@ -254,7 +312,6 @@ def next_level(partyID):
     for p in party.players:
         for i in range(current_level):
             party.raw_draw(p.mtype, handName='hand', deckName='deck')
-            print("\n\n\nDealt card to player " + str(p.name) + ": " + str(p.hands['hand']) + "\n\n\n")
 
     # calculate the next cards to be drawn (on next level) for each player and send them to the clients to preload them and reduce waiting times at the start of the next level
     get_inGameCards(partyID, party.players[0].mtype, party.players[0].id, None, n = (current_level + 1), ShuffleCopyDeck = True)

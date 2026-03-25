@@ -75,15 +75,19 @@ class Deck:
         return deck
     
     def removeCard(self, card):
-        
         if isinstance(card, Card):
             card = card.card
 
         for c in self.cards:
             if c.card == card:
                 self.cards.remove(c)
-                return True
+                return c
         return False
+    
+    def getLowestCard(self):
+        if self.cards:
+            return min(self.cards, key=lambda c: c.card)
+        return None
     
 
 class Pile(Deck):

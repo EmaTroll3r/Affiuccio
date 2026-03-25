@@ -73,7 +73,7 @@ function playCard(card,options=null){
     }
 
     console.log('playCard',card);
-    socket.emit('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'cards':[parseInt(card)], 'handtype':['hand'],'options':options});
+    socket.emit('play-card', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'cards':[parseInt(card)], 'handtype':['hand'],'options':options, 'askHand':0});
     
 }
 
@@ -89,6 +89,7 @@ const levelElement = document.getElementById('level-text');
 const livesElement = document.getElementById('lives-text');
 const shurikensElement = document.getElementById('shurikens-text');
 const infoRightPanel = document.getElementById('info-rightPanel');
+const shurikenButton = document.getElementById('shurikens-icon');
 let gamePile = [];
 
 
@@ -177,6 +178,7 @@ function clearGamePile(){
     });
 }
 
+
 socket.on('notify-left-lives', async function(data) {
     console.log('notify-left-lives', data);
     await alert(data.message, 1, 'Watch out!');
@@ -187,9 +189,7 @@ socket.on('notify-left-lives', async function(data) {
             continue;
         }
         if (card < data.playedCard){
-            const cardElement = fromCardToElem(card);
-            cardElement.classList.add('hidden');
-            hand['hand'].splice(i, 1);
+            hideCardElemFromHand(card);
         }
     }
 
@@ -252,6 +252,44 @@ socket.on('response-otherInitialInformations', function(data) {
     }
 });
 
+socket.on('used-shuriken', function(data) {
+    for(let i=0;i<data.removedCards.length;i++){
+        card = data.removedCards[i];
+        if (hand['hand'].includes(card)){
+            hideCardElemFromHand(card);
+            continue;
+        }
+    }
+    updateAllPlayerHandTrackers(data.handsTracker);
+    shurikensElement.setAttribute('data-text', data.shurikens.toString());
+});
+
+socket.on('vote-for-shuriken', async function(data) {
+    if (data.playerID != playerID){
+        let res = await alert('Player '+ playerList[data.mtype - 1].name +' has proposed to use a shuriken. Do you agree?', 1, 'Shuriken Proposal', YesNo=true)
+        if (res.isConfirmed){
+            vote = 1;
+        }else{
+            vote = 0;
+        }
+        console.log('Voting for shuriken', vote);
+        socket.emit('themind-shuriken-vote', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'vote': vote});
+    }
+});
+
+socket.on('shuriken-votation-result', async function(data) {
+    if (data.result == 1){
+        alert('All players agreed to use a shuriken.<br>Using shuriken...', 0, 'Shuriken Proposal Accepted');
+    } else {
+        let message = 'The shuriken proposal has been rejected!<br><br>'
+        for (let i = 0; i < data.disagreeVotes.length; i++) {
+            const player_mtype = data.disagreeVotes[i];
+            message += 'Player ' + playerList[player_mtype - 1].name + ' voted No<br>';
+        }
+        alert(message, 1, 'Shuriken Proposal Rejected');
+    }
+});
+
 function showGamePile(){
     clearGamePile();
 
@@ -276,6 +314,14 @@ function updatePlayerHandTracker(mtype, numberOfCardsInHand){
 }
 
 
+function fromCardToElem(cardValue) {
+    const selector = `.card[src$="/${cardValue}.png"]`;
+    
+    const cardElement = document.querySelector(selector);
+    
+    return cardElement;
+}
+
 function updateAllPlayerHandTrackers(handsTracker){
     console.log('updateAllPlayerHandTrackers');
     handsTracker.forEach(playerInfo => {
@@ -293,3 +339,20 @@ function removeCardFromHand(card){
     }
     return 0;
 }
+
+function hideCardElemFromHand(card){
+    const cardElement = fromCardToElem(card);
+    cardElement.classList.add('hidden');
+    removeCardFromHand(card);
+}
+
+
+shurikenButton.addEventListener('click', async function() {
+
+    let res = await alert('Do you want to use a shuriken?', 1, 'Use Shuriken?',YesNo=true)
+
+    if (res.isConfirmed) {
+        // socket.emit('themind-use-shuriken', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
+        socket.emit('themind-propose-votation-for-shuriken', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
+    }
+});

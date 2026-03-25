@@ -1,1 +1,1 @@
-{"maxHand": 12, "maxCards": 100, "noiseForHost": 10, "noiseForClients": 10,"maxNumberCards": 100, "lives": 5, "shurikens": 2, "maxLevel": 12, "difficulty": "hard"}
+{"maxHand": 12, "maxCards": 100, "noiseForHost": 10, "noiseForClients": 10,"maxNumberCards": 100, "starting_lives": 5, "starting_shurikens": 20, "maxLevel": 12, "difficulty": "hard"}

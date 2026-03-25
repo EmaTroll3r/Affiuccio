@@ -4,27 +4,30 @@
         <title>404 - Pagina non trovata</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
         <meta name="google" content="notranslate">
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='DBChess/404.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home/404.css') }}">
+		<link rel="icon" type="image/png" href="{{ url_for('static', filename='TheMind/images/favicon.png') }}">
     </head>
-<body>
-    <!-- Decorazioni per SosOnline -->
-    <div class="game-decoration card1"></div>
-    <div class="game-decoration card2"></div>
-    <div class="game-decoration card3"></div>
-    <div class="game-decoration card4"></div>
-    
-    <h1 class="write">404</h1>
-    
-    <div class="error-container">
-        <div class="write">
-            <span id="sorry-message">Siamo spiacenti</span>
-            <span>La pagina che stai cercando non esiste</span>
+
+
+    <body>
+        <!-- Decorazioni per SosOnline -->
+        <div class="game-decoration card1"></div>
+        <div class="game-decoration card2"></div>
+        <div class="game-decoration card3"></div>
+        <div class="game-decoration card4"></div>
+        
+        <h1 class="write">404</h1>
+        
+        <div class="error-container">
+            <div class="write">
+                <span id="sorry-message">Siamo spiacenti</span>
+                <span>La pagina che stai cercando non esiste</span>
+            </div>
         </div>
-    </div>
 
-    <button id="home-button" onclick="location.href='/DBChess'">Torna alla Home</button>
+        <button id="home-button" onclick="location.href='/TheMind'">Torna alla Home</button>
 
 
-    <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
-</body>
+        <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
+    </body>
 </html>

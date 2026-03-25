@@ -159,11 +159,7 @@ def play_card_endpoint(data):
     
     if (response['status'] == 0):
         if(askHand == 1):
-            for handtype in handtypes:                
-                
-                
-                if (partyManager.get_party(partyID).gameEndpoint == 'TheMind'):
-                    continue
+            for handtype in handtypes:
 
                 hand = partyManager.get_party(partyID).get_player(mtype).hands[handtype].to_dict()
                 emit('response-hand', {'playerID': playerID,'handtype':handtype, 'hand': hand}, room=partyID)

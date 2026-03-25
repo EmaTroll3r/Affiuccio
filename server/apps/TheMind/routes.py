@@ -12,7 +12,11 @@ themind = Blueprint('themind', __name__)
 @socketio.on('themind-ask-start-game')
 def themind_start_game(data):
     partyID = int(data['partyID'])
-    theMind.start_game(partyID)
+    try:
+        settings = data['settings']
+    except KeyError:
+        settings = None
+    theMind.start_game(partyID, settings)
 
 @socketio.on('themind-get-inGameCards')
 def themind_inGameCards(data):
@@ -48,6 +52,18 @@ def themind_get_gamePile(data):
 @socketio.on('themind-get-otherInitialInformations')
 def themind_get_otherInitialInformations(data):
     return theMind.get_otherInitialInformations(int(data['partyID']),int(data['playerID']),int(data['mtype']))
+    
+@socketio.on('themind-use-shuriken')
+def themind_use_shuriken(data):
+    return theMind.use_shuriken(int(data['partyID']),int(data['playerID']),int(data['mtype']))
+
+@socketio.on('themind-propose-votation-for-shuriken')
+def themind_propose_votation_for_shuriken(data):
+    return theMind.propose_votation_for_shuriken(int(data['partyID']),int(data['playerID']),int(data['mtype']))
+
+@socketio.on('themind-shuriken-vote')
+def themind_shuriken_vote(data):
+    return theMind.shuriken_vote(int(data['partyID']),int(data['playerID']),int(data['mtype']),int(data['vote']))
 
 #-------------------------------------------------------------------------------------------
 

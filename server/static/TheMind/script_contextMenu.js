@@ -4,14 +4,6 @@ const playOption = document.getElementById('context-play');
 
 let timeoutHideMenu;
 
-function fromCardToElem(cardValue) {
-    const selector = `.card[src$="/${cardValue}.png"]`;
-    
-    const cardElement = document.querySelector(selector);
-    
-    return cardElement;
-}
-
 function hideMenu() {
     contextMenu.style.visibility = "hidden";
 }
