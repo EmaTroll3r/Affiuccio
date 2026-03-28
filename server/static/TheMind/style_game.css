@@ -205,24 +205,46 @@
     content: attr(data-text);
 }
 
+
 .info-numberOfCardsInHand[data-numberOfCardsInHand]::after {
     content: "(" attr(data-numberOfCardsInHand) ")";
 }
 
 #info-rightPanel{
+    display: grid;
+    grid-template-columns: 60px max-content auto; 
+    align-items: center;
+    
+    row-gap: 25px;
+    column-gap: 20px;
+
     right: 2.5%;
 }
 
 #info-rightPanel .info-container{
-    justify-content: flex-end;
+    display: contents;
+}
+
+#info-rightPanel .info-icon{
+    height: auto;
+    width: 100%;
 }
 
 .info-playerName {
-    margin-right: 15px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.info-numberOfCardsInHand {
+    text-align: left;
 }
 
 #shurikens-icon:hover {
     transform: scale(1.2);
     transition: transform 0.3s ease;
     cursor: pointer;
+}
+
+.info-plus-text {
+    margin-left: 20px;
 }

@@ -90,6 +90,8 @@ const livesElement = document.getElementById('lives-text');
 const shurikensElement = document.getElementById('shurikens-text');
 const infoRightPanel = document.getElementById('info-rightPanel');
 const shurikenButton = document.getElementById('shurikens-icon');
+const livesOptionsElement = document.getElementById('lives-options-text');
+const shurikensOptionsElement = document.getElementById('shurikens-options-text');
 let gamePile = [];
 
 
@@ -155,6 +157,11 @@ socket.on('next-level', async function(data) {
     await alert('Congratulations! You have reached level ' + data.level, 0, 'Level Up!');
     levelElement.setAttribute('data-text', data.level.toString());
 
+    if (data.livesOptions)
+        livesOptionsElement.setAttribute('data-text', data.livesOptions ? '(+' + data.livesOptions.toString() + ')' : '');
+    if (data.shurikensOptions)
+        shurikensOptionsElement.setAttribute('data-text', data.shurikensOptions ? '(+' + data.shurikensOptions.toString() + ')' : '');
+
     updateAllPlayerHandTrackers(data.handsTracker);
 
     clearGamePile();
@@ -216,6 +223,12 @@ socket.on('response-otherInitialInformations', function(data) {
     if (data.targetPlayer == playerID){
         
         levelElement.setAttribute('data-text', data.level.toString());
+
+        if (data.livesOptions)
+            livesOptionsElement.setAttribute('data-text', '(+' + data.livesOptions.toString() + ')');
+        if (data.shurikensOptions)
+            shurikensOptionsElement.setAttribute('data-text', '(+' + data.shurikensOptions.toString() + ')' );
+
         livesElement.setAttribute('data-text', data.lives.toString());
         shurikensElement.setAttribute('data-text', data.shurikens.toString());
 
