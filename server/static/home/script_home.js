@@ -9,7 +9,7 @@
             route: "/TheMind",
             description: "Silent teamwork and perfect timing.",
             category: "Co-op",
-            players: "2-4 players",
+            players: "2+ players",
             status: "Online",
             enabled: true,
             showInCarousel: true,
@@ -33,28 +33,28 @@
             id: "db-chess",
             name: "DB Chess",
             route: "/DBChess",
-            description: "Classic board control with modern pace.",
+            description: "Tactical chess database.",
             category: "Classic",
-            players: "2 players",
+            players: "1 players",
             status: "Online",
             enabled: true,
             showInCarousel: true,
             slideClass: "placeholder-3",
             thumbClass: "thumb-3"
         },
-        {
-            id: "syncwatch",
-            name: "SyncWatch",
-            route: "/SyncWatch",
-            description: "Coordination challenge in real time.",
-            category: "Party",
-            players: "Multiplayer",
-            status: "Online",
-            enabled: true,
-            showInCarousel: true,
-            slideClass: "placeholder-4",
-            thumbClass: "thumb-4"
-        }
+        // {
+        //     id: "syncwatch",
+        //     name: "SyncWatch",
+        //     route: "/SyncWatch",
+        //     description: "Coordination challenge in real time.",
+        //     category: "Party",
+        //     players: "Multiplayer",
+        //     status: "Online",
+        //     enabled: true,
+        //     showInCarousel: true,
+        //     slideClass: "placeholder-4",
+        //     thumbClass: "thumb-4"
+        // }
     ];
 
     const enabledGames = games.filter((game) => game.enabled);
