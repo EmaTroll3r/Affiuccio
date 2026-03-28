@@ -4,143 +4,71 @@
         <title>SoS Online</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
         <meta name="google" content="notranslate">
+        <link rel="icon" type="image/png" href="{{ url_for('static', filename='SosOnline/images/favicon.png') }}">
         <div class="content">
             <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='SosOnline/style.css') }}">
         </div>
     </head>
-<body>
-    
-  <div id="wrapper">
-    <div id="shakeableIndex">
-    <!--
-    <select id="context-menu" class="context-menu" size="3" style="display: none; position: fixed; height: auto; overflow-y: auto;">
-        <option id="context-play" class="contextMenu-option">Gioca</option>
-        <option id="context-block" class="contextMenu-option">Blocca</option>
-        <option id="context-blame" class="contextMenu-option">Scaricabarile</option>
-    </select>
-    -->
-    <!--
-    <div class="wrapper">
-        <div class="content">
-          <ul class="menu">
-            <li class="item">
-              <i class="uil uil-eye"></i>
-              <span>Preview</span>
-            </li>
-            <li class="item share">
-              <div>
-                <i class="uil uil-share"></i>
-                <span>Share</span>
-              </div>
-              <i class="uil uil-angle-right"></i>
-              <ul class="share-menu">
-                <li class="item">
-                  <i class="uil uil-twitter-alt"></i>
-                  <span>Twitter</span>
-                </li>
-                <li class="item">
-                  <i class="uil uil-instagram"></i>
-                  <span>Instagram</span>
-                </li>
-                <li class="item">
-                  <i class="uil uil-dribbble"></i>
-                  <span>Dribble</span>
-                </li>
-                <li class="item">
-                  <i class="uil uil-telegram-alt"></i>
-                  <span>Telegram</span>
-                </li>
-              </ul>
-            </li>
-            <li class="item">
-              <i class="uil uil-link-alt"></i>
-              <span>Get Link</span>
-            </li>
-            <li class="item">
-              <i class="uil uil-edit"></i>
-              <span>Rename</span>
-            </li>
-            <li class="item">
-              <i class="uil uil-trash-alt"></i>
-              <span>Delete</span>
-            </li>
-          </ul>
-          <div class="setting">
-            <li class="item">
-              <i class="uil uil-setting"></i>
-              <span>Settings</span>
-            </li>
-          </div>
-        </div>
+  <body>
+      
+    <div id="wrapper">
+      <div id="shakeableIndex">
+      
+      <h1 class="write">SoS Online</h1>
+      <button id="host-lobby">Host a lobby</button>
+      <button id="join-lobby">Join a lobby</button>
+      <input type="text" id="nickname" placeholder="Inserisci il tuo nickname">
+      <!-- <button id="start-game">Start Game</button> -->
+      <!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script> -->
+
+      <input type="hidden" id="gameEndpoint" value="SosOnline" />
+      <script>
+        document.getElementById('nickname').value = localStorage.getItem( document.getElementById('gameEndpoint').value+'_playername');
+      </script>
+
+      <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+      <input type="hidden" class="dynamic-script-url" value="{{ url_for('static', filename='home/index_script.js') }}" />
+      <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
+      <script src="{{ url_for('static', filename='home/index_frontend.js') }}"></script>
+      <!--
+      <script>
+        var script = document.createElement('script');
+        script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
+        document.body.appendChild(script);
+      </script>
+      -->
+      
+
+
+      <!-- <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script> -->
+      <!--
+      <script>
+        ///*
+        var script = document.createElement('script');
+        script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
+        script.onload = function() {
+            var gameScript = document.createElement('script');
+            gameScript.src = "{{ url_for('static', filename='home/index_script.js') }}";
+            document.body.appendChild(gameScript);
+        };
+        document.body.appendChild(script);
+        //*/
+      </script>
+      -->
+      <!--
+      <script>
+          window.addEventListener('load', function() {
+              var script = document.createElement('script');
+              script.src = "{{ url_for('static', filename='home/index_script.js') }}";
+              document.body.appendChild(script);
+          });
+      </script>
+      -->
+      <!-- <script src="{{ url_for('static', filename='home/index_script.js') }}"></script> -->
+      </div>
     </div>
-    -->
-    
-    <!--
-    <div class="wrapper">
-        <div class="content">
-          <ul class="menu">
-            <li class="item"><span>Gioca</span></li>
-            <li class="item"><span>Blocca</span></li>
-            <li class="item"><span>Scaricabarile</span></li>
-        </div>
-    </div>>
-    -->
-
-    <h1 class="write">SoS Online</h1>
-    <button id="host-lobby">Host a lobby</button>
-    <button id="join-lobby">Join a lobby</button>
-    <input type="text" id="nickname" placeholder="Inserisci il tuo nickname">
-    <!-- <button id="start-game">Start Game</button> -->
-    <!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script> -->
-
-    <input type="hidden" id="gameEndpoint" value="SosOnline" />
-    <script>
-      document.getElementById('nickname').value = localStorage.getItem( document.getElementById('gameEndpoint').value+'_playername');
-    </script>
-
-    <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
-    <input type="hidden" class="dynamic-script-url" value="{{ url_for('static', filename='home/index_script.js') }}" />
-    <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
-    <script src="{{ url_for('static', filename='home/index_frontend.js') }}"></script>
-    <!--
-    <script>
-      var script = document.createElement('script');
-      script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
-      document.body.appendChild(script);
-    </script>
-    -->
-    
-
-
-    <!-- <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script> -->
-    <!--
-    <script>
-      ///*
-      var script = document.createElement('script');
-      script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
-      script.onload = function() {
-          var gameScript = document.createElement('script');
-          gameScript.src = "{{ url_for('static', filename='home/index_script.js') }}";
-          document.body.appendChild(gameScript);
-      };
-      document.body.appendChild(script);
-      //*/
-    </script>
-    -->
-    <!--
-    <script>
-        window.addEventListener('load', function() {
-            var script = document.createElement('script');
-            script.src = "{{ url_for('static', filename='home/index_script.js') }}";
-            document.body.appendChild(script);
-        });
-    </script>
-    -->
-    <!-- <script src="{{ url_for('static', filename='home/index_script.js') }}"></script> -->
-    </div>
-  </div>
-</body>
+  </body>
 </html>

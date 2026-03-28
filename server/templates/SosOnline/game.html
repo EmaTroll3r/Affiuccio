@@ -1,112 +1,114 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>SoS Online</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='SosOnline/style.css') }}">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="google" content="notranslate">
-</head>
-<body>
-    <div id="wrapper">
-        <div id="shakeable">
-            <div id="big"></div>
-            <!--<button id="drawButton">Draw</button>-->
-            <p id="playerTurn">Giocatore di turno:</p>
-            <img id="noise-image" src="{{ url_for('static', filename='SosOnline/images/noise.png') }}" alt="Noise" style="position: absolute; top: 15px; right: 40px; width: 50px; height: 50px;">
-            <div id="wlCounterDiv" style="position: absolute; top: 1.5%; right: 14%; width: 200px; height: 10vh;">
-                <img id="wl1Counter" src="{{ url_for('static', filename='SosOnline/images/wl1.png') }}" alt="wl1" style="position: absolute; left: 0%; height: 100%; visibility: hidden;">
-                <img id="wl2Counter" src="{{ url_for('static', filename='SosOnline/images/wl2.png') }}" alt="wl2" style="position: absolute; left: 8%; height: 100%; visibility: hidden;">
-                <img id="wl3Counter" src="{{ url_for('static', filename='SosOnline/images/wl3.png') }}" alt="wl3" style="position: absolute; left: 16%; height: 100%; visibility: hidden;">
-                <div id="wlCounter" class="write" style="position: absolute; top: 20%; left:40%; height: 80%; font-size: 26px; visibility: hidden;">x2</div>
-            </div>
-            <hr>
-            <div id="game-images">
-                <img id="card1" class="card" src="">
-                <img id="card2" class="card">
-                <img id="card3" class="card">
-            </div>
-
-            <select id="context-choosePlayer" class="context-menu" size="3" style="display: none; position: fixed;">
-                <!-- <option id="context-player1">Giocatore 1</option> -->
-            </select>
-            
-            <div id="BigCard">
-                <img id="showedCard" style="display: none;" src="{{ url_for('static', filename='SosOnline/images/0.png') }}">
-            </div>
-
-            <!--
-            <select id="context-menu" class="context-menu" style="display: none; position: fixed; height: auto; overflow-y: auto;">
-                <option id="context-play" class="contextMenu-option">Gioca</option>
-                <option id="context-block" class="contextMenu-option">Blocca</option>
-                <option id="context-blame" class="contextMenu-option">Scaricabarile</option>
-            </select>
-            -->
-            
-            <!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-            <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script> -->
-            
-            <progress id="loadingBar" value="0" max="3" style="display: visible;"></progress>
-
-            <!--<script src="{{ url_for('static', filename='home/contextmenu.js') }}"></script>-->
-            <!-- <script src="https://cdn.jsdelivr.net/npm/interactjs@1.10.11/dist/interact.min.js"></script> -->
-            <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-            <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.3"></script>
-
-            <input type="hidden" class="dynamic-script-url" value="{{ url_for('static', filename='SosOnline/game_script.js') }}">
+    <head>
+        <title>SoS Online</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='SosOnline/style.css') }}">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+        <link rel="icon" type="image/png" href="{{ url_for('static', filename='SosOnline/images/favicon.png') }}">
+        <meta name="google" content="notranslate">
+    </head>
     
-            <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
-            <!--
-            <script>
-                var script = document.createElement('script');
-                script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
-                document.body.appendChild(script);
-            </script>
-            
-            -->
-            
-            <!--
-            <script>
-                var script = document.createElement('script');
-                script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
-                script.onload = function() {
-                    var gameScript = document.createElement('script');
-                    gameScript.src = "{{ url_for('static', filename='SosOnline/game_script.js') }}";
-                    document.body.appendChild(gameScript);
-                };
-                document.body.appendChild(script);
-            </script>
-            -->
-            <!--
-            <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
-            <script>
-                window.addEventListener('load', function() {
-                    var script = document.createElement('script');
-                    script.src = "{{ url_for('static', filename='SosOnline/game_script.js') }}";
-                    document.body.appendChild(script);
-                });
-            </script>
-            -->
-            <!-- <script src="{{ url_for('static', filename='home/index_script.js') }}"></script> -->
+    <body>
+        <div id="wrapper">
+            <div id="shakeable">
+                <div id="big"></div>
+                <!--<button id="drawButton">Draw</button>-->
+                <p id="playerTurn">Giocatore di turno:</p>
+                <img id="noise-image" src="{{ url_for('static', filename='SosOnline/images/noise.png') }}" alt="Noise" style="position: absolute; top: 15px; right: 40px; width: 50px; height: 50px;">
+                <div id="wlCounterDiv" style="position: absolute; top: 1.5%; right: 14%; width: 200px; height: 10vh;">
+                    <img id="wl1Counter" src="{{ url_for('static', filename='SosOnline/images/wl1.png') }}" alt="wl1" style="position: absolute; left: 0%; height: 100%; visibility: hidden;">
+                    <img id="wl2Counter" src="{{ url_for('static', filename='SosOnline/images/wl2.png') }}" alt="wl2" style="position: absolute; left: 8%; height: 100%; visibility: hidden;">
+                    <img id="wl3Counter" src="{{ url_for('static', filename='SosOnline/images/wl3.png') }}" alt="wl3" style="position: absolute; left: 16%; height: 100%; visibility: hidden;">
+                    <div id="wlCounter" class="write" style="position: absolute; top: 20%; left:40%; height: 80%; font-size: 26px; visibility: hidden;">x2</div>
+                </div>
+                <hr>
+                <div id="game-images">
+                    <img id="card1" class="card" src="">
+                    <img id="card2" class="card">
+                    <img id="card3" class="card">
+                </div>
+
+                <select id="context-choosePlayer" class="context-menu" size="3" style="display: none; position: fixed;">
+                    <!-- <option id="context-player1">Giocatore 1</option> -->
+                </select>
+                
+                <div id="BigCard">
+                    <img id="showedCard" style="display: none;" src="{{ url_for('static', filename='SosOnline/images/0.png') }}">
+                </div>
+
+                <!--
+                <select id="context-menu" class="context-menu" style="display: none; position: fixed; height: auto; overflow-y: auto;">
+                    <option id="context-play" class="contextMenu-option">Gioca</option>
+                    <option id="context-block" class="contextMenu-option">Blocca</option>
+                    <option id="context-blame" class="contextMenu-option">Scaricabarile</option>
+                </select>
+                -->
+                
+                <!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+                <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script> -->
+                
+                <progress id="loadingBar" value="0" max="3" style="display: visible;"></progress>
+
+                <!--<script src="{{ url_for('static', filename='home/contextmenu.js') }}"></script>-->
+                <!-- <script src="https://cdn.jsdelivr.net/npm/interactjs@1.10.11/dist/interact.min.js"></script> -->
+                <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+                <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.3"></script>
+
+                <input type="hidden" class="dynamic-script-url" value="{{ url_for('static', filename='SosOnline/game_script.js') }}">
         
-        </div>
+                <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
+                <!--
+                <script>
+                    var script = document.createElement('script');
+                    script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
+                    document.body.appendChild(script);
+                </script>
+                
+                -->
+                
+                <!--
+                <script>
+                    var script = document.createElement('script');
+                    script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
+                    script.onload = function() {
+                        var gameScript = document.createElement('script');
+                        gameScript.src = "{{ url_for('static', filename='SosOnline/game_script.js') }}";
+                        document.body.appendChild(gameScript);
+                    };
+                    document.body.appendChild(script);
+                </script>
+                -->
+                <!--
+                <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
+                <script>
+                    window.addEventListener('load', function() {
+                        var script = document.createElement('script');
+                        script.src = "{{ url_for('static', filename='SosOnline/game_script.js') }}";
+                        document.body.appendChild(script);
+                    });
+                </script>
+                -->
+                <!-- <script src="{{ url_for('static', filename='home/index_script.js') }}"></script> -->
+            
+            </div>
 
-        <!--
-        <div id="endGame" style="display: none; text-align: center; padding: 50px; background-color: #4CAF50; color: white; border-radius: 10px; box-shadow: 0px 10px 20px rgba(0,0,0,0.19), 0px 6px 6px rgba(0,0,0,0.23);">
-            <h1 style="font-size: 2em; animation: fadeIn 2s;">Congratulazioni!</h1>
-            <p style="font-size: 1.2em; animation: fadeIn 2s;">Hai vinto il gioco!</p>
-            <button style="background-color: white; color: #4CAF50; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 5px; animation: fadeIn 2s;">Gioca di nuovo</button>
-        </div>
-        -->
+            <!--
+            <div id="endGame" style="display: none; text-align: center; padding: 50px; background-color: #4CAF50; color: white; border-radius: 10px; box-shadow: 0px 10px 20px rgba(0,0,0,0.19), 0px 6px 6px rgba(0,0,0,0.23);">
+                <h1 style="font-size: 2em; animation: fadeIn 2s;">Congratulazioni!</h1>
+                <p style="font-size: 1.2em; animation: fadeIn 2s;">Hai vinto il gioco!</p>
+                <button style="background-color: white; color: #4CAF50; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 5px; animation: fadeIn 2s;">Gioca di nuovo</button>
+            </div>
+            -->
 
-        <div class="wrapper">
-            <div class="content">
-            <ul class="menu">
-                <li id="context-play" class="item"><span>Gioca</span></li>
-                <li id="context-block" class="item"><span>Blocca</span></li>
-                <li id="context-blame" class="item"><span>Scaricabarile</span></li>
+            <div class="wrapper">
+                <div class="content">
+                <ul class="menu">
+                    <li id="context-play" class="item"><span>Gioca</span></li>
+                    <li id="context-block" class="item"><span>Blocca</span></li>
+                    <li id="context-blame" class="item"><span>Scaricabarile</span></li>
+                </div>
             </div>
         </div>
-    </div>
-</body>
+    </body>
 </html>
