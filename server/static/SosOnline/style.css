@@ -133,7 +133,7 @@ hr {
 .write {
     /*color: #333;*/
     color : #ffffff;
-    text-align: center;
+    /* text-align: center; */
     font-size: 20px;
 }
 
