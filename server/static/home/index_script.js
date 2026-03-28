@@ -149,7 +149,7 @@ document.getElementById('join-lobby').addEventListener('click', async function()
         */
 
         //socket.emit('join', socket_data);
-        window.location.href = `/`+gameEndpoint+`/lobby?mtype=${data.mtype}&partyID=${data.partyID}&playerID=${data.playerID}`
+        window.location.href = `/`+gameEndpoint+`/${data.page}?mtype=${data.mtype}&partyID=${data.partyID}&playerID=${data.playerID}`
     })
     .catch((error) => {
         //console.error('Error:', error);

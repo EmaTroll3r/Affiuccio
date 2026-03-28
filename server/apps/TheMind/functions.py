@@ -16,12 +16,29 @@ def join(partyID,playername):
     
     if playername:
 
-        player = Player(playername,partyManager.get_party(partyID),{'hand': limits['maxHand']})
-        player.components['noisePoints'] = limits['noiseForClients']
+        old_player = None
+        for player in partyManager.get_party(partyID).players:
+            if player.name == playername:
+                old_player = player
+                break
+        
+        if old_player:
+            mtype = old_player.mtype
+            playerID = old_player.id
+            page = 'game' if partyManager.get_party(partyID).status == 'Game' else 'lobby'
+        else:
+            player = Player(playername,partyManager.get_party(partyID),{'hand': limits['maxHand']})
+            player.components['noisePoints'] = limits['noiseForClients']
+            
+            mtype = partyManager.get_party(partyID).join(player)
+            playerID = player.id
+            page = 'lobby'
+
         response = {
             'partyID': partyID,
-            'mtype': partyManager.get_party(partyID).join(player),
-            'playerID': player.id
+            'mtype': mtype,
+            'playerID': playerID,
+            'page': page
         }
         
         return jsonify(response)
@@ -133,10 +150,7 @@ def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
         if party.getVariable('lives') <= 0:
             end_response = end(0, party.partyID)
         elif cards_in_game == 0:
-            if party.getVariable('level') >= limits['maxLevel']:
-                end_response = end(1, party.partyID)
-            else:
-                next_level(party.partyID)
+            next_level(party.partyID)
 
     response.update({"status": 0, "message": "Success"})
     
@@ -228,7 +242,7 @@ def get_gamePile(partyID, playerID, mtype):
 def get_otherInitialInformations(partyID, playerID, mtype):
     party = partyManager.get_party(partyID)
     handsTracker = calc_updated_hands_tracker(partyID)
-    emit('response-otherInitialInformations', {'lives': party.getVariable('lives'), 'level': party.getVariable('level'), 'shurikens': party.getVariable('shurikens'), 'handsTracker': handsTracker, 'targetPlayer': playerID}, room=partyID)
+    emit('response-otherInitialInformations', {'lives': party.getVariable('lives'), 'level': party.getVariable('level'), 'shurikens': party.getVariable('shurikens'), 'handsTracker': handsTracker, 'shurikensOptions': 1, 'targetPlayer': playerID}, room=partyID)
 
 
 def calc_updated_hands_tracker(partyID):
@@ -274,6 +288,7 @@ def propose_votation_for_shuriken(partyID, playerID, mtype):
     party.setVariable('shurikenVotes', shuriken_votes)
     emit('vote-for-shuriken', {'mtype': mtype, 'playerID': playerID}, room=partyID)
 
+
 def shuriken_vote(partyID, playerID, mtype, vote):
     party = partyManager.get_party(partyID)
     shuriken_votes = party.getVariable('shurikenVotes')
@@ -292,15 +307,53 @@ def shuriken_vote(partyID, playerID, mtype, vote):
         emit('shuriken-votation-result', {'result': 1}, room=partyID)
         use_shuriken(partyID, playerID, mtype)
     else:
-        emit('shuriken-votation-result', {'result': 0, 'disagreeVotes': disagree_votes}, room=partyID)
-
-        
+        emit('shuriken-votation-result', {'result': 0, 'disagreeVotes': disagree_votes}, room=partyID)      
         
 
 def next_level(partyID):
     party = partyManager.get_party(partyID)
+
+    try:
+        maxLevel = limits['maxLevel'+str(len(party.players))+'players'] 
+    except KeyError:
+        maxLevel = limits['maxLevel4players']
+
+    if party.getVariable('level') >= maxLevel:
+        emit('end-game', end(1, party.partyID), room=partyID)
+        return
+                
     party.setVariable('level', party.getVariable('level') + 1)
     current_level = party.getVariable('level')
+    livesOptions = None
+    shurikenOptions = None
+
+    if current_level == 2:
+        party.setVariable('shurikens', party.getVariable('shurikens') + 1)
+        livesOptions = 1
+    elif current_level == 3:
+        party.setVariable('lives', party.getVariable('lives') + 1)
+    elif current_level == 4:
+        shurikenOptions = 1
+    elif current_level == 5:
+        party.setVariable('shurikens', party.getVariable('shurikens') + 1)
+        livesOptions = 1
+    elif current_level == 6:
+        party.setVariable('lives', party.getVariable('lives') + 1)
+    elif current_level == 7:
+        shurikenOptions = 1
+    elif current_level == 8:
+        party.setVariable('shurikens', party.getVariable('shurikens') + 1)
+        livesOptions = 1
+    elif current_level == 9:
+        party.setVariable('lives', party.getVariable('lives') + 1)
+
+    if party.getVariable('lives') > limits['maxLives']:
+        party.setVariable('lives', limits['maxLives'])
+    if party.getVariable('shurikens') > limits['maxShurikens']:
+        party.setVariable('shurikens', limits['maxShurikens'])
+    
+
+
 
     # party.decks['gamePile'].shuffle_into_deck(party.decks['deck'], shuffle=True)
     # Instead of shuffling the game pile back into the deck, get_inGameCards already function shuffled a copy of the original deck with all cards 
@@ -319,5 +372,7 @@ def next_level(partyID):
     
     handsTracker = calc_updated_hands_tracker(partyID)
 
-    emit('next-level', {'level': current_level, 'handsTracker': handsTracker}, room=partyID)
+    emit('next-level', {'level': current_level, 'handsTracker': handsTracker, 'livesOptions': livesOptions, 'shurikensOptions': shurikenOptions}, room=partyID)
+
+    return
 

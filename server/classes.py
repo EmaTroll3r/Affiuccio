@@ -235,6 +235,7 @@ class Party:
         return {
             'partyID': self.partyID,
             'players': [str(player) for player in self.players],
+            'status': self.status,
             #'deck': str(self.deck)  # Converti l'oggetto Deck in una stringa
         }
     

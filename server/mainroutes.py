@@ -107,7 +107,7 @@ def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
 
 
 @socketio.on('ping')
-def on_join(data):
+def on_ping(data):
     partyID = int(data['partyID'])
     playerID = int(data['playerID'])
     

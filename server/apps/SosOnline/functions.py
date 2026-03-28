@@ -126,15 +126,35 @@ def join(partyID,playername):
     
     if partyManager.get_party(partyID) is None:
         return "sorry no party found"
+    
+
     if playername:
 
-        player = Player(playername,partyManager.get_party(partyID),{'hint': sosOnlineLimits['maxHintHand'], 'action': sosOnlineLimits['maxActionHand']})
-        player.components['noisePoints'] = 5
+        old_player = None
+        for player in partyManager.get_party(partyID).players:
+            if player.name == playername:
+                old_player = player
+                break
+        
+        if old_player:
+            mtype = old_player.mtype
+            playerID = old_player.id
+            page = 'game' if partyManager.get_party(partyID).status == 'Game' else 'lobby'
+        else:
+            player = Player(playername,partyManager.get_party(partyID),{'hint': sosOnlineLimits['maxHintHand'], 'action': sosOnlineLimits['maxActionHand']})
+            player.components['noisePoints'] = 5
+
+            mtype = partyManager.get_party(partyID).join(player)
+            playerID = player.id
+            page = 'lobby'
+        
+
 
         response = {
             'partyID': partyID,
-            'mtype': partyManager.get_party(partyID).join(player),
-            'playerID': player.id
+            'mtype': mtype,
+            'playerID': playerID,
+            'page': page
         }
         
         #print("player",partyManager.get_party(partyID).get_player(response['mtype']).to_dict())
