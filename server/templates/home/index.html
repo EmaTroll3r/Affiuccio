@@ -1,20 +1,56 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Affiuccio</title> 
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home/home_style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affiuccio | Minimal Board Games Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home/styles_home.css') }}">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Welcome to Affiuccio</h1>
-        </div>
-        <div class="content">
-            <p>A quale gioco vuoi giocare?</p>
-            <p><a href="/SosOnline">Sos Online</a></p>
-        </div>
-        <div class="footer">
-            <p>Powered by Affiuccio</p>
-        </div>
-    </div>
+    <header class="topbar">
+        <a class="brand" href="#">Affiuccio</a>
+        <a class="top-action" href="#games-list">Explore Games</a>
+    </header>
 
+    <main>
+        <section class="hero" aria-label="Featured Games Carousel">
+            <div class="hero-header">
+                <h1>Play Board Games Online</h1>
+                <p>Simple, sharp, and ready to play.</p>
+            </div>
+
+            <div class="carousel" id="home-carousel">
+                <button class="carousel-arrow prev" type="button" aria-label="Previous slide">&#10094;</button>
+
+                <div class="carousel-track" id="carousel-track"></div>
+                <div class="carousel-counter" id="carousel-counter" aria-live="polite">1/1</div>
+
+                <button class="carousel-arrow next" type="button" aria-label="Next slide">&#10095;</button>
+            </div>
+        </section>
+
+        <section id="games-list" class="games-list-section">
+            <div class="section-head">
+                <h2>Available Games</h2>
+            </div>
+
+            <div class="games-grid" id="games-grid"></div>
+        </section>
+
+        <section class="final-cta" aria-label="Call To Action">
+            <h2>Choose your game and start now.</h2>
+            <a href="#games-list" class="cta-button">Play Now</a>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>Affiuccio</p>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+    </footer>
+
+    <script src="{{ url_for('static', filename='home/script_home.js') }}"></script>
+</body>
 </html>
