@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     /*background-color: #add8e6;*/
-    background-image: url('images/background.webp'); /* Aggiungi questa linea */
+    background-image: url('images/background.webp');
     background-size: cover; /* Questa linea fa in modo che l'immagine di sfondo copra l'intero elemento */
     display: flex;
     flex-direction: column;
