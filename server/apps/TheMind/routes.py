@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, redirect, render_template, request
 from global_vars import partyManager,socketio, test
 from server.apps import TheMind as theMind
 from json import load
@@ -96,6 +96,10 @@ def themind_game():
         return render_template('TheMind/404.html')
     
     return render_template('TheMind/game.html')
+
+@themind.route('/end', methods=['GET'])
+def themind_end():
+    return redirect('/')
 
 @themind.route('/lobby')
 def themind_lobby():

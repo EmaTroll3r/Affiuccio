@@ -25,7 +25,13 @@ def join(partyID,playername):
         if old_player:
             mtype = old_player.mtype
             playerID = old_player.id
-            page = 'game' if partyManager.get_party(partyID).status == 'Game' else 'lobby'
+            if partyManager.get_party(partyID).status == 'Game':
+                page = 'game'
+            elif partyManager.get_party(partyID).status == 'End':
+                page = 'end'
+            else:
+                page = 'lobby'
+            
         else:
             player = Player(playername,partyManager.get_party(partyID),{'hand': limits['maxHand']})
             player.components['noisePoints'] = limits['noiseForClients']
