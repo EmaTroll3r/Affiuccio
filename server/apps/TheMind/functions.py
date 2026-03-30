@@ -258,21 +258,25 @@ def use_shuriken(partyID, playerID, mtype):
     if party.getVariable('shurikens') > 0:
         party.setVariable('shurikens', party.getVariable('shurikens') - 1)
         removed_cards = []
+        message = "All players agreed to use a shuriken.<br>Using shuriken...<br><br>"
         for player in party.players:
             card = player.hands['hand'].getLowestCard()
             if card is not None:
                 player.hands['hand'].removeCard(card)
                 removed_cards.append(card.card)
+                message += "Player " + str(player.name) + " removed " + str(card.card) + " from their hand.<br>"
 
         handsTracker = calc_updated_hands_tracker(partyID)
 
-        emit('used-shuriken', {'mtype': mtype, 'playerID': playerID, 'handsTracker': handsTracker, 'shurikens': party.getVariable('shurikens'), 'removedCards': removed_cards}, room=partyID)
+        emit('used-shuriken', {'mtype': mtype, 'playerID': playerID, 'handsTracker': handsTracker, 'shurikens': party.getVariable('shurikens'), 'removedCards': removed_cards, 'message': message}, room=partyID)
 
         cards_in_game = 0
         for player in party.players:
             cards_in_game += len(player.hands['hand'])
         if cards_in_game == 0:
             next_level(partyID)
+
+        
 
     else:
         emit('error', {'mtype': mtype, 'playerID': playerID, 'handsTracker': None, 'shurikens': 0}, room=partyID)
@@ -304,10 +308,10 @@ def shuriken_vote(partyID, playerID, mtype, vote):
 
 
     if len(disagree_votes) == 0:
-        emit('shuriken-votation-result', {'result': 1}, room=partyID)
+        # emit('shuriken-votation-failed', {'result': 1}, room=partyID)
         use_shuriken(partyID, playerID, mtype)
     else:
-        emit('shuriken-votation-result', {'result': 0, 'disagreeVotes': disagree_votes}, room=partyID)      
+        emit('shuriken-votation-failed', {'result': 0, 'disagreeVotes': disagree_votes}, room=partyID)      
         
 
 def next_level(partyID):
@@ -372,7 +376,7 @@ def next_level(partyID):
     
     handsTracker = calc_updated_hands_tracker(partyID)
 
-    emit('next-level', {'level': current_level, 'handsTracker': handsTracker, 'livesOptions': livesOptions, 'shurikensOptions': shurikenOptions}, room=partyID)
+    emit('next-level', {'level': current_level, 'handsTracker': handsTracker, 'livesOptions': livesOptions, 'shurikensOptions': shurikenOptions, 'shuriken': party.getVariable('shurikens'), 'lives': party.getVariable('lives')}, room=partyID)
 
     return
 

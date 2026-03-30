@@ -159,8 +159,15 @@ socket.on('next-level', async function(data) {
 
     if (data.livesOptions)
         livesOptionsElement.setAttribute('data-text', data.livesOptions ? '(+' + data.livesOptions.toString() + ')' : '');
+    else
+        livesOptionsElement.setAttribute('data-text', '');
     if (data.shurikensOptions)
         shurikensOptionsElement.setAttribute('data-text', data.shurikensOptions ? '(+' + data.shurikensOptions.toString() + ')' : '');
+    else
+        shurikensOptionsElement.setAttribute('data-text', '');
+
+    livesElement.setAttribute('data-text', data.lives.toString());
+    shurikensElement.setAttribute('data-text', data.shuriken.toString());
 
     updateAllPlayerHandTrackers(data.handsTracker);
 
@@ -266,6 +273,7 @@ socket.on('response-otherInitialInformations', function(data) {
 });
 
 socket.on('used-shuriken', function(data) {
+    alert(data.message, 0, 'Shuriken Proposal Accepted');
     for(let i=0;i<data.removedCards.length;i++){
         card = data.removedCards[i];
         if (hand['hand'].includes(card)){
@@ -276,6 +284,7 @@ socket.on('used-shuriken', function(data) {
     updateAllPlayerHandTrackers(data.handsTracker);
     shurikensElement.setAttribute('data-text', data.shurikens.toString());
 });
+
 
 socket.on('vote-for-shuriken', async function(data) {
     if (data.playerID != playerID){
@@ -290,10 +299,9 @@ socket.on('vote-for-shuriken', async function(data) {
     }
 });
 
-socket.on('shuriken-votation-result', async function(data) {
-    if (data.result == 1){
-        alert('All players agreed to use a shuriken.<br>Using shuriken...', 0, 'Shuriken Proposal Accepted');
-    } else {
+
+socket.on('shuriken-votation-failed', async function(data) {        //if you receive this event, it means that failed
+    if (data.result == 0){
         let message = 'The shuriken proposal has been rejected!<br><br>'
         for (let i = 0; i < data.disagreeVotes.length; i++) {
             const player_mtype = data.disagreeVotes[i];
