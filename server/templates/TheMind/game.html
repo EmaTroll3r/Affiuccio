@@ -85,7 +85,7 @@
 
         <!-- These scripts are only executed after socket_connect.js has finished -->
         <input type="hidden" class="dynamic-script-url" value="{{ url_for('static', filename='TheMind/script_game.js') }}">
-        <input type="hidden" class="dynamic-script-url" value="{{ url_for('static', filename='TheMind/script_contextMenu.js') }}">
+        <input type="hidden" class="dynamic-script-url" value="{{ url_for('static', filename='home/script_contextMenu.js') }}">
         <input type="hidden" class="dynamic-script-url" value="{{ url_for('static', filename='home/game_common.js') }}">
 
         <script defer src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>

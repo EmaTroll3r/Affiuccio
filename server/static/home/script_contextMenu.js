@@ -71,7 +71,6 @@ document.addEventListener('click', function(e) {
 });
 
 
-
 contextMenu.addEventListener('mouseenter', function() {
     // Il mouse è entrato nel menu in tempo! Fermiamo la chiusura.
     clearTimeout(timeoutHideMenu); 
