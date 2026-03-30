@@ -14,7 +14,7 @@ def join(partyID,playername):
     if partyManager.get_party(partyID) is None:
         return "sorry no party found"
     
-    if playername:
+    if playername:        
 
         old_player = None
         for player in partyManager.get_party(partyID).players:
@@ -27,8 +27,6 @@ def join(partyID,playername):
             playerID = old_player.id
             if partyManager.get_party(partyID).status == 'Game':
                 page = 'game'
-            elif partyManager.get_party(partyID).status == 'End':
-                page = 'end'
             else:
                 page = 'lobby'
             
@@ -39,6 +37,10 @@ def join(partyID,playername):
             mtype = partyManager.get_party(partyID).join(player)
             playerID = player.id
             page = 'lobby'
+
+
+        if partyManager.get_party(partyID).status == 'End':
+            page = 'end'
 
         response = {
             'partyID': partyID,
