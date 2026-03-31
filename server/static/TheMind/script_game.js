@@ -197,8 +197,11 @@ socket.on('notify-left-lives', async function(data) {
     console.log('notify-left-lives', data);
     await alert(data.message, 1, 'Watch out!');
 
-    for(let i=0;i<hand['hand'].length;i++){
-        card = hand['hand'][i] || 0;
+    const hand_copy = [...hand['hand']];
+    console.log('hand', hand['hand'], 'hand_copy', hand_copy);
+
+    for(let i=0;i<hand_copy.length;i++){
+        card = hand_copy[i] || 0;
         if (card == 0){         //if the card is 0, it means that the card was not found, so we skip it
             continue;
         }

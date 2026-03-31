@@ -2,7 +2,6 @@ from flask import Blueprint
 from flask_socketio import SocketIO
 from server.classes import PartyManager
 from json import dump
-#from socketio_instance import socketio
 
 test = True
 #"""
@@ -29,7 +28,6 @@ if test == True:
     data = {
         'ip': "localhost",
         'domain': "http://localhost"
-        # 'domain': "http://192.168.1.54"
     }
 
 with open('server/static/server_stats.json', 'w') as f:

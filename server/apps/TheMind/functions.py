@@ -9,6 +9,7 @@ from time import sleep
 with open('server/static/TheMind/TheMindLimits.json', 'r') as f:
     limits = load(f)
 
+
 def join(partyID,playername):
     
     if partyManager.get_party(partyID) is None:
@@ -52,7 +53,6 @@ def join(partyID,playername):
         return jsonify(response)
     else:
         return "no player name provided"
-    
 
 
 def host(test=False):
@@ -215,6 +215,14 @@ def end(outcome, partyID):
 
     partyManager.get_party(partyID).end()
     return data
+
+
+def get_inGameCardsN(partyID):
+    return partyManager.get_party(partyID).getVariable('level') + 1 + 1
+
+
+
+
 
 
 def notifyLeftLives(partyID, left_lives, higher_cards, played_card):

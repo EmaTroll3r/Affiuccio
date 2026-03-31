@@ -138,7 +138,7 @@ document.getElementById('start-game').addEventListener('click', function() {
         return;
     }
 
-    socket.emit(gameEndpoint.toLowerCase()+"-ask-start-game", {'partyID': partyID})
+    socket.emit("ask-start-game", {'partyID': partyID, 'gameName': gameEndpoint});
     console.log("start-game emitted to",partyID)
     /*
     fetch(`/SosOnline/game?mtype=${mtype}&partyID=${partyID}`, {

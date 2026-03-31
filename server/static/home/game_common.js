@@ -194,7 +194,7 @@ function stopPing() {
 }
 
 function get_InGameCards(){
-    socket.emit(lowerEndpoint + '-get-inGameCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype})
+    socket.emit('get-inGameCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'gameName': endpoint});
 }
 
 function requestHand(partyID, playerID, mtype, handtype){

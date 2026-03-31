@@ -1,9 +1,9 @@
-from flask import jsonify, render_template, request
+from flask import jsonify, render_template, request,redirect, url_for, abort
 from flask_socketio import join_room, leave_room,emit
 import server.apps.SosOnline as sosOnline
 import server.apps.TheMind as theMind
 from global_vars import main, partyManager,socketio, test
-#from .classes import Deck, Party, Player
+from .gamelist import game_list
 
 #    -----------------------------------------------------------------------------
 #   |                                                                             |
@@ -12,98 +12,19 @@ from global_vars import main, partyManager,socketio, test
 #   |                                                                             |
 #    -----------------------------------------------------------------------------
 
+def get_game(game_name):
+    if game_name not in game_list:
+        abort(404)
+    game = game_list.get(game_name)
+
+    if not game:
+        abort(404)
+
+    return game
+
 
 def p(*args):
     print("\n\n\n",*args,"\n\n\n")
-
-"""
-def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
-    response = {"status": -1,"message": ""}
-    newTurn = -1
-    if(party.gameEndpoint == 'SosOnline'):
-        if(handtypes[0] != "wl"):     #se non è una carta occhiataccia
-            with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
-                sosOnlineLimits = json.load(f)
-            for i in range(len(cards)):
-                if cards[i] == 0:
-                    continue
-                if(not player.can_play(cards[i],handtypes[i])):
-                    #print("cards",cards[i],"not in hand",handtypes[i])
-                    response.update({"status": 1, "message": "card "+cards[i]+" not in hand "+handtypes[i]})
-                    return response
-            if(party.turn != player.mtype and cards[1] != 0 and cards[1] > sosOnlineLimits['maxBlockCards']):  #non è il tuo turno e hai giocato una carta scaricabarile
-                #print("cards",cards[0]," non è il tuo turno e hai giocato una carta scaricabarile")
-                response.update({"status": 2, "message": "Is not your turn and you played a blame action card"})
-                return response
-            if(party.turn != player.mtype and cards[1] == 0): #non è il tuo turno e hai giocato una carta semplicemente
-                #print("cards",cards[0]," non è il tuo turno e hai giocato una carta semplicemente")
-                response.update({"status": 3, "message": "Is not your turn and you played a card whitout a block action card"})
-                return response
-            if(party.turn == player.mtype and  cards[1] != 0 and cards[1] < sosOnlineLimits['maxBlockCards']): #è il tuo turno e hai giocato una carta blocca
-                #print("cards",cards[0],"è il tuo turno ma hai giocato una carta blocca")
-                response.update({"status": 4, "message": "Is your turn and you played a block action card"})
-                return response
-            
-            if(cards[1] >= sosOnlineLimits['maxBlockCards']):       #se è uno scaricabarile vede se può cambiare il turno
-                newTurn = party.changeTurn(options['newTurn'],[1],needToPlay=False)   #vedw se può cambiare il turno ma non lo cambia effettivamente
-                #print("newTurn",newTurn)
-                if newTurn == -1:
-                    response.update({"status": 5, "message": "No player with that mtype"})
-                    return response
-                elif newTurn == -2:
-                    response.update({"status": 6, "message": "newTurn is not a valid"})
-                    return response
-                elif newTurn == -3:
-                    response.update({"status": 6, "message": "Can't pass turn to a forbitten player"})
-                    return response
-                elif newTurn > 0:
-                    pass
-                else:
-                    response.update({"status": 7, "message": "Generic error"})
-                    return response
-
-
-            if(needToPlay == True):
-                player.play(cards[0],handtypes[0])
-                if(cards[1] != 0):
-                    player.play(cards[1],handtypes[1])
-                    if(cards[1] >= sosOnlineLimits['maxBlockCards']):      #se è uno scaricabarile
-                        if newTurn > 0:
-                            for i in range(sosOnlineLimits['maxHintHand'] - len(party.players[player.mtype-1].hands['hint'])):  #pesca hint card fino ad arrivare a maxHintHand
-                                party.raw_draw(player.mtype,'hint','hint')
-                            newTurn = party.changeTurn(options['newTurn'],[1],needToPlay=True)        #cambia effettivamente il turno
-                            emit('response-turn', {'turn': newTurn}, room=party.partyID)
-                    if(cards[1] < sosOnlineLimits['maxBlockCards']):        #se è una carta blocco
-                        party.raw_draw(player.mtype,'action','action')
-
-                        
-            response.update({"status": 0, "message": "Success"})
-            return response
-        
-        elif(handtypes[0] == "wl"):     #se è una carta occhiataccia
-            victim = party.players[options['victim']]
-            if(player.mtype != 1):
-                response.update({"status": 8, "message": "You are not the overlord"})
-                return response
-            
-            elif(victim.mtype == 1):
-                response.update({"status": 9, "message": "You can't launch Withering Looks to yourself"})
-                return response
-            elif(victim.mtype == 0 or victim.mtype > len(party.players)):
-                response.update({"status": 5, "message": "No player with that mtype"})
-                return response
-            elif(victim.points >= cards[0]):
-                response.update({"status": 10, "message": "You can't launch Withering Looks to that player bacause he has more Withering Looks than the card"})
-                return response
-            elif(cards[0] < 1 or cards[0] > 3):
-                response.update({"status": 11, "message": "The card is not valid"})
-                return response
-
-            victim.points = cards[0]
-
-            response.update({"status": 0, "message": "Success"})
-            return response
-"""
 
 
 @socketio.on('ping')
@@ -318,6 +239,44 @@ def remove_player_from_lobby(data):
 
 
 
+@socketio.on('ask-start-game')
+def start_game(data):
+    game = get_game(data.get('gameName'))
+    partyID = int(data['partyID'])
+    try:
+        settings = data['settings']
+    except KeyError:
+        settings = None
+
+    game.start_game(partyID, settings)
+
+@socketio.on('get-inGameCards')
+def inGameCards(data):
+    game = get_game(data.get('gameName'))
+    partyID = int(data['partyID'])
+    mtype = int(data['mtype'])
+    playerID = int(data['playerID'])
+    n = game.get_inGameCardsN(partyID)
+
+    return game.get_inGameCards(partyID,mtype,playerID, playerID, n)
+
+@socketio.on('change-turn')
+def change_turn(data):
+    
+    game = get_game(data.get('gameName'))
+    return game.change_turn(int(data['partyID']),int(data['playerID']),int(data['mtype']),int(data['newTurn']))
+
+@socketio.on('noise')
+def noise(data):
+    game = get_game(data.get('gameName'))
+    return game.noise(int(data['partyID']),int(data['playerID']),int(data['mtype']),int(data['targetPlayer']),int(data['noiseLevel']))
+
+@socketio.on('get-noise')
+def get_noise(data):
+    game = get_game(data.get('gameName'))
+    return game.get_noise(int(data['partyID']),int(data['playerID']),int(data['mtype']))
+
+
 
 @main.route('/')
 def home_index():
@@ -327,8 +286,6 @@ def home_index():
 @main.route('/home/playerList', methods=['GET'])
 def get_player_list():
     partyID = int(request.args.get('partyID'))
-    # print("\n\n\nRicevuto richiesta player list per partyID",partyID,"\n\n\n")
-    #print("\n\n\n",partyID,"\n\n\n")
     if partyManager.get_party(partyID) is None:
         return {'message':"sorry no party found", 'status': 1}
     players = partyManager.get_party(partyID).players
@@ -337,3 +294,62 @@ def get_player_list():
 @main.route('/home/parties')
 def get_parties():
     return jsonify(partyManager.get_parties())
+
+
+
+
+
+
+@main.route('/<game_name>/', methods=['GET'])
+def home(game_name):
+    print("\n\n\nRichiesta home di",game_name,"\n\n\n")
+    if game_name not in game_list:
+        abort(404)
+        
+    return render_template(f'{game_name}/index.html')
+
+
+@main.route('/<game_name>/host', methods=['POST'])
+def host(game_name):
+    if game_name not in game_list:
+        abort(404)
+        
+    manager = game_list[game_name]
+    return manager.host(test=test)
+
+
+@main.route('/<game_name>/join', methods=['GET'])
+def join(game_name):
+    if game_name not in game_list:
+        abort(404)
+        
+    partyID = int(request.args.get('partyID'))
+    playername = request.args.get('player')
+    
+    manager = game_list[game_name]
+    return manager.join(partyID, playername)
+
+
+@main.route('/<game_name>/game', methods=['GET'])
+def game(game_name):
+    if game_name not in game_list:
+        abort(404)
+        
+    partyID = int(request.args.get('partyID'))
+    if partyManager.get_party(partyID) is None:
+        return render_template(f'{game_name}/404.html')
+    
+    return render_template(f'{game_name}/game.html')
+
+
+@main.route('/<game_name>/end', methods=['GET'])
+def end(game_name):
+    return redirect(url_for('.home', game_name=game_name))
+
+
+@main.route('/<game_name>/lobby')
+def lobby(game_name):
+    partyID = int(request.args.get('partyID'))
+    if partyManager.get_party(partyID) is None:
+        return render_template(f'{game_name}/404.html')
+    return render_template(f'{game_name}/lobby.html')
