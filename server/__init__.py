@@ -5,7 +5,7 @@ from .mainroutes import main
 from .apps.SosOnline.routes import sosonline
 from .apps.SyncWatch.routes import syncwatch
 from .apps.DBChess.routes import dbchess
-# from .apps.TheMind.routes import themind
+
 from .errors import global_error_handler
 
 #from global_vars import socketio
@@ -24,11 +24,9 @@ def create_app():
 
 
     app.register_blueprint(main)
-    # app.register_blueprint(themind, url_prefix='/TheMind')
     app.register_blueprint(dbchess, url_prefix='/DBChess')
     app.register_blueprint(syncwatch, url_prefix='/SyncWatch')
     app.register_blueprint(sosonline, url_prefix='/SosOnline')
-    #app.register_blueprint(sos_online, url_prefix='/SosOnline')
     
     # Error handler globale che determina il CSS in base al path
     @app.errorhandler(404)

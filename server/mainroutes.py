@@ -1,16 +1,9 @@
 from flask import jsonify, render_template, request,redirect, url_for, abort
 from flask_socketio import join_room, leave_room,emit
-import server.apps.SosOnline as sosOnline
-import server.apps.TheMind as theMind
 from global_vars import main, partyManager,socketio, test
 from .gamelist import game_list
 
-#    -----------------------------------------------------------------------------
-#   |                                                                             |
-#   |   Quando si creano nuovi giochi aggiungere un if in play_card_endpoint()    |
-#   |           e in draw() con lo specifico endpoint del gioco                   |
-#   |                                                                             |
-#    -----------------------------------------------------------------------------
+
 
 def get_game(game_name):
     if game_name not in game_list:
@@ -72,10 +65,8 @@ def play_card_endpoint(data):
     askHand = data.get('askHand', 1)
     
     #response = play_card(cards,handtypes,partyManager.get_player(playerID),partyManager.get_party(partyID),options=options)
-    if(partyManager.get_party(partyID).gameEndpoint == 'SosOnline'):
-        response,end_response = sosOnline.play_card(cards,handtypes,partyManager.get_player(playerID),partyManager.get_party(partyID),options=options)
-    if(partyManager.get_party(partyID).gameEndpoint == 'TheMind'):
-        response,end_response = theMind.play_card(cards,handtypes,partyManager.get_player(playerID),partyManager.get_party(partyID),options=options)
+    game = get_game(partyManager.get_party(partyID).gameEndpoint)
+    response,end_response = game.play_card(cards,handtypes,partyManager.get_player(playerID),partyManager.get_party(partyID),options=options)
     
     
     if (response['status'] == 0):
@@ -198,11 +189,9 @@ def draw(data):
         emit('response-hand', {'playerID': partyManager.get_party(partyID).get_player(targetPlayer).id,'handtype':targetHand, 'hand': hand}, room=partyID)
 
 
-        if(partyManager.get_party(partyID).gameEndpoint == 'SosOnline'):
-            sosOnline.get_inGameCards(partyID,mtype,playerID,n=2)
-        if(partyManager.get_party(partyID).gameEndpoint == 'TheMind'):
-            theMind.get_inGameCards(partyID,mtype,playerID,n= 2)
-        #emit('response-inGameCards', {'hand': partyManager.get_party(partyID).decks[handtype].watchNextCards(2*sosOnlineLimits['watchCards']), 'playerID':playerID, 'mtype': mtype}, room=partyID)
+        
+        game = get_game(partyManager.get_party(partyID).gameEndpoint)
+        game.get_inGameCards(partyID,mtype,playerID,n=2)
 
 @socketio.on('get-playerList')
 def get_playerList(data):
