@@ -1,6 +1,7 @@
 let handtypes = ['hand']
 let required_full_screen = 'True'
-let showingHands = ['hand']             //handtypes che possono essere mostrate (ad es. in SosOnline mostriamo le carte hint, ma non le carte action)
+let showingHands = ['hand']             //handtypes that can be shown (e.g. in SosOnline we can show the hint cards, but not the action cards)
+
 
 // ------------------ All of this are functions specfic for this game, so maybe be empty ------------------
 // They include specific additional functions beyond the basic ones that are already implemented 
@@ -60,6 +61,7 @@ function showHand(){
     }
 
 }
+
 
 function playCard(card,options=null){
     
