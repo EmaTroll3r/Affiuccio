@@ -57,7 +57,6 @@ function showHand(){
         console.log('showHand', card, "n:", i);
         cardsImages[i].src = img;
         cardsImages[i].classList.remove('hidden');
-        // cardsImages[i].setAttribute('used', 'false');
     }
 
 }

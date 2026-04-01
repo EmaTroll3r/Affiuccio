@@ -1,10 +1,7 @@
-from flask import Blueprint, redirect, render_template, request
-from global_vars import partyManager,socketio, test, main
+# from flask import Blueprint, redirect, render_template, request
+# from global_vars import partyManager, test, main
+from global_vars import socketio
 from server.apps import TheMind as theMind
-from json import load
-
-
-
 
 
 @socketio.on('themind-received-left-lives')
