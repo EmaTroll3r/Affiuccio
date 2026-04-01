@@ -41,20 +41,7 @@
             showInCarousel: true,
             slideClass: "placeholder-3",
             thumbClass: "thumb-3"
-        },
-        // {
-        //     id: "syncwatch",
-        //     name: "SyncWatch",
-        //     route: "/SyncWatch",
-        //     description: "Coordination challenge in real time.",
-        //     category: "Party",
-        //     players: "Multiplayer",
-        //     status: "Online",
-        //     enabled: true,
-        //     showInCarousel: true,
-        //     slideClass: "placeholder-4",
-        //     thumbClass: "thumb-4"
-        // }
+        }
     ];
 
     const enabledGames = games.filter((game) => game.enabled);
