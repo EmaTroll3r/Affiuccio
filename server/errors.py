@@ -1,5 +1,6 @@
 
 from flask import render_template, request
+from jinja2.exceptions import TemplateNotFound
 from .mainroutes import game_list
 
 def global_error_handler(e, error_code):
@@ -12,7 +13,10 @@ def global_error_handler(e, error_code):
             if game_path:
                 game_name = game_path[0]                
                 if game_name in game_list:
-                    return render_template(f'{game_name}/404.html'), error_code
+                    try:
+                        return render_template(f'{game_name}/404.html'), error_code
+                    except TemplateNotFound:
+                        return render_template('home/404.html'), error_code
 
             if path.startswith('/SosOnline'):
                 print('Loading SosOnline CSS for 404')
