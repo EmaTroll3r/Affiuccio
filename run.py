@@ -1,4 +1,4 @@
-#https://affiuccio.duckdns.org/SosOnline
+#https://affiuccio.duckdns.org
 from server import create_app
 from global_vars import socketio, test
 from flask_cors import CORS

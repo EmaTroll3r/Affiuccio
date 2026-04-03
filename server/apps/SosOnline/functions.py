@@ -222,7 +222,7 @@ def get_noise(partyID,playerID,mtype):
     emit('response-noise', {'playerID':playerID, 'mtype': mtype, 'noisePoints': partyManager.get_party(partyID).get_player(mtype).components['noisePoints']}, room=partyID)
 
 
-def start_game(partyID):
+def start_game(partyID, settings):
     maxPlayersMtype = 0
     real_mtype = 1
 

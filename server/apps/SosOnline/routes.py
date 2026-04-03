@@ -1,13 +1,10 @@
-from flask import Blueprint, render_template, request
-from global_vars import partyManager,socketio, test
+# from flask import Blueprint
+from flask import render_template, request
+from global_vars import partyManager, main
 from server.apps import SosOnline as sosOnline
-from json import load
+from global_vars import socketio
 
 
-with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
-    sosOnlineLimits = load(f)
-
-sosonline = Blueprint('sosonline', __name__)
 
 @socketio.on('sosonline-ask-start-game')
 def sosonline_start_game(data):
@@ -39,53 +36,14 @@ def sosonline_get_noise(data):
 #-------------------------------------------------------------------------------------------
 
 
-@sosonline.route('/')
-def sosonline_index():
-    return render_template('SosOnline/index.html')
-
-@sosonline.route('/host', methods=['POST'])
-def sosonline_host():
-    return sosOnline.host(test=test)
-    
-
-@sosonline.route('/join', methods=['GET'])
-def sosonline_join():
-    
-    #with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
-    #    sosOnlineLimits = json.load(f)
-    
-    partyID = int(request.args.get('partyID'))
-    playername = request.args.get('player')
-    
-    return sosOnline.join(partyID,playername)
-
-@sosonline.route('/game', methods=['GET'])
-def sosonline_game():
-    mtype = int(request.args.get('mtype'))
-    partyID = int(request.args.get('partyID'))  # Converti partyID in un intero
-    if partyManager.get_party(partyID) is None:
-        #return "sorry no party found"        
-        return render_template('SosOnline/404.html')
-    #sosOnline.run(partyID)
-    return render_template('SosOnline/game.html')
-
-@sosonline.route('/overlord', methods=['GET'])
+@main.route('/SosOnline/overlord', methods=['GET'])
 def sosonline_overlord():
     mtype = int(request.args.get('mtype'))
-    partyID = int(request.args.get('partyID'))  # Converti partyID in un intero
-    if partyManager.get_party(partyID) is None:
-        #return "sorry no party found"
-        return render_template('SosOnline/404.html')
-    #sosOnline.run(partyID)
-    return render_template('SosOnline/overlord.html')
-
-@sosonline.route('/lobby')
-def sosonline_lobby():
-    #partyID = request.args.get('partyID')
     partyID = int(request.args.get('partyID'))
     if partyManager.get_party(partyID) is None:
-        #return "sorry no party found"
         return render_template('SosOnline/404.html')
-    return render_template('SosOnline/lobby.html')
+    return render_template('SosOnline/overlord.html')
+
+
 
 
