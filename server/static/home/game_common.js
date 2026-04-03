@@ -123,7 +123,9 @@ socket.on('response-playerList', function(data) {
 
     onResponsePlayerList();
 
-    socket.emit('get-turn', {'partyID':partyID, 'playerID':playerID});
+    if (playerID == data.playerID){
+        socket.emit('get-turn', {'partyID':partyID, 'playerID':playerID});
+    }
 });
 
 
@@ -133,7 +135,9 @@ socket.on('response-turn', function(data) {
     onResponseTurn();
 
     if (data.response['status'] == 0){
-        showHand();
+        if (playerID == data.playerID){
+            showHand();
+        }
     }
 
     if(parseInt(mtype) == turn && data.response['status'] == 0 && data.requestType == 'changeTurn'){
@@ -201,7 +205,8 @@ function requestHand(partyID, playerID, mtype, handtype){
     socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':handtype});
 }
 
-async function askFullScreen() {
+async function askFullScreen(orientationMode = 'landscape') {
+    
     Swal.fire({
         title: '<span style="color: #fff;">Vuoi attivare il FullScreen?</span>',
         showCancelButton: true,
@@ -212,19 +217,30 @@ async function askFullScreen() {
             content: 'swal-content-custom'
         }
     }).then((result) => {
+        let isFullScreen = false;
         if (result.isConfirmed) {
             // L'utente ha cliccato su "Sì"
-            toggleFullScreen(document.documentElement);
+            isFullScreen = toggleFullScreen(document.documentElement, orientationMode = orientationMode);
             //console.log("L'utente ha confermato FullScreen");
         } else if (result.isDismissed) {
             //console.log("L'utente ha annullato o chiuso il popup");
         }
+
+        additionalFullScreenActions(isFullScreen);
     });
 }
 
-function toggleFullScreen(elem) {
-    // ## The below if statement seems to work better ## if ((document.fullScreenElement && document.fullScreenElement !== null) || (document.msfullscreenElement && document.msfullscreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
-    if ((document.fullScreenElement !== undefined && document.fullScreenElement === null) || (document.msFullscreenElement !== undefined && document.msFullscreenElement === null) || (document.mozFullScreen !== undefined && !document.mozFullScreen) || (document.webkitIsFullScreen !== undefined && !document.webkitIsFullScreen)) {
+
+function toggleFullScreen(elem, orientationMode = 'landscape') {
+    let isFullScreen = false;
+
+    if ((document.fullScreenElement !== undefined && document.fullScreenElement === null) || 
+        (document.msFullscreenElement !== undefined && document.msFullscreenElement === null) || 
+        (document.mozFullScreen !== undefined && !document.mozFullScreen) || 
+        (document.webkitIsFullScreen !== undefined && !document.webkitIsFullScreen)) {
+        
+        isFullScreen = true; 
+
         if (elem.requestFullScreen) {
             elem.requestFullScreen();
         } else if (elem.mozRequestFullScreen) {
@@ -235,12 +251,15 @@ function toggleFullScreen(elem) {
             elem.msRequestFullscreen();
         }
 
-        if (window.screen.orientation.lock) {
-            window.screen.orientation.lock('landscape');
-            console.log('Orientation locked');
+        if (window.screen && window.screen.orientation && window.screen.orientation.lock) {
+            window.screen.orientation.lock(orientationMode)
+                .then(() => console.log('Orientation locked to: ' + orientationMode))
+                .catch((err) => console.warn('Impossibile bloccare l\'orientamento:', err));
         }
 
     } else {
+        isFullScreen = false; 
+
         if (document.cancelFullScreen) {
             document.cancelFullScreen();
         } else if (document.mozCancelFullScreen) {
@@ -251,6 +270,8 @@ function toggleFullScreen(elem) {
             document.msExitFullscreen();
         }
     }
+
+    return isFullScreen;
 }
 
 
@@ -260,6 +281,7 @@ function loadGeneralImages(){
 
 }
 
+
 async function alert(text, status = 1, title = '', YesNo = false) {
 
     console.log('Waiting for alert mutex...');
@@ -267,26 +289,32 @@ async function alert(text, status = 1, title = '', YesNo = false) {
     console.log('Alert mutex acquired');
 
     try {
-        // Configurazione base di SweetAlert2
+        const isMobile = window.matchMedia("(max-width: 750px)").matches;
+
         let swalConfig = {
-            html: '<span style="color: #fff;">' + text + '</span>',
+            html: '<span style="color: #ddd;">' + text + '</span>',
             background: '#333',
             customClass: {
                 content: 'swal-content-custom'
             }
         };
 
-        // Se YesNo è true, mostriamo i pulsanti Sì/No
+        if (isMobile) {
+            swalConfig.width = '90%';
+            swalConfig.padding = '1em';
+            swalConfig.html = '<span style="color: #ddd; font-size: 0.9em; line-height: 1.4;">' + text + '</span>';
+            swalConfig.customClass.popup = 'swal-popup-mobile';
+            swalConfig.customClass.title = 'swal-title-mobile';
+        }
+
         if (YesNo) {
             swalConfig.showCancelButton = true;
             swalConfig.confirmButtonText = 'Sì';
             swalConfig.cancelButtonText = 'No';
         } else {
-            // Altrimenti mostriamo il classico OK
             swalConfig.confirmButtonText = 'OK';
         }
 
-            // Gestione del titolo e dell'icona in base allo status
         if (status === 0) {
             swalConfig.icon = 'success';
             finalTitle = title === '' ? 'Success!' : title;
@@ -302,8 +330,6 @@ async function alert(text, status = 1, title = '', YesNo = false) {
 
         swalConfig.title = '<span style="color: #fff;">' + finalTitle + '</span>';
 
-
-        // Restituisce il risultato (utile per capire cosa ha cliccato l'utente)
         return await Swal.fire(swalConfig);
 
     } finally {
@@ -315,14 +341,11 @@ async function alert(text, status = 1, title = '', YesNo = false) {
 
 function startingFunction() {
     
-    //loadAllImages();
-    ///*
     socket.emit('join', {'playerID': playerID, 'partyID': partyID,'mtype': mtype});
     startPing();
     if (required_full_screen == 'True')
-        askFullScreen();
+        askFullScreen(fullScreenOrientationMode);
     loadGeneralImages();
-    //*/
 }
 
 startingFunction();

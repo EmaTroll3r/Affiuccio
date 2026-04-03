@@ -1,11 +1,13 @@
 const contextMenu = document.querySelector(".context-menu");
 const cardsImages = document.querySelectorAll('.card');
 const playOption = document.getElementById('context-play');
+const supportsHover = window.matchMedia('(hover: hover)').matches;
 
 let timeoutHideMenu;
 
 function hideMenu() {
-    contextMenu.style.visibility = "hidden";
+    // contextMenu.style.visibility = "hidden";
+    contextMenu.classList.add('hidden');
 }
 
 function handleMenu(card){
@@ -21,6 +23,9 @@ cardsImages.forEach(function(cardImage) {
 
         if(card != '0' && !this.classList.contains("played-card")){
             e.preventDefault();
+            e.stopPropagation();
+            clearTimeout(timeoutHideMenu);
+
             let x = e.pageX, y = e.pageY,
             winWidth = window.innerWidth,
             winHeight = window.innerHeight,
@@ -33,7 +38,8 @@ cardsImages.forEach(function(cardImage) {
             contextMenu.style.left = `${x}px`;
             contextMenu.style.top = `${y}px`;
 
-            contextMenu.style.visibility = "visible";
+            // contextMenu.style.visibility = "visible";
+            contextMenu.classList.remove('hidden');
             
             contextMenu.setAttribute('selected-card', card);
         }
@@ -44,42 +50,53 @@ cardsImages.forEach(function(cardImage) {
         event.preventDefault();
     });
 
-    cardImage.addEventListener('mouseleave', function (event) {
+    if (supportsHover) {
+        cardImage.addEventListener('mouseleave', function () {
+            timeoutHideMenu = setTimeout(hideMenu, 200);
+        });
 
-        timeoutHideMenu = setTimeout(hideMenu, 200);
-    });
-
-    cardImage.addEventListener('mouseenter', function (event) {
-        // console.log('mouseenter',this.src.split('/').slice(-1)[0].split('.')[0])
-
-        handleMenu(this.src.split('/').slice(-1)[0].split('.')[0]);
-    });
+        cardImage.addEventListener('mouseenter', function () {
+            handleMenu(this.src.split('/').slice(-1)[0].split('.')[0]);
+        });
+    }
 });
 
 document.addEventListener('click', function(e) {
-    if(e.target.className === 'card'){
-        let parts = e.target.src.split('/');
+    const clickedCard = e.target.closest('.card');
+    const clickedInsideMenu = e.target.closest('.context-menu');
+
+    if (clickedInsideMenu) {
+        return;
+    }
+
+    if (clickedCard) {
+        let parts = clickedCard.src.split('/');
         let card = parts[parts.length - 1].split('.')[0];
         // console.log('click',e.target.className,card)
 
         if(card == '0'){   
-            contextMenu.style.visibility = 'hidden';
+            // contextMenu.style.visibility = 'hidden';
+            contextMenu.classList.add('hidden');
         }
-    }else if (e.target.className !== 'card') {
-        contextMenu.style.visibility = 'hidden';
+        return;
     }
+
+    // contextMenu.style.visibility = 'hidden';
+    contextMenu.classList.add('hidden');
 });
 
 
-contextMenu.addEventListener('mouseenter', function() {
-    // Il mouse è entrato nel menu in tempo! Fermiamo la chiusura.
-    clearTimeout(timeoutHideMenu); 
-});
+if (supportsHover) {
+    contextMenu.addEventListener('mouseenter', function() {
+        // Il mouse è entrato nel menu in tempo! Fermiamo la chiusura.
+        clearTimeout(timeoutHideMenu); 
+    });
 
-contextMenu.addEventListener('mouseleave', function() {
-    // Il mouse è uscito anche dal menu, quindi ora possiamo nasconderlo.
-    timeoutHideMenu = setTimeout(hideMenu, 200);
-});
+    contextMenu.addEventListener('mouseleave', function() {
+        // Il mouse è uscito anche dal menu, quindi ora possiamo nasconderlo.
+        timeoutHideMenu = setTimeout(hideMenu, 200);
+    });
+}
 
 
 playOption.addEventListener('click', function() {

@@ -3,7 +3,7 @@
     <head>
 		<meta charset="UTF-8">
 		<title>The Mind</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
         <meta name="google" content="notranslate">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home/styles.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='TheMind/styles.css') }}">
@@ -15,7 +15,7 @@
     <body>
         <div id="wrapper">
             <div id="shakeable">
-                <div id="top">c</div>
+                <div id="top"></div>
                 <hr id="hr-separator">
                 <div id="game-area">
                     <div id="info-area">
@@ -39,8 +39,9 @@
                         </div>
                         
                         <div id="info-rightPanel" class="info-panel unselectable">
-                            
                         </div>
+
+                        <img id="mobile-players-button" src="{{ url_for('static', filename='TheMind/images/player_icon.png') }}">
                     </div>
                     <div id="otherPlayershand-area">
                         <!-- <img id="card100" style="height: 200px;" src="{{ url_for('static', filename='TheMind/images/3.png') }}"> -->
@@ -69,7 +70,7 @@
             
             <input type="hidden" id="gameEndpoint" value="TheMind"/>
 
-            <div class="context-menu">
+            <div class="context-menu hidden">
                 <ul class="menu">
                     <li id="context-play" class="item"><span>Gioca</span></li>
                 </ul>

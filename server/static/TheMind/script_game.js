@@ -1,10 +1,11 @@
 let handtypes = ['hand']
 let required_full_screen = 'True'
-let showingHands = ['hand']             //handtypes that can be shown (e.g. in SosOnline we can show the hint cards, but not the action cards)
+let showingHands = ['hand']                     //handtypes that can be shown (e.g. in SosOnline we can show the hint cards, but not the action cards)
+let fullScreenOrientationMode = 'portrait'      //can be 'landscape' or 'portrait' it is used to set the orientation of the game when asking for full screen
 
-
-// ------------------ All of this are functions specfic for this game, so maybe be empty ------------------
-// They include specific additional functions beyond the basic ones that are already implemented 
+// ------------------ Additional Functions ------------------
+// They include specific additional functions beyond the basic ones that are already implemented
+// You cannot delete these functions, but they can be empty if you dont need them, but they must be present in the code
 
 function loadSpecificGeneralImages(){}
 
@@ -18,7 +19,12 @@ function additionalInitialRequests(){
     // socket.emit('get-noise', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
     socket.emit('themind-get-gamePile', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
     socket.emit('themind-get-otherInitialInformations', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
-    // console.log('additionalInitialRequests: get game pile');
+}
+
+function additionalFullScreenActions(isFullScreen){
+    // if (isFullScreen)
+    //     tableArea.classList.remove('mobile-table-area');
+    
 }
 
 function end(data){}
@@ -46,7 +52,6 @@ function showHand(){
     if (!hand['hand']){
         return;
     }
-
 
     for(let i=0;i<hand['hand'].length;i++){
         card = hand['hand'][i] || 0;
@@ -93,12 +98,13 @@ const infoRightPanel = document.getElementById('info-rightPanel');
 const shurikenButton = document.getElementById('shurikens-icon');
 const livesOptionsElement = document.getElementById('lives-options-text');
 const shurikensOptionsElement = document.getElementById('shurikens-options-text');
+const mobilePlayersButton = document.getElementById('mobile-players-button');
 let gamePile = [];
 
 
 function playCardAnimation(card, playedFromClient=true, animation=true) {
-    // console.log('playCardAnimation', card);
     const cardElement = fromCardToElem(card);
+    console.log('playCardAnimation', card, 'cardElement', cardElement);
     const cardRect = cardElement.getBoundingClientRect();
     const pileRect = tableArea.getBoundingClientRect();
 
@@ -231,6 +237,7 @@ socket.on('response-gamePile', function(data) {
 });
 
 socket.on('response-otherInitialInformations', function(data) {
+
     if (data.targetPlayer == playerID){
         
         levelElement.setAttribute('data-text', data.level.toString());
@@ -244,6 +251,7 @@ socket.on('response-otherInitialInformations', function(data) {
         shurikensElement.setAttribute('data-text', data.shurikens.toString());
 
         console.log('response-otherInitialInformations', data.handsTracker, data.handsTracker.length);
+        infoRightPanel.innerHTML = '';
         for (let i = 0; i < data.handsTracker.length; i++) {
             const playerInfo = data.handsTracker[i];
 
@@ -371,6 +379,21 @@ function hideCardElemFromHand(card){
     removeCardFromHand(card);
 }
 
+mobilePlayersButton.addEventListener('click', function(event) {
+    console.log('mobilePlayersButton clicked');
+    event.stopPropagation();
+    infoRightPanel.classList.add('mobile-open');
+    mobilePlayersButton.classList.add('hidden');
+    // tableArea.style.visibility = 'hidden';
+
+    document.addEventListener('click', function(event) {
+        mobilePlayersButton.classList.remove('hidden');
+        // tableArea.style.visibility = 'visible';
+        infoRightPanel.classList.remove('mobile-open');
+    }, { once: true });
+});
+
+  
 
 shurikenButton.addEventListener('click', async function() {
 

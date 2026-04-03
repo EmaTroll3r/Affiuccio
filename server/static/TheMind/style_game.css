@@ -7,10 +7,26 @@
   border-radius: 5px;
 }
 
+#mobile-players-button {
+    display: none;
+    position: absolute;
+    top: 28vh;
+    right: 5vw;
+    width: 50px;
+    height: 50px;
+    z-index: 100;
+    background-color: transparent;
+    box-shadow: none;
+    border: none;
+    backdrop-filter: none;
+    outline: none;
+    cursor: pointer;
+}
+
 #top {
-        margin-top: 2vh;
-        margin-bottom: 2vh;
-    /* background-color: aqua; */
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+    height: 18px;
 }
 
 #game-area {
@@ -132,7 +148,7 @@
 
 
 .context-menu{
-    visibility: hidden;
+    /* visibility: hidden; */
     position: absolute;
     border-radius: 10px;
     background: #fff;
@@ -140,7 +156,7 @@
     color: white;
     box-shadow: 0 12px 35px rgba(0,0,0,0.1);
     padding: 0px 12px;
-    z-index: 100;
+    z-index: 200;
 }
 
 .context-menu .item{
@@ -173,6 +189,19 @@
     left: 2.5vw;
 }
 
+.info-container {
+    display: grid;
+    grid-template-columns: 80px max-content max-content;
+    align-items: center;
+    column-gap: 30px;
+}
+
+#info-leftPanel .info-icon {
+    width: 100%;
+    height: auto;
+    margin-right: 0;
+}
+
 .info-panel {
     position: absolute;
     display: flex;
@@ -183,7 +212,7 @@
 }
 
 .info-container{
-    display: flex;
+    /* display: flex; */
     align-items: center;
 }
 
@@ -216,7 +245,7 @@
     row-gap: 25px;
     column-gap: 20px;
 
-    right: 2.5%;
+    right: 2.5vw;
 }
 
 #info-rightPanel .info-container{
@@ -245,4 +274,87 @@
 
 .info-plus-text {
     margin-left: 20px;
+}
+
+@media (max-width: 1000px) {
+    .card,
+    .game-pile {
+        width: 170px;
+    }
+
+    .info-panel {
+        top: 14vh;
+        gap: 18px;
+    }
+
+    .info-text {
+        font-size: 2.2em;
+    }
+}
+
+@media (max-width: 750px) {
+
+
+    #mobile-players-button {
+        display: block; 
+    }
+
+    #info-rightPanel.mobile-open {
+        display: grid !important; 
+    }
+
+    .card,
+    .game-pile {
+        width: min(28vw, 120px);
+    }
+
+    .card {
+        margin: 0 -10px;
+    }
+
+    #hand-area {
+        min-height: 42vh;
+    }
+
+    .info-panel {
+        top: 10vh;
+        gap: 10px;
+    }
+
+    .info-text {
+        font-size: 1.3em;
+    }
+
+    #table-area{
+        margin-top: 40px;
+    }
+
+    #info-leftPanel {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .info-container {
+        grid-template-columns: 50px max-content max-content !important;
+        column-gap: 15px !important;
+    }
+
+    .info-plus-text {
+        margin-left: 0px;
+        margin-right: 8px;
+    }
+
+    #info-rightPanel {
+        display: none;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 20px;
+        z-index: 101;
+        top: 25vh;
+        grid-template-columns: 50px max-content max-content !important;
+        column-gap: 15px !important;
+        border-radius: 15px;
+    }
+    
 }
