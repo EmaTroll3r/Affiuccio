@@ -82,7 +82,7 @@ class Deck:
             if c.card == card:
                 self.cards.remove(c)
                 return c
-        return False
+        return None
     
     def getLowestCard(self):
         if self.cards:

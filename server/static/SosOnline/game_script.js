@@ -12,7 +12,7 @@ var socket = io.connect('http://'+ip_address);
 var maxHintHand = 3;
 var maxActionHand = 3;
 var maxHintCards = 2;
-var maxBlockCards = 12;
+var maxBlockCards = 50;
 
 //--------------------------------------------------------------------------------------------
 

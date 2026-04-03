@@ -3,6 +3,7 @@ from flask_socketio import emit
 from flask import jsonify, request
 from global_vars import partyManager
 from server.classes import Deck, Party, Player
+from random import randrange
 
 
 with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
@@ -161,7 +162,6 @@ def join(partyID,playername):
         return jsonify(response)
     else:
         return "no player name provided"
-    
 
 
 def host(test=False):
@@ -245,7 +245,26 @@ def start_game(partyID, settings):
         real_mtype += 1
         for i in range(sosOnlineLimits['maxHintHand']):
             partyManager.get_party(partyID).raw_draw(player.mtype,'hint','hint')
-        for i in range(sosOnlineLimits['maxActionHand']):
+        
+        # check = False
+        # while check == False:
+        #     card = partyManager.get_party(partyID).raw_draw(player.mtype,'action','action')
+        #     print("\n\ncard\n\n",card)
+        #     if card.card > sosOnlineLimits['maxBlockCards'] and card.card <= sosOnlineLimits['maxActionCards']:
+        #         check = True
+        #     else:
+        #         if partyManager.get_party(partyID).players[player.mtype-1].hands['action'].removeCard(card):
+        #             partyManager.get_party(partyID).players[player.mtype-1].hands['action'].addCard(card)
+        
+        check = False
+        while not check:
+            cardNumber = randrange(sosOnlineLimits['maxBlockCards'] + 1, sosOnlineLimits['maxActionCards'])
+            card = partyManager.get_party(partyID).decks['action'].removeCard(cardNumber)
+            if card:
+                partyManager.get_party(partyID).players[player.mtype-1].hands['action'].addCard(card)
+                check = True
+
+        for i in range(sosOnlineLimits['maxActionHand'] - 1):
             partyManager.get_party(partyID).raw_draw(player.mtype,'action','action')
 
 
@@ -253,6 +272,13 @@ def start_game(partyID, settings):
     partyManager.get_party(partyID).status = 'Game'
     emit('start-game',{'links': links}, room = partyID)
 
+
+def check_atleastone_card_in_hands(cards,hand):
+    for c in hand.cards:
+        if c.card in cards:
+            return True
+    return False
+    
 
 def get_inGameCards(partyID,mtype,playerID,targetPlayer = None,n=1):
     cards = []

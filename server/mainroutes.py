@@ -291,7 +291,6 @@ def get_parties():
 
 @main.route('/<game_name>/', methods=['GET'])
 def home(game_name):
-    print("\n\n\nRichiesta home di",game_name,"\n\n\n")
     if game_name not in game_list:
         abort(404)
         
