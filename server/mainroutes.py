@@ -303,7 +303,7 @@ def host(game_name):
         abort(404)
         
     manager = game_list[game_name]
-    return manager.host(test=test)
+    return manager.host(game_name, test=test)
 
 
 @main.route('/<game_name>/join', methods=['GET'])
@@ -315,7 +315,7 @@ def join(game_name):
     playername = request.args.get('player')
     
     manager = game_list[game_name]
-    return manager.join(partyID, playername)
+    return manager.join(partyID, playername, game_name)
 
 
 @main.route('/<game_name>/game', methods=['GET'])

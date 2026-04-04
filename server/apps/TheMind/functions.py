@@ -10,15 +10,36 @@ with open('server/static/TheMind/TheMindLimits.json', 'r') as f:
     limits = load(f)
 
 
-def join(partyID,playername):
+def get_game_endpoint(partyID):
+    party = partyManager.get_party(partyID)
+    if party is None:
+        return None
+    return party.gameEndpoint
+
+
+def join(partyID,playername, game_name):
+
+    party = partyManager.get_party(partyID)  
     
-    if partyManager.get_party(partyID) is None:
-        return "sorry no party found"
-    
-    if playername:        
+    if party is None:
+        response = {
+            'status': 1,
+            'verbouse_error': 'No party found'
+        }
+        
+        return jsonify(response)
+
+    if party.gameEndpoint != game_name:
+        response = {
+            'status': 5,
+            'verbouse_error': 'Found a that partyID but for a different game. Game found: ' + party.gameEndpoint
+        }        
+        return jsonify(response)
+
+    if playername:
 
         old_player = None
-        for player in partyManager.get_party(partyID).players:
+        for player in party.players:
             if player.name == playername:
                 old_player = player
                 break
@@ -26,24 +47,34 @@ def join(partyID,playername):
         if old_player:
             mtype = old_player.mtype
             playerID = old_player.id
-            if partyManager.get_party(partyID).status == 'Game':
-                page = 'game'
-            else:
-                page = 'lobby'
-            
+            page = 'game' if party.status == 'Game' else 'lobby'
         else:
-            player = Player(playername,partyManager.get_party(partyID),{'hand': limits['maxHand']})
-            player.components['noisePoints'] = limits['noiseForClients']
-            
-            mtype = partyManager.get_party(partyID).join(player)
-            playerID = player.id
-            page = 'lobby'
+            if party.status == 'Lobby':
+                player = Player(playername,partyManager.get_party(partyID),{'hand': limits['maxHand']})
+                player.components['noisePoints'] = limits['noiseForClients']
 
+                mtype = party.join(player)
+                playerID = player.id
+                page = 'lobby'
+            else:
+                if party.status == 'Game':
+                    status = 2
+                    verbouse_error = "Game already started, you can'join"
+                elif party.status == 'End':
+                    status = 3
+                    verbouse_error = "Game already ended, you can'join"
 
-        if partyManager.get_party(partyID).status == 'End':
-            page = 'end'
+                response = {
+                    'status': status,
+                    'verbouse_error': verbouse_error
+                }
+                
+                return jsonify(response)
+
 
         response = {
+            'status': 0,
+            'verbouse_error': 'no error',
             'partyID': partyID,
             'mtype': mtype,
             'playerID': playerID,
@@ -52,12 +83,16 @@ def join(partyID,playername):
         
         return jsonify(response)
     else:
-        return "no player name provided"
+        response = {
+            'status': 4,
+            'verbouse_error': 'No player name provided'
+        }
+        return jsonify(response)
 
 
-def host(test=False):
+def host(game_name, test=False):
 
-    partyID = Party.create_party('TheMind',test=test)
+    partyID = Party.create_party(game_name,test=test)
     party = partyManager.get_party(partyID)
     party.add_deck(Deck(limits['maxCards']),'deck')
 
@@ -76,7 +111,7 @@ def host(test=False):
 
     with open('server/static/server_stats.json', 'r') as f:
         data = load(f)
-    party.homeLink = data['domain'] + '/TheMind'
+    party.homeLink = data['domain'] + '/' + game_name
     
     player = Player(request.get_json().get('player'),party,{'hand': limits['maxHand']})
     player.components['noisePoints'] = limits['noiseForHost']

@@ -7,7 +7,7 @@ from random import randrange
 
 
 with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
-    sosOnlineLimits = load(f)
+    limits = load(f)
 
 def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
     response = {"status": -1,"message": ""}
@@ -15,7 +15,7 @@ def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
     end_response = None
     if(handtypes[0] != "wl"):     #se non è una carta occhiataccia
         #with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
-        #    sosOnlineLimits = load(f)
+        #    limits = load(f)
         for i in range(len(cards)):
             if cards[i] == 0:
                 continue
@@ -23,7 +23,7 @@ def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
                 #print("cards",cards[i],"not in hand",handtypes[i])
                 response.update({"status": 1, "message": "card "+cards[i]+" not in hand "+handtypes[i]})
                 return response,end_response
-        if(party.turn != player.mtype and cards[1] != 0 and cards[1] > sosOnlineLimits['maxBlockCards']):  #non è il tuo turno e hai giocato una carta scaricabarile
+        if(party.turn != player.mtype and cards[1] != 0 and cards[1] > limits['maxBlockCards']):  #non è il tuo turno e hai giocato una carta scaricabarile
             #print("cards",cards[0]," non è il tuo turno e hai giocato una carta scaricabarile")
             response.update({"status": 2, "message": "Is not your turn and you played a blame action card"})
             return response,end_response
@@ -31,12 +31,12 @@ def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
             #print("cards",cards[0]," non è il tuo turno e hai giocato una carta semplicemente")
             response.update({"status": 3, "message": "Is not your turn and you played a card whitout a block action card"})
             return response,end_response
-        if(party.turn == player.mtype and  cards[1] != 0 and cards[1] < sosOnlineLimits['maxBlockCards']): #è il tuo turno e hai giocato una carta blocca
+        if(party.turn == player.mtype and  cards[1] != 0 and cards[1] < limits['maxBlockCards']): #è il tuo turno e hai giocato una carta blocca
             #print("cards",cards[0],"è il tuo turno ma hai giocato una carta blocca")
             response.update({"status": 4, "message": "Is your turn and you played a block action card"})
             return response,end_response
         
-        if(cards[1] >= sosOnlineLimits['maxBlockCards']):       #se è uno scaricabarile vede se può cambiare il turno
+        if(cards[1] >= limits['maxBlockCards']):       #se è uno scaricabarile vede se può cambiare il turno
             newTurn = party.changeTurn(options['newTurn'],forbittenPlayers = [1],needToPlay=False)   #vedw se può cambiare il turno ma non lo cambia effettivamente
             #print("newTurn",newTurn)
             if newTurn == -1:
@@ -59,14 +59,14 @@ def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
             player.play(cards[0],handtypes[0])
             if(cards[1] != 0):
                 player.play(cards[1],handtypes[1])
-                if(cards[1] >= sosOnlineLimits['maxBlockCards']):      #se è uno scaricabarile
+                if(cards[1] >= limits['maxBlockCards']):      #se è uno scaricabarile
                     if newTurn > 0:
-                        for i in range(sosOnlineLimits['maxHintHand'] - len(party.players[player.mtype-1].hands['hint'])):  #pesca hint card fino ad arrivare a maxHintHand
+                        for i in range(limits['maxHintHand'] - len(party.players[player.mtype-1].hands['hint'])):  #pesca hint card fino ad arrivare a maxHintHand
                             party.raw_draw(player.mtype,'hint','hint')
                         newTurn = party.changeTurn(options['newTurn'],[1],needToPlay=needToPlay)        #cambia effettivamente il turno
                         emit('response-turn', {'response': {"status": 0, "message": "Success"},'playerID':player.id,'turn': newTurn}, room=party.partyID)
                         get_inGameCards(party.partyID,player.mtype,player.id)
-                if(cards[1] < sosOnlineLimits['maxBlockCards']):        #se è una carta blocco
+                if(cards[1] < limits['maxBlockCards']):        #se è una carta blocco
                     party.raw_draw(player.mtype,'action','action')
 
                     
@@ -121,18 +121,30 @@ def end(loser,partyID):
     partyManager.get_party(partyID).status = 'End'
     return {'loser': loser}
 
-def join(partyID,playername):
-    #with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
-    #    sosOnlineLimits = load(f)
+
+def join(partyID,playername, game_name):
+
+    party = partyManager.get_party(partyID)  
     
-    if partyManager.get_party(partyID) is None:
-        return "sorry no party found"
-    
+    if party is None:
+        response = {
+            'status': 1,
+            'verbouse_error': 'No party found'
+        }
+        
+        return jsonify(response)
+
+    if party.gameEndpoint != game_name:
+        response = {
+            'status': 5,
+            'verbouse_error': 'Found a that partyID but for a different game. Game found: ' + party.gameEndpoint
+        }        
+        return jsonify(response)
 
     if playername:
 
         old_player = None
-        for player in partyManager.get_party(partyID).players:
+        for player in party.players:
             if player.name == playername:
                 old_player = player
                 break
@@ -140,43 +152,59 @@ def join(partyID,playername):
         if old_player:
             mtype = old_player.mtype
             playerID = old_player.id
-            page = 'game' if partyManager.get_party(partyID).status == 'Game' else 'lobby'
+            page = 'game' if party.status == 'Game' else 'lobby'
         else:
-            player = Player(playername,partyManager.get_party(partyID),{'hint': sosOnlineLimits['maxHintHand'], 'action': sosOnlineLimits['maxActionHand']})
-            player.components['noisePoints'] = 5
+            if party.status == 'Lobby':
+                player = Player(playername,party,{'hint': limits['maxHintHand'], 'action': limits['maxActionHand']})
+                player.components['noisePoints'] = 5
 
-            mtype = partyManager.get_party(partyID).join(player)
-            playerID = player.id
-            page = 'lobby'
-        
+                mtype = party.join(player)
+                playerID = player.id
+                page = 'lobby'
+            else:
+                if party.status == 'Game':
+                    status = 2
+                    verbouse_error = "Game already started, you can'join"
+                elif party.status == 'End':
+                    status = 3
+                    verbouse_error = "Game already ended, you can'join"
+
+                response = {
+                    'status': status,
+                    'verbouse_error': verbouse_error
+                }
+                
+                return jsonify(response)
 
 
         response = {
+            'status': 0,
+            'verbouse_error': 'no error',
             'partyID': partyID,
             'mtype': mtype,
             'playerID': playerID,
             'page': page
         }
         
-        #print("player",partyManager.get_party(partyID).get_player(response['mtype']).to_dict())
         return jsonify(response)
     else:
-        return "no player name provided"
+        response = {
+            'status': 4,
+            'verbouse_error': 'No player name provided'
+        }
+        return jsonify(response)
 
+def host(game_name, test=False):
 
-def host(test=False):
-    #with open('server/static/SosOnline/SosOnlineLimits.json', 'r') as f:
-    #    sosOnlineLimits = load(f)
-
-    partyID = Party.create_party('SosOnline',test=test)
-    partyManager.get_party(partyID).add_deck(Deck(sosOnlineLimits['maxHintCards']),'hint')
-    partyManager.get_party(partyID).add_deck(Deck(sosOnlineLimits['maxActionCards']),'action')
+    partyID = Party.create_party(game_name,test=test)
+    partyManager.get_party(partyID).add_deck(Deck(limits['maxHintCards']),'hint')
+    partyManager.get_party(partyID).add_deck(Deck(limits['maxActionCards']),'action')
     with open('server/static/server_stats.json', 'r') as f:
         data = load(f)
-    partyManager.get_party(partyID).homeLink = data['domain'] + '/SosOnline'
+    partyManager.get_party(partyID).homeLink = data['domain'] + '/' + game_name
     #partyManager.get_party(partyID).add_deck(Deck(3),'wl')
     
-    player = Player(request.get_json().get('player'),partyManager.get_party(partyID),{'hint': sosOnlineLimits['maxHintHand'], 'action': sosOnlineLimits['maxActionHand']})
+    player = Player(request.get_json().get('player'),partyManager.get_party(partyID),{'hint': limits['maxHintHand'], 'action': limits['maxActionHand']})
     player.components['noisePoints'] = 10
 
     response = {
@@ -243,14 +271,14 @@ def start_game(partyID, settings):
         links[player.mtype] = '/SosOnline/game?partyID='+str(partyID)+'&mtype='+str(real_mtype) + '&playerID=' + str(player.id)
         player.mtype = real_mtype
         real_mtype += 1
-        for i in range(sosOnlineLimits['maxHintHand']):
+        for i in range(limits['maxHintHand']):
             partyManager.get_party(partyID).raw_draw(player.mtype,'hint','hint')
         
         # check = False
         # while check == False:
         #     card = partyManager.get_party(partyID).raw_draw(player.mtype,'action','action')
         #     print("\n\ncard\n\n",card)
-        #     if card.card > sosOnlineLimits['maxBlockCards'] and card.card <= sosOnlineLimits['maxActionCards']:
+        #     if card.card > limits['maxBlockCards'] and card.card <= limits['maxActionCards']:
         #         check = True
         #     else:
         #         if partyManager.get_party(partyID).players[player.mtype-1].hands['action'].removeCard(card):
@@ -258,13 +286,13 @@ def start_game(partyID, settings):
         
         check = False
         while not check:
-            cardNumber = randrange(sosOnlineLimits['maxBlockCards'] + 1, sosOnlineLimits['maxActionCards'])
+            cardNumber = randrange(limits['maxBlockCards'] + 1, limits['maxActionCards'])
             card = partyManager.get_party(partyID).decks['action'].removeCard(cardNumber)
             if card:
                 partyManager.get_party(partyID).players[player.mtype-1].hands['action'].addCard(card)
                 check = True
 
-        for i in range(sosOnlineLimits['maxActionHand'] - 1):
+        for i in range(limits['maxActionHand'] - 1):
             partyManager.get_party(partyID).raw_draw(player.mtype,'action','action')
 
 
@@ -292,7 +320,7 @@ def get_inGameCards(partyID,mtype,playerID,targetPlayer = None,n=1):
             cards.append(card.card)
 
     #cards.extend([card.card for card in partyManager.get_party(partyID).decks['hint'].watchNextCards(3,'card')])
-    cards.extend(partyManager.get_party(partyID).decks['hint'].watchNextCards(n * sosOnlineLimits['maxHintHand']))
+    cards.extend(partyManager.get_party(partyID).decks['hint'].watchNextCards(n * limits['maxHintHand']))
     #p(cards)
     if(targetPlayer != None):
         emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype,'targetPlayer':playerID}, room=partyID)

@@ -139,21 +139,14 @@ document.getElementById('join-lobby').addEventListener('click', async function()
     })
     .then(response => response.json())
     .then(data => {
-        //console.log(data);
-        /*
-        var socket_data = {
-            playerID: data.playerID,
-            partyID: data.partyID,
-            mtype: data.mtype
-        };
-        */
-
-        //socket.emit('join', socket_data);
-        window.location.href = `/`+gameEndpoint+`/${data.page}?mtype=${data.mtype}&partyID=${data.partyID}&playerID=${data.playerID}`
+        console.log(data);
+        if (data.status == 0)
+            window.location.href = `/`+gameEndpoint+`/${data.page}?mtype=${data.mtype}&partyID=${data.partyID}&playerID=${data.playerID}`
+        else
+            alert(data.verbouse_error)
     })
     .catch((error) => {
-        //console.error('Error:', error);
-        alert("No Party Found!");
+        alert("Generic Error");
     });
 });
 
