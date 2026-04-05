@@ -100,6 +100,7 @@ if (supportsHover) {
 
 
 playOption.addEventListener('click', function() {
+    hideMenu();
     let selectedCard = contextMenu.getAttribute('selected-card');
     playCard(selectedCard);
 });
