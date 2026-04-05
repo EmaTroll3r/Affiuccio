@@ -5,3 +5,19 @@
     user-select: none; 
     -webkit-user-drag: none;
 }
+
+
+img{
+  /* Impedisce l'apertura del menu contestuale (callout) su iOS e molti browser Android */
+  -webkit-touch-callout: none;
+
+  /* Impedisce la selezione dell'elemento */
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  /* Impedisce il "drag & drop" (trascinamento) dell'immagine nativo dei browser */
+  -webkit-user-drag: none;
+}
