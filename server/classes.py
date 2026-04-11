@@ -113,7 +113,7 @@ class Pile(Deck):
 class Party:
 
     def __init__(self, partyID, decks, gameEndpoint,variables={}):
-        self.partyID = partyID
+        self.id = partyID
         self.decks = decks
         self.players = []
         self.gameEndpoint = gameEndpoint
@@ -129,7 +129,7 @@ class Party:
         socketio.on_namespace(self.partynamespace)"""
     
     def __init__(self, partyID,gameEndpoint,variables={}):
-        self.partyID = partyID
+        self.id = partyID
         self.players = []
         self.decks = {}
         #self.hands = {key: Deck(value) for key, value in maxHandCardDict.items()}
@@ -180,7 +180,7 @@ class Party:
         return partyID
 
     def __str__(self):
-        return str(self.partyID) + " " + str(self.players)
+        return str(self.id) + " " + str(self.players)
     
     def pickCard(self,deckName=0):
 
@@ -233,7 +233,7 @@ class Party:
 
     def to_dict(self):
         return {
-            'partyID': self.partyID,
+            'partyID': self.id,
             'players': [str(player) for player in self.players],
             'status': self.status,
             #'deck': str(self.deck)  # Converti l'oggetto Deck in una stringa
@@ -253,8 +253,8 @@ class Party:
         player.mtype = self.last_mtype
         """
         from flask_socketio import emit,join_room
-        join_room(self.partyID)
-        emit('player-joined', {'player': player}, room=str(self.partyID))
+        join_room(self.id)
+        emit('player-joined', {'player': player}, room=str(self.id))
         """
         return player.mtype
 

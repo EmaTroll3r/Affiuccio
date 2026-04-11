@@ -23,6 +23,7 @@ var urlParams = new URLSearchParams(window.location.search);
 var playerID = parseInt(urlParams.get('playerID'));
 var partyID = urlParams.get('partyID');
 var mtype = urlParams.get('mtype');
+let endpoint = document.getElementById('gameEndpoint').value;
 
 
 
@@ -278,7 +279,7 @@ noiseButton.addEventListener('click', async function() {
 
     if (noiseLevel.isConfirmed){
         console.log('noiseLevel',parseInt(noiseLevel.value))
-        socket.emit('sosonline-noise', {'partyID':partyID, 'mtype':mtype, 'playerID':playerID, 'targetPlayer':targetPlayer, 'noiseLevel':parseInt(noiseLevel.value)});
+        socket.emit('noise', {'partyID':partyID, 'mtype':mtype, 'playerID':playerID, 'targetPlayer':targetPlayer, 'noiseLevel':parseInt(noiseLevel.value)});
     }
 
     /*
@@ -303,7 +304,7 @@ noiseButton.addEventListener('click', async function() {
     if (noiseLevel.isConfirmed){
         
         console.log('noiseLevel',parseInt(noiseLevel.value))
-        socket.emit('sosonline-noise', {'partyID':partyID, 'mtype':mtype, 'playerID':playerID, 'targetPlayer':targetPlayer, 'noiseLevel':parseInt(noiseLevel.value)});
+        socket.emit('noise', {'partyID':partyID, 'mtype':mtype, 'playerID':playerID, 'targetPlayer':targetPlayer, 'noiseLevel':parseInt(noiseLevel.value)});
     }
     */
 });
@@ -316,7 +317,7 @@ window.addEventListener('beforeunload', function(event) {
 });
 
 socket.on('response-turn', function(data) {
-    //console.log('response-turn', data);
+    console.log('response-turn', data);
     turn = parseInt(data.turn);
 
     if (data.response['status'] == 0 && getPlayer(turn)){
@@ -414,9 +415,9 @@ socket.on('player-joined', function(data) {
     if(data.playerID == playerID){
         //socket.emit('get-all-points', {'partyID':partyID});
         socket.emit('get-playerList', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
-        socket.emit('get-turn', {'partyID':partyID, 'playerID':playerID});
-        socket.emit('sosonline-get-inGameCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
-        socket.emit('sosonline-get-noise', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
+        // socket.emit('get-turn', {'partyID':partyID, 'playerID':playerID});
+        socket.emit('get-inGameCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'gameName': endpoint});
+        socket.emit('get-noise', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
     }
 });
 
@@ -453,7 +454,7 @@ turnButton.addEventListener('click', async function() {
     if (newTurn == null) 
         return;
     console.log("changing turn in "+newTurn)
-    socket.emit('sosonline-change-turn', {'partyID':partyID,'playerID':playerID, 'mtype':mtype, 'newTurn':newTurn} );
+    socket.emit('change-turn', {'partyID':partyID,'playerID':playerID, 'mtype':mtype, 'newTurn':newTurn} );
 });
 
 letDrawButton.addEventListener('click', async function() {
@@ -627,7 +628,7 @@ bigCard.addEventListener('animationend', function() {
 });
 
 function showHand(){
-    //console.log(witheringLooks[turn])
+    console.log("--------------",witheringLooks[turn])
     let wlLevel = witheringLooks[turn] + 1;
     if(wlLevel >= 4) 
         wlLevel = 3;

@@ -6,30 +6,30 @@ from global_vars import socketio
 
 
 
-@socketio.on('sosonline-ask-start-game')
-def sosonline_start_game(data):
-    partyID = int(data['partyID'])
-    sosOnline.start_game(partyID)
+# @socketio.on('sosonline-ask-start-game')
+# def sosonline_start_game(data):
+#     partyID = int(data['partyID'])
+#     sosOnline.start_game(partyID)
 
-@socketio.on('sosonline-get-inGameCards')
-def sosonline_inGameCards(data):
-    partyID = int(data['partyID'])
-    mtype = int(data['mtype'])
-    playerID = int(data['playerID'])
+# @socketio.on('sosonline-get-inGameCards')
+# def sosonline_inGameCards(data):
+#     partyID = int(data['partyID'])
+#     mtype = int(data['mtype'])
+#     playerID = int(data['playerID'])
 
-    return sosOnline.get_inGameCards(partyID,mtype,playerID,playerID,1)
+#     return sosOnline.get_inGameCards(partyID,mtype,playerID,playerID,1)
 
-@socketio.on('sosonline-change-turn')
-def sosonline_change_turn(data):
-    return sosOnline.change_turn(int(data['partyID']),int(data['playerID']),int(data['mtype']),int(data['newTurn']))
+# @socketio.on('sosonline-change-turn')
+# def sosonline_change_turn(data):
+#     return sosOnline.change_turn(int(data['partyID']),int(data['playerID']),int(data['mtype']),int(data['newTurn']))
 
-@socketio.on('sosonline-noise')
-def sosonline_noise(data):
-    return sosOnline.noise(int(data['partyID']),int(data['playerID']),int(data['mtype']),int(data['targetPlayer']),int(data['noiseLevel']))
+# @socketio.on('sosonline-noise')
+# def sosonline_noise(data):
+#     return sosOnline.noise(int(data['partyID']),int(data['playerID']),int(data['mtype']),int(data['targetPlayer']),int(data['noiseLevel']))
 
-@socketio.on('sosonline-get-noise')
-def sosonline_get_noise(data):
-    return sosOnline.get_noise(int(data['partyID']),int(data['playerID']),int(data['mtype']))
+# @socketio.on('sosonline-get-noise')
+# def sosonline_get_noise(data):
+#     return sosOnline.get_noise(int(data['partyID']),int(data['playerID']),int(data['mtype']))
 
 
 

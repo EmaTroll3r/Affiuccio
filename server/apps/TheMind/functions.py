@@ -3,97 +3,18 @@ from flask_socketio import emit
 from flask import jsonify, request
 from global_vars import partyManager
 from server.classes import Deck, Party, Pile, Player
-from time import sleep
+from server.common_functions import common_generate_game_links
 
 
 with open('server/static/TheMind/TheMindLimits.json', 'r') as f:
     limits = load(f)
 
 
-def get_game_endpoint(partyID):
-    party = partyManager.get_party(partyID)
-    if party is None:
-        return None
-    return party.gameEndpoint
+# -------------------------------- Common functions --------------------------------
+# This function are necessary, if not used can be empty, but they must be present in the code
 
 
-def join(partyID,playername, game_name):
-
-    party = partyManager.get_party(partyID)  
-    
-    if party is None:
-        response = {
-            'status': 1,
-            'verbouse_error': 'No party found'
-        }
-        
-        return jsonify(response)
-
-    if party.gameEndpoint != game_name:
-        response = {
-            'status': 5,
-            'verbouse_error': 'Found a that partyID but for a different game. Game found: ' + party.gameEndpoint
-        }        
-        return jsonify(response)
-
-    if playername:
-
-        old_player = None
-        for player in party.players:
-            if player.name == playername:
-                old_player = player
-                break
-        
-        if old_player:
-            mtype = old_player.mtype
-            playerID = old_player.id
-            page = 'game' if party.status == 'Game' else 'lobby'
-        else:
-            if party.status == 'Lobby':
-                player = Player(playername,partyManager.get_party(partyID),{'hand': limits['maxHand']})
-                player.components['noisePoints'] = limits['noiseForClients']
-
-                mtype = party.join(player)
-                playerID = player.id
-                page = 'lobby'
-            else:
-                if party.status == 'Game':
-                    status = 2
-                    verbouse_error = "Game already started, you can'join"
-                elif party.status == 'End':
-                    status = 3
-                    verbouse_error = "Game already ended, you can'join"
-
-                response = {
-                    'status': status,
-                    'verbouse_error': verbouse_error
-                }
-                
-                return jsonify(response)
-
-
-        response = {
-            'status': 0,
-            'verbouse_error': 'no error',
-            'partyID': partyID,
-            'mtype': mtype,
-            'playerID': playerID,
-            'page': page
-        }
-        
-        return jsonify(response)
-    else:
-        response = {
-            'status': 4,
-            'verbouse_error': 'No player name provided'
-        }
-        return jsonify(response)
-
-
-def host(game_name, test=False):
-
-    partyID = Party.create_party(game_name,test=test)
-    party = partyManager.get_party(partyID)
+def create_game(party):
     party.add_deck(Deck(limits['maxCards']),'deck')
 
     copyDeck = Deck(limits['maxCards'])
@@ -106,59 +27,76 @@ def host(game_name, test=False):
     party.setVariable('shurikens', limits['starting_shurikens'])
     party.setVariable('level', 1)
     party.setVariable('shurikenVotes', {})
+    return party
 
-    print("\n\n\nCreated Deck with "+str(limits['maxCards'])+ " cards\n" + str(party.decks['deck'].cards)+ "\n\n\n")
 
-    with open('server/static/server_stats.json', 'r') as f:
-        data = load(f)
-    party.homeLink = data['domain'] + '/' + game_name
-    
-    player = Player(request.get_json().get('player'),party,{'hand': limits['maxHand']})
+def create_masterPlayer(party, playername):
+    player = Player(playername,party,{'hand': limits['maxHand']})
     player.components['noisePoints'] = limits['noiseForHost']
 
-    response = {
-        'partyID': partyID,
-        'mtype': party.join(player),
-        'playerID': player.id
+    return player
+
+
+def create_player(party, playername):
+    player = Player(playername,party,{'hand': limits['maxHand']})
+    player.components['noisePoints'] = limits['noiseForClients']
+
+    return player
+
+
+def end(party, outcome):
+
+    # end() function is called when the game ends.
+    # It calcs the outcome of the game (win or lose) and creates a message to be displayed to the users at the end of the game. 
+    # Then it returns a response containing the outcome and the message, which will be sent to the clients to display the end game screen.
+    # end() must also update the party status to 'End' and perform any necessary cleanup or finalization for the game.
+
+    if outcome == 0:
+        message = "Game Over! The team lost all their lives. Better luck next time!"
+    elif outcome == 1:
+        message = "Congratulations! The team successfully completed all the levels and won the game!"
+    
+    data = {
+        'outcome': outcome,
+        'message': message
     }
 
-    return jsonify(response)
+    party.end()
+    return data
 
 
-def start_game(partyID, settings=None):
-    maxPlayersMtype = 0
-    real_mtype = 1
+def generate_game_links(party):
 
-    #assegna in ordine gli mptype reali e crea i link della nuova pagina per ogni giocatore in base al suo mtype originale e al partyID
-    for player in partyManager.get_party(partyID).players:
-        if player.mtype > maxPlayersMtype:
-            maxPlayersMtype = player.mtype
+    # generate_game_links() function is called at the start of the game
+    # It generates the links for the game, not all players need to have the same page
+    # If it happens you can simply call common_generate_game_links(party)
 
-    links = [None] * (maxPlayersMtype + 1)
-    
-    for player in partyManager.get_party(partyID).players:
-
-        links[player.mtype] = '/TheMind/game?partyID=' + str(partyID) + '&mtype=' + str(real_mtype) + '&playerID=' + str(player.id)
-        player.mtype = real_mtype
-        real_mtype += 1
-
-        partyManager.get_party(partyID).raw_draw(player.mtype)
-        # print("\n\n\n" + str(partyManager.get_party(partyID).players[player.mtype -1].hands['hand']) + "\n\n\n")
+    return common_generate_game_links(party)
 
 
-    partyManager.get_party(partyID).turn = -1
-    partyManager.get_party(partyID).status = 'Game'
-    emit('start-game',{'links': links}, room = partyID)
+def setup_game(party):
+
+    # setup_game() function is called at the start of the game to initialize the game state. 
+    # It can perform any necessary setup for the game, such as dealing initial cards to player
+
+    for player in party.players:
+        party.raw_draw(player.mtype)
+
+    party.turn = -1
 
 
-def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
+def play_card(party, cards, handtypes, player, options=None, needToPlay=True):
+
+    # play_card must return a response with at least the "status" field, which will be used to determine if the action was successful or if an error occurred. The "message" field can be used to provide additional information about the result of the action, such as error details or success messages. This structure allows for consistent communication between the server and clients regarding the outcome of game actions.
+    # play_card can also return end_response (maybe be None if the game hasn't ended), which will be sent to the clients if the game has ended as a result of the action performed in play_card. This end_response can contain information about the outcome of the game, such as whether the players won or lost, and any relevant messages or data to be displayed to the users at the end of the game.
+
     response = {"status": -1,"message": ""}
     end_response = None
     card = cards[0]
     handtype = handtypes[0]
 
-    for i in range(len(cards)):                 #viene controllato se il giocatore abbia le carte in mano
-        if cards[i] == 0:                       #è stato usato il caso di più carte solo per generalizzare, questo gioco prevede di giocare una sola carta per volta
+    for i in range(len(cards)):                 # Checking if the player has cards in his hand
+        if cards[i] == 0:                       # The case of multiple cards was used only to generalize, this game involves playing only one card at a time
             continue
         if(not player.can_play(cards[i],handtypes[i])):
             response.update({"status": 1, "message": "card " + str(cards[i]) + " not in hand " + str(handtypes[i])})
@@ -169,8 +107,7 @@ def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
         party.decks['gamePile'].addCard(card)
         higher_cards = {}
         left_lives = 0
-        cards_in_game = 0          
-        print("\n\n\n")
+        cards_in_game = 0     
         for p in party.players:
             higher_cards[p.name] = []
             for c in p.hands[handtype].cards[:]:
@@ -188,28 +125,35 @@ def play_card(cards,handtypes,player,party,options=None,needToPlay=True):
         if left_lives > 0:
             if limits['difficulty'] == 'normal':
                 left_lives = 1
-            notifyLeftLives(party.partyID, left_lives, higher_cards, card)
+            notifyLeftLives(party.id, left_lives, higher_cards, card)
 
         if party.getVariable('lives') <= 0:
-            end_response = end(0, party.partyID)
+            end_response = end(party, 0)
         elif cards_in_game == 0:
-            next_level(party.partyID)
+            next_level(party.id)
 
     response.update({"status": 0, "message": "Success"})
     
-    return response,end_response
+    return response, end_response
 
 
-def get_inGameCards(partyID,mtype,playerID,targetPlayer = None,n=1, ShuffleCopyDeck = False):
+def get_inGameCardsN(party):
+    # This function calcs the number of cards (not yet shown in game) that must be preoloaded from client
+    return party.getVariable('level') + 1
 
-    
+
+def get_inGameCards(party, mtype, playerID, targetPlayer=None, n=1, ShuffleCopyDeck = False):
+
+    # get_inGameCards used for preloading cards on the client side to reduce waiting times at the start of each level. 
+    # It calculates cards that are already in game and the next cards to be drawn for each player and sends them to the clients. 
+
     cards = []
     cardsInHand = 0
-    for card in partyManager.get_party(partyID).get_player(mtype).hands['hand'].cards:
+    for card in party.get_player(mtype).hands['hand'].cards:
         cards.append(card.card)
         cardsInHand += 1
 
-    for player in partyManager.get_party(partyID).players:
+    for player in party.players:
         if player.mtype == mtype:
             continue
         for card in player.hands['hand'].cards:
@@ -217,46 +161,21 @@ def get_inGameCards(partyID,mtype,playerID,targetPlayer = None,n=1, ShuffleCopyD
 
 
     # also add cards already played
-    for card in partyManager.get_party(partyID).decks['gamePile'].cards:
+    for card in party.decks['gamePile'].cards:
         cards.append(card)
 
 
     if ShuffleCopyDeck:
-        partyManager.get_party(partyID).decks['copyDeck'].shuffle()
-    cards.extend(partyManager.get_party(partyID).decks['copyDeck'].watchNextCards(n * len(partyManager.get_party(partyID).players)))
-    # print("\n\n\nplayers " + str(len(partyManager.get_party(partyID).players)) + "n" + str(n) + " loading..." + str(cards) + "\n\n\n")
+        party.decks['copyDeck'].shuffle()
+    cards.extend(party.decks['copyDeck'].watchNextCards(n * len(party.players)))
 
-    # print("\n\n\nCards in game: " + str(cards) + "\n\n\n")
-    if(targetPlayer != None):
-        emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype,'targetPlayer':playerID, 'cardsInHand': cardsInHand}, room=partyID)
-    else:
-        emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype, 'cardsInHand': cardsInHand}, room=partyID)
-
-
-def get_noise(partyID,playerID,mtype):
-    emit('response-noise', {'playerID':playerID, 'mtype': mtype, 'noisePoints': partyManager.get_party(partyID).get_player(mtype).components['noisePoints']}, room=partyID)
-
-
-def end(outcome, partyID):
-    if outcome == 0:
-        message = "Game Over! The team lost all their lives. Better luck next time!"
-    elif outcome == 1:
-        message = "Congratulations! The team successfully completed all the levels and won the game!"
-    
-    data = {
-        'outcome': outcome,
-        'message': message
-    }
-
-    partyManager.get_party(partyID).end()
-    return data
-
-
-def get_inGameCardsN(partyID):
-    return partyManager.get_party(partyID).getVariable('level') + 1 + 1
+    return cards, cardsInHand
 
 
 
+
+# ------------------------------- Custom functions --------------------------------
+# Custom functions specific for each game
 
 
 
@@ -374,7 +293,7 @@ def next_level(partyID):
         maxLevel = limits['maxLevel4players']
 
     if party.getVariable('level') >= maxLevel:
-        emit('end-game', end(1, party.partyID), room=partyID)
+        emit('end-game', end(party, 1), room=partyID)
         return
                 
     party.setVariable('level', party.getVariable('level') + 1)

@@ -33,7 +33,7 @@ var urlParams = new URLSearchParams(window.location.search);
 var playerID = parseInt(urlParams.get('playerID'));
 var partyID = urlParams.get('partyID');
 var mtype = urlParams.get('mtype');
-
+let endpoint = document.getElementById('gameEndpoint').value;
 
 
 //var images = document.getElementsByClassName('card');
@@ -187,7 +187,7 @@ noiseButton.addEventListener('click', async function() {
 
     if (noiseLevel.isConfirmed){
         console.log('noiseLevel',parseInt(noiseLevel.value))
-        socket.emit('sosonline-noise', {'partyID':partyID, 'mtype':mtype, 'playerID':playerID, 'targetPlayer':targetPlayer, 'noiseLevel':parseInt(noiseLevel.value)});
+        socket.emit('noise', {'partyID':partyID, 'mtype':mtype, 'playerID':playerID, 'targetPlayer':targetPlayer, 'noiseLevel':parseInt(noiseLevel.value)});
     }
 
     /*
@@ -212,7 +212,7 @@ noiseButton.addEventListener('click', async function() {
     if (noiseLevel.isConfirmed){
         
         console.log('noiseLevel',parseInt(noiseLevel.value))
-        socket.emit('sosonline-noise', {'partyID':partyID, 'mtype':mtype, 'playerID':playerID, 'targetPlayer':targetPlayer, 'noiseLevel':parseInt(noiseLevel.value)});
+        socket.emit('noise', {'partyID':partyID, 'mtype':mtype, 'playerID':playerID, 'targetPlayer':targetPlayer, 'noiseLevel':parseInt(noiseLevel.value)});
     }
     */
 });
@@ -557,11 +557,11 @@ socket.on('response-turn', function(data) {
 socket.on('player-joined', function(data) {
     console.log('join', data);
     if(data.playerID == playerID){
-        socket.emit('sosonline-get-inGameCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
+        socket.emit('get-inGameCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'gameName': endpoint});
         socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'hint'});
         socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'action'});
         socket.emit('get-playerList', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
-        socket.emit('sosonline-get-noise', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
+        socket.emit('get-noise', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
     }
     //document.getElementById('playerTurn').innerHTML = 'Giocatore di turno: ' + data.playerID;
 });
