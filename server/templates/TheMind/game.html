@@ -5,7 +5,7 @@
 		<title>The Mind</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
         <meta name="google" content="notranslate">
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home/styles.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='common/styles.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='TheMind/styles.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='TheMind/style_game.css') }}">
 		<link rel="icon" type="image/png" href="{{ url_for('static', filename='TheMind/images/favicon.png') }}">
@@ -86,10 +86,10 @@
 
         <!-- These scripts are only executed after socket_connect.js has finished -->
         <input type="hidden" class="dynamic-script-url" value="{{ url_for('static', filename='TheMind/script_game.js') }}">
-        <input type="hidden" class="dynamic-script-url" value="{{ url_for('static', filename='home/script_contextMenu.js') }}">
-        <input type="hidden" class="dynamic-script-url" value="{{ url_for('static', filename='home/game_common.js') }}">
+        <input type="hidden" class="dynamic-script-url" value="{{ url_for('static', filename='common/script_contextMenu.js') }}">
+        <input type="hidden" class="dynamic-script-url" value="{{ url_for('static', filename='common/game_common.js') }}">
 
-        <script defer src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='common/socket_connect.js') }}"></script>
     </body>
 
 </html>

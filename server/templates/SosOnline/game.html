@@ -49,7 +49,7 @@
                 
                 <progress id="loadingBar" value="0" max="3" style="display: visible;"></progress>
 
-                <!--<script src="{{ url_for('static', filename='home/contextmenu.js') }}"></script>-->
+                <!--<script src="{{ url_for('static', filename='common/contextmenu.js') }}"></script>-->
                 <!-- <script src="https://cdn.jsdelivr.net/npm/interactjs@1.10.11/dist/interact.min.js"></script> -->
                 <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
                 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
@@ -57,11 +57,11 @@
 
                 <input type="hidden" class="dynamic-script-url" value="{{ url_for('static', filename='SosOnline/game_script.js') }}">
         
-                <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
+                <script src="{{ url_for('static', filename='common/socket_connect.js') }}"></script>
                 <!--
                 <script>
                     var script = document.createElement('script');
-                    script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
+                    script.src = "{{ url_for('static', filename='common/socket_connect.js') }}";
                     document.body.appendChild(script);
                 </script>
                 
@@ -70,7 +70,7 @@
                 <!--
                 <script>
                     var script = document.createElement('script');
-                    script.src = "{{ url_for('static', filename='home/socket_connect.js') }}";
+                    script.src = "{{ url_for('static', filename='common/socket_connect.js') }}";
                     script.onload = function() {
                         var gameScript = document.createElement('script');
                         gameScript.src = "{{ url_for('static', filename='SosOnline/game_script.js') }}";
@@ -80,7 +80,7 @@
                 </script>
                 -->
                 <!--
-                <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
+                <script src="{{ url_for('static', filename='common/socket_connect.js') }}"></script>
                 <script>
                     window.addEventListener('load', function() {
                         var script = document.createElement('script');
@@ -89,7 +89,7 @@
                     });
                 </script>
                 -->
-                <!-- <script src="{{ url_for('static', filename='home/index_script.js') }}"></script> -->
+                <!-- <script src="{{ url_for('static', filename='common/index_script.js') }}"></script> -->
             
             </div>
 

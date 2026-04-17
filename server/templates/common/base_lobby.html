@@ -8,7 +8,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
 		<meta name="google" content="notranslate">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename=conf.g_folder | trim ~ '/styles.css') }}">
-		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home/style_index.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='common/style_index.css') }}">
 		<link rel="icon" type="image/png" href="{{ url_for('static', filename=conf.g_folder | trim ~ '/images/favicon.png') }}">
     </head>
 
@@ -26,8 +26,8 @@
         <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
-        <input type="hidden" class="dynamic-script-url" value="{{ url_for('static', filename='home/lobby_script.js') }}" />
-        <script src="{{ url_for('static', filename='home/socket_connect.js') }}"></script>
+        <input type="hidden" class="dynamic-script-url" value="{{ url_for('static', filename='common/lobby_script.js') }}" />
+        <script src="{{ url_for('static', filename='common/socket_connect.js') }}"></script>
         
     </body>
 </html>
