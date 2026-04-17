@@ -8,7 +8,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
 		<meta name="google" content="notranslate">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename=conf.g_folder | trim ~ '/styles.css') }}">
-		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename=conf.g_folder | trim ~ '/style_index.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home/style_index.css') }}">
 		<link rel="icon" type="image/png" href="{{ url_for('static', filename=conf.g_folder | trim ~ '/images/' ~ conf.g_favicon) }}">
     </head>
 
@@ -17,7 +17,7 @@
 			<div id="shakeableIndex">
 
 				<div id="mainContent">
-					<h1 class="title-text" id="game-title">{{ conf.g_title | default('Generic Game') }}</h1>
+					<h1 class="title-text" id="game-title">{{ conf.g_indexTitle | default('Generic Game') }}</h1>
 					<button class="index-button" id="host-lobby">Host a lobby</button>
 					<button class="index-button" id="join-lobby">Join a lobby</button>
 					<input type="text" id="nickname" placeholder="Insert your nickname">
