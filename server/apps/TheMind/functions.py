@@ -137,14 +137,14 @@ def play_card(party, cards, handtypes, player, options=None, needToPlay=True):
     return response, end_response
 
 
-def get_inGameCardsN(party):
+def preloadCardsN(party):
     # This function calcs the number of cards (not yet shown in game) that must be preoloaded from client
     return party.getVariable('level') + 1
 
 
-def get_inGameCards(party, mtype, playerID, targetPlayer=None, n=1, ShuffleCopyDeck = False):
+def preloadCards(party, mtype, playerID, targetPlayer=None, n=1, ShuffleCopyDeck = False):
 
-    # get_inGameCards used for preloading cards on the client side to reduce waiting times at the start of each level. 
+    # preloadCards used for preloading cards on the client side to reduce waiting times at the start of each level. 
     # It calculates cards that are already in game and the next cards to be drawn for each player and sends them to the clients. 
 
     cards = []
@@ -186,7 +186,7 @@ def notifyLeftLives(partyID, left_lives, higher_cards, played_card):
     for name, cards in higher_cards.items():
         message += "<br>Player " + str(name) + " has " + ", ".join(str(c.card) for c in cards) + " left in hand."
 
-    handsTracker = calc_updated_hands_tracker(partyID)    
+    handsTracker = calc_updated_hands_tracker(party)    
 
     emit('notify-left-lives', {'leftLives': left_lives, 'lives': lives, 'playedCard': played_card, 'handsTracker': handsTracker, 'message': message}, room=partyID)
 
@@ -211,12 +211,11 @@ def get_gamePile(partyID, playerID, mtype):
 
 def get_otherInitialInformations(partyID, playerID, mtype):
     party = partyManager.get_party(partyID)
-    handsTracker = calc_updated_hands_tracker(partyID)
+    handsTracker = calc_updated_hands_tracker(party)
     emit('response-otherInitialInformations', {'lives': party.getVariable('lives'), 'level': party.getVariable('level'), 'shurikens': party.getVariable('shurikens'), 'handsTracker': handsTracker, 'shurikensOptions': 1, 'targetPlayer': playerID}, room=partyID)
 
 
-def calc_updated_hands_tracker(partyID):
-    party = partyManager.get_party(partyID)
+def calc_updated_hands_tracker(party):
     handsTracker = []
     for player in party.players:
         handsTracker.append({'mtype': player.mtype, 'name': player.name, 'numberOfCardsInHand': len(player.hands['hand'])})
@@ -236,7 +235,7 @@ def use_shuriken(partyID, playerID, mtype):
                 removed_cards.append(card.card)
                 message += "Player " + str(player.name) + " removed " + str(card.card) + " from their hand.<br>"
 
-        handsTracker = calc_updated_hands_tracker(partyID)
+        handsTracker = calc_updated_hands_tracker(party)
 
         emit('used-shuriken', {'mtype': mtype, 'playerID': playerID, 'handsTracker': handsTracker, 'shurikens': party.getVariable('shurikens'), 'removedCards': removed_cards, 'message': message}, room=partyID)
 
@@ -330,7 +329,7 @@ def next_level(partyID):
 
 
     # party.decks['gamePile'].shuffle_into_deck(party.decks['deck'], shuffle=True)
-    # Instead of shuffling the game pile back into the deck, get_inGameCards already function shuffled a copy of the original deck with all cards 
+    # Instead of shuffling the game pile back into the deck, preloadCards already function shuffled a copy of the original deck with all cards 
     # In this way we can predict the next cards to be drawn and preload them on the client side to reduce waiting times and improve user experience
     # So we just need to copy the shuffled copyDeck into the game deck and clear the game pile
     party.decks['gamePile'].clear()
@@ -341,10 +340,10 @@ def next_level(partyID):
             party.raw_draw(p.mtype, handName='hand', deckName='deck')
 
     # calculate the next cards to be drawn (on next level) for each player and send them to the clients to preload them and reduce waiting times at the start of the next level
-    get_inGameCards(partyID, party.players[0].mtype, party.players[0].id, None, n = (current_level + 1), ShuffleCopyDeck = True)
+    preloadCards(party, party.players[0].mtype, party.players[0].id, None, n = (current_level + 1), ShuffleCopyDeck = True)
 
     
-    handsTracker = calc_updated_hands_tracker(partyID)
+    handsTracker = calc_updated_hands_tracker(party)
 
     emit('next-level', {'level': current_level, 'handsTracker': handsTracker, 'livesOptions': livesOptions, 'shurikensOptions': shurikenOptions, 'shuriken': party.getVariable('shurikens'), 'lives': party.getVariable('lives')}, room=partyID)
 

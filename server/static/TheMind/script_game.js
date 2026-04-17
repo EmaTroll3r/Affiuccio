@@ -181,7 +181,7 @@ socket.on('next-level', async function(data) {
     clearGamePile();
 
     requestHand(partyID, playerID, mtype, 'hand');
-    get_InGameCards();
+    preloadCards();
 });
 
 function clearGamePile(){

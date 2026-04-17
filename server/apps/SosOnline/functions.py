@@ -155,7 +155,7 @@ def play_card(party, cards, handtypes, player, options=None, needToPlay=True):
                             party.raw_draw(player.mtype,'action','action')
                         newTurn = party.changeTurn(options['newTurn'],[1],needToPlay=needToPlay)        #cambia effettivamente il turno
                         emit('response-turn', {'response': {"status": 0, "message": "Success"},'playerID':player.id,'turn': newTurn}, room=party.id)
-                        get_inGameCards(party,player.mtype,player.id)
+                        preloadCards(party,player.mtype,player.id)
                 if(cards[1] < limits['maxBlockCards']):        #if it's a block card
                     party.raw_draw(player.mtype,'action','action')
 
@@ -206,14 +206,14 @@ def play_card(party, cards, handtypes, player, options=None, needToPlay=True):
         return response, end_response
 
 
-def get_inGameCardsN(party):
+def preloadCardsN(party):
     # This function calcs the number of cards (not yet shown in game) that must be preoloaded from client
     return 3
 
 
-def get_inGameCards(party, mtype, playerID, targetPlayer=None, n=1, ShuffleCopyDeck = False):
+def preloadCards(party, mtype, playerID, targetPlayer=None, n=1, ShuffleCopyDeck = False):
 
-    # get_inGameCards used for preloading cards on the client side to reduce waiting times at the start of each level. 
+    # preloadCards used for preloading cards on the client side to reduce waiting times at the start of each level. 
     # It calculates cards that are already in game and the next cards to be drawn for each player and sends them to the clients. 
 
     cards = []

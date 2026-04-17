@@ -11,13 +11,13 @@ from global_vars import socketio
 #     partyID = int(data['partyID'])
 #     sosOnline.start_game(partyID)
 
-# @socketio.on('sosonline-get-inGameCards')
-# def sosonline_inGameCards(data):
+# @socketio.on('sosonline-preloadCards')
+# def sosonline_preloadCards(data):
 #     partyID = int(data['partyID'])
 #     mtype = int(data['mtype'])
 #     playerID = int(data['playerID'])
 
-#     return sosOnline.get_inGameCards(partyID,mtype,playerID,playerID,1)
+#     return sosOnline.preloadCards(partyID,mtype,playerID,playerID,1)
 
 # @socketio.on('sosonline-change-turn')
 # def sosonline_change_turn(data):

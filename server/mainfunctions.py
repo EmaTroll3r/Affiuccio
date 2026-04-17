@@ -232,7 +232,7 @@ def draw(partyID, playerID, mtype, handtype, targetPlayer, targetHand):
         emit('response-hand', {'playerID': party.get_player(targetPlayer).id,'handtype':targetHand, 'hand': hand}, room=party.id)
         
         game = get_game(party.gameEndpoint)
-        game.get_inGameCards(party.id,mtype,playerID,n=2)
+        game.preloadCards(party.id,mtype,playerID,n=2)
 
 
 def change_turn(partyID,playerID,mtype,turn=None):
@@ -240,21 +240,20 @@ def change_turn(partyID,playerID,mtype,turn=None):
     get_game(party.gameEndpoint).change_turn(party,playerID,mtype,turn)
 
 
-def get_inGameCards(partyID, game_name, mtype, playerID, targetPlayer, n):
+def preloadCards(partyID, game_name, mtype, playerID, targetPlayer, n):
     party = partyManager.get_party(partyID)
     game = get_game(game_name)
 
-    cards, cardsInHand = game.get_inGameCards(party, mtype, playerID, targetPlayer, n)
+    cards, cardsInHand = game.preloadCards(party, mtype, playerID, targetPlayer, n)
 
     if(targetPlayer != None):
-        emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype,'targetPlayer':playerID, 'cardsInHand': cardsInHand}, room=partyID)
+        emit('responsepreloadCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype,'targetPlayer':playerID, 'cardsInHand': cardsInHand}, room=partyID)
     else:
-        emit('response-inGameCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype, 'cardsInHand': cardsInHand}, room=partyID)
+        emit('responsepreloadCards', {'hand': cards, 'playerID':playerID, 'mtype': mtype, 'cardsInHand': cardsInHand}, room=partyID)
 
 
-def get_inGameCardsN(partyID, game_name):
+def preloadCardsN(partyID, game_name):
     party = partyManager.get_party(partyID)
-    print("\n\n\nget_inGameCardsN: partyID:", partyID, game_name, "\n\n\n")
     game = get_game(game_name)
 
-    return game.get_inGameCardsN(party)
+    return game.preloadCardsN(party)

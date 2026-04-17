@@ -48,7 +48,7 @@ alertMutex = new mutex();
 socket.on('player-joined', function(data) {
     console.log('join', data);
     if(data.playerID == playerID){
-        get_InGameCards();
+        preloadCards();
         for (let handtype of handtypes) {
             requestHand(partyID, playerID, mtype, handtype);
         }
@@ -59,8 +59,8 @@ socket.on('player-joined', function(data) {
 });
 
 
-socket.on('response-inGameCards',async  function(data) {
-    console.log('response-inGameCards',data.hand);
+socket.on('responsepreloadCards',async  function(data) {
+    console.log('responsepreloadCards',data.hand);
 
     if(data.targetPlayer == playerID || data.targetPlayer == undefined){
         // Mostra la barra di caricamento
@@ -197,8 +197,8 @@ function stopPing() {
     clearInterval(pingInterval);
 }
 
-function get_InGameCards(){
-    socket.emit('get-inGameCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'gameName': endpoint});
+function preloadCards(){
+    socket.emit('preloadCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'gameName': endpoint});
 }
 
 function requestHand(partyID, playerID, mtype, handtype){

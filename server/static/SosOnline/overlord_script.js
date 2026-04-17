@@ -368,8 +368,8 @@ socket.on('response-playerList', function(data) {
     */
 });
 
-socket.on('response-inGameCards', function(data) {
-    console.log('response-inGameCards',data.hand);
+socket.on('responsepreloadCards', function(data) {
+    console.log('responsepreloadCards',data.hand);
     data.hand.forEach((card, i) => {
         //console.log('preloadedImages[card]',preloadedImages[card]);
         if(preloadedImages[card] == undefined){
@@ -416,7 +416,7 @@ socket.on('player-joined', function(data) {
         //socket.emit('get-all-points', {'partyID':partyID});
         socket.emit('get-playerList', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
         // socket.emit('get-turn', {'partyID':partyID, 'playerID':playerID});
-        socket.emit('get-inGameCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'gameName': endpoint});
+        socket.emit('preloadCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'gameName': endpoint});
         socket.emit('get-noise', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
     }
 });

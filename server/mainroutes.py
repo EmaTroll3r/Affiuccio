@@ -127,15 +127,15 @@ def start_game(data):
 
     mainfunctions.start_game(partyID, game, settings)
 
-@socketio.on('get-inGameCards')
-def inGameCards(data):
+@socketio.on('preloadCards')
+def preloadCards(data):
     game_name = data.get('gameName')
     partyID = int(data['partyID'])
     mtype = int(data['mtype'])
     playerID = int(data['playerID'])
-    n = mainfunctions.get_inGameCardsN(partyID, game_name)
+    n = mainfunctions.preloadCardsN(partyID, game_name)
 
-    return mainfunctions.get_inGameCards(partyID, game_name, mtype, playerID, playerID, n)
+    return mainfunctions.preloadCards(partyID, game_name, mtype, playerID, playerID, n)
 
 @socketio.on('change-turn')
 def change_turn(data):

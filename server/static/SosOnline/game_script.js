@@ -360,8 +360,8 @@ document.addEventListener('click', function(e) {
 });
 
 /*
-socket.on('response-inGameCards', function(data) {
-    console.log('response-inGameCards',data.hand);
+socket.on('responsepreloadCards', function(data) {
+    console.log('responsepreloadCards',data.hand);
     
     if(data.targetPlayer == playerID || data.targetPlayer == undefined){
         //console.log('in')
@@ -381,8 +381,8 @@ socket.on('response-inGameCards', function(data) {
 */
 
 
-socket.on('response-inGameCards',async  function(data) {
-    console.log('response-inGameCards',data.hand);
+socket.on('responsepreloadCards',async  function(data) {
+    console.log('responsepreloadCards',data.hand);
 
     if(data.targetPlayer == playerID || data.targetPlayer == undefined){
         // Mostra la barra di caricamento
@@ -557,7 +557,7 @@ socket.on('response-turn', function(data) {
 socket.on('player-joined', function(data) {
     console.log('join', data);
     if(data.playerID == playerID){
-        socket.emit('get-inGameCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'gameName': endpoint});
+        socket.emit('preloadCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'gameName': endpoint});
         socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'hint'});
         socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':'action'});
         socket.emit('get-playerList', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype});
