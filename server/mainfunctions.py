@@ -7,6 +7,7 @@ from server.classes import Party
 
 
 def get_game(game_name):
+    game_name = game_name.strip()
     if game_name not in game_list:
         abort(404)
     game = game_list.get(game_name)

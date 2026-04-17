@@ -14,15 +14,15 @@ def global_error_handler(e, error_code):
                 game_name = game_path[0]
                 if game_name in game_list:
                     try:
-                        return render_template(f'{game_name}/404.html'), error_code
+                        return render_template(f'{game_name}/404.html', game_name=game_name), error_code
                     except TemplateNotFound:
-                        return render_template('home/404.html'), error_code
+                        return render_template('home/404.html', game_name=game_name), error_code
 
             elif path.startswith('/DBChess'):
                 print('Loading DBChess CSS for 404')
-                return render_template('DBChess/404.html'), error_code
+                return render_template('DBChess/404.html', game_name=game_name), error_code
 
             print('Loading default CSS for 404')
-            return render_template('home/404.html'), error_code
+            return render_template('home/404.html', game_name=game_name), error_code
 
-        return render_template('home/404.html'), 500
+        return render_template('home/404.html', game_name=game_name), 500

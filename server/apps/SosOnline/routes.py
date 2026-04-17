@@ -41,8 +41,8 @@ def sosonline_overlord():
     mtype = int(request.args.get('mtype'))
     partyID = int(request.args.get('partyID'))
     if partyManager.get_party(partyID) is None:
-        return render_template('SosOnline/404.html')
-    return render_template('SosOnline/overlord.html')
+        return render_template('SosOnline/404.html', game_name='SosOnline')
+    return render_template('SosOnline/overlord.html', game_name='SosOnline')
 
 
 

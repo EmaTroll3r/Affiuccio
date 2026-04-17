@@ -199,7 +199,7 @@ def home(game_name):
     if game_name not in game_list:
         abort(404)
         
-    return render_template(f'{game_name}/index.html')
+    return render_template(f'{game_name}/index.html', game_name=game_name)
 
 
 @main.route('/<game_name>/host', methods=['POST'])
@@ -229,9 +229,9 @@ def game(game_name):
         
     partyID = int(request.args.get('partyID'))
     if partyManager.get_party(partyID) is None:
-        return render_template(f'{game_name}/404.html')
+        return render_template(f'{game_name}/404.html', game_name=game_name)
     
-    return render_template(f'{game_name}/game.html')
+    return render_template(f'{game_name}/game.html', game_name=game_name)
 
 
 @main.route('/<game_name>/end', methods=['GET'])
@@ -243,5 +243,5 @@ def end(game_name):
 def lobby(game_name):
     partyID = int(request.args.get('partyID'))
     if partyManager.get_party(partyID) is None:
-        return render_template(f'{game_name}/404.html')
-    return render_template(f'{game_name}/lobby.html')
+        return render_template(f'{game_name}/404.html', game_name=game_name)
+    return render_template(f'{game_name}/lobby.html', game_name=game_name)
