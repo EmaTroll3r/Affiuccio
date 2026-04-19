@@ -201,6 +201,20 @@ function preloadCards(){
     socket.emit('preloadCards', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'gameName': endpoint});
 }
 
+function shakeScreen(time){
+    shakeable.classList.add('shake');
+    setTimeout(function() {
+        shakeable.classList.remove('shake');
+        bigCardCanDisappear = true;
+    }, time);
+}
+
+function vibrateDevice(time){
+    if (navigator.vibrate) {
+        navigator.vibrate(time);
+    }
+}
+
 function requestHand(partyID, playerID, mtype, handtype){
     socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'handtype':handtype});
 }
