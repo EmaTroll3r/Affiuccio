@@ -103,6 +103,34 @@ document.getElementById('join-lobby').addEventListener('click', async function()
     });
 });
 
+
+document.getElementById('join-lobby-by-invite').addEventListener('click', async function() {
+    var playername = nickname.value;
+    if (playername == '') {
+        alert('Inserisci un nome valido');
+        return;
+    }
+    
+    localStorage.setItem(gameEndpoint+'_playername', playername);
+
+    partyID = new URLSearchParams(window.location.search).get('partyID');
+
+    fetch(`/`+gameEndpoint+`/join?partyID=${partyID}&player=${playername}`, {
+        method: 'GET',
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        if (data.status == 0)
+            window.location.href = `/`+gameEndpoint+`/${data.page}?partyID=${data.partyID}&mtype=${data.mtype}&playerID=${data.playerID}`
+        else
+            alert(data.verbouse_error)
+    })
+    .catch((error) => {
+        alert("Generic Error");
+    });
+});
+
 function alert(text,status = 1) {
     var title = '<span style="color: #fff;">Attenzione!</span>';
     var icon = 'warning'

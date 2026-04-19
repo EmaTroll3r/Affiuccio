@@ -245,3 +245,13 @@ def lobby(game_name):
     if partyManager.get_party(partyID) is None:
         return render_template(f'{game_name}/404.html', game_name=game_name)
     return render_template(f'{game_name}/lobby.html', game_name=game_name)
+
+
+@main.route('/<game_name>/invite')
+def invite(game_name):
+    partyID = int(request.args.get('partyID'))
+    senderID = int(request.args.get('playerID'))
+    sender = partyManager.get_player(senderID).name if senderID is not None else "Unknown"
+    if partyManager.get_party(partyID) is None:
+        return render_template(f'{game_name}/404.html', game_name=game_name)
+    return render_template(f'{game_name}/invite.html', game_name=game_name, sender=sender)

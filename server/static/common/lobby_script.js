@@ -3,16 +3,15 @@
 
 let gameEndpoint = document.getElementById('gameEndpoint').value;
 
-var urlParams = new URLSearchParams(window.location.search);
-var mtype = urlParams.get('mtype');
-var partyID = urlParams.get('partyID');
-var playerID = parseInt(urlParams.get('playerID'));
-//var playerID = parseInt(localStorage.getItem('playerID'));
+let urlParams = new URLSearchParams(window.location.search);
+let mtype = urlParams.get('mtype');
+let partyID = urlParams.get('partyID');
+let playerID = parseInt(urlParams.get('playerID'));
 
 document.getElementById('party-id').querySelector('span').textContent = partyID;
-var playerListElem = document.getElementById('player-list');
-var players = [];
-var playerList = [];
+let playerListElem = document.getElementById('player-list');
+let players = [];
+let playerList = [];
 let pingInterval;
 
 function refreshPlayerList() {
@@ -27,7 +26,7 @@ function refreshPlayerList() {
             players = [];
 
             playerss.forEach(player => {
-                var li = document.createElement('li');
+                let li = document.createElement('li');
                 players.push(player.name);
                 playerList.push({name: player.name, mtype: player.mtype, playerID: player.playerID});
                 li.textContent = player.name;
@@ -38,12 +37,11 @@ function refreshPlayerList() {
 }
 
 if (mtype == 1) {
-    var buttons = document.querySelectorAll('.host-buttons');
-    for (var i = 0; i < buttons.length; i++) {
-        buttons[i].style.display = 'block'; // o 'inline', 'inline-block', a seconda del tuo layout
+    let buttons = document.querySelectorAll('.host-buttons');
+    for (let i = 0; i < buttons.length; i++) {
+        buttons[i].style.display = 'block';
     }
 
-    //document.getElementById('remove-player').style.display = 'none'; // o 'inline', 'inline-block', a seconda del tuo layout
 }
 
 window.addEventListener('beforeunload', function(event) {
@@ -53,16 +51,13 @@ window.addEventListener('beforeunload', function(event) {
 });
 
 socket.on('player-joined', function(data) {
-    //if (data.playerID != playerID)
-        //alert('A player joined with ID: ' + data.playerName);
     refreshPlayerList();
-    //console.log('A player joined with ID: ' + data.playerID);
 });
 
 
 socket.on('playerList', function(data) {
     if(data.response['status'] == 0){
-        var playerss = data.playerList;
+        let playerss = data.playerList;
         //console.log(playerss);
 
         while (playerListElem.firstChild) {
@@ -73,7 +68,7 @@ socket.on('playerList', function(data) {
 
         // Aggiungere un nuovo elemento <li> per ogni giocatore
         playerss.forEach(player => {
-            var li = document.createElement('li');
+            let li = document.createElement('li');
             players.push(player.name);
             
             playerList.push({name: player.name, mtype: player.mtype, playerID: player.playerID});
@@ -87,14 +82,7 @@ socket.on('playerList', function(data) {
         alert(data.response['message'])
     }
 });
-/*
-socket.on('error', function(data) {
-    console.log('error ',data,playerID,mtype,partyID);
-    if(data.playerID == playerID && data.mtype == mtype && data.partyID == partyID){
-        alert(data.message)
-    }
-});
-*/
+
 
 socket.on('start-game', function(data){
     console.log("received")
@@ -113,8 +101,8 @@ socket.on('kicked-player', function(data){
 });
 
 function alert(text,status = 1) {
-    var title = '<span style="color: #fff;">Attenzione!</span>';
-    var icon = 'warning'
+    let title = '<span style="color: #fff;">Attenzione!</span>';
+    let icon = 'warning'
     if(status == 0){
         title = '<span style="color: #fff;">Successo!</span>'
         icon = 'success'
@@ -174,6 +162,38 @@ document.getElementById('remove-player').addEventListener('click', async functio
     console.log("remove-player",partyID,targetMtype)
 });
 
+document.getElementById('invite-player').addEventListener('click', async () => {
+
+    const inviteUrl = `${window.location.origin}/${gameEndpoint}/invite?partyID=${partyID}&playerID=${playerID}`;
+
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: 'Play with me!',
+                text: 'Join me! Click the link to enter the lobby.',
+                url: inviteUrl
+            });
+            console.log('Share successfully sent');
+        } catch (err) {
+            console.log('Share failed', err);
+        }
+    } else {
+        try {
+            await navigator.clipboard.writeText(inviteUrl);
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Copied Link!',
+                text: 'The lobby link has been copied. Paste it to your friends!',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } catch (err) {
+            alert('Failed to copy the link. Please try copying it manually: ' + inviteUrl);
+        }
+    }
+});
+
 async function choosePlayer(foreignPlayers) {
     console.log('choosePlayer',foreignPlayers);
     let inputOptions = {};
@@ -206,14 +226,9 @@ async function choosePlayer(foreignPlayers) {
         return null;
     }
 }
-/*
-window.onload = function() {
-    startingFunction()
-}
-*/
+
 
 function ping(){
-    //console.log('ping', {'partyID':partyID, 'playerID':playerID})
     socket.emit('ping', {'partyID':partyID, 'playerID':playerID});
 }
 
@@ -239,7 +254,7 @@ document.addEventListener('visibilitychange', function() {
 });
 
 function startingFunction() {
-    var socket_data = {
+    let socket_data = {
         playerID: playerID,
         partyID: partyID,
         mtype: mtype
@@ -255,11 +270,3 @@ function startingFunction() {
 
 startingFunction()
 
-
-
-/*
-socket.on('plaer_joined', function(data) {
-    console.log('A player joined with ID: ' + data.playerID);
-    socket.emit('get-hand', {'partyID':partyID, 'playerID':playerID, 'mtype':mtype, 'hand':'hint'});
-});
-*/

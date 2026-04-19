@@ -46,7 +46,7 @@
 
 #nickname {
     background: rgba(0, 0, 0, 0.7);
-    margin: 20px 10px 10px 10px;
+    margin: 30px 10px 20px 10px;
     font-size: 16px;
     color: white;
     padding: 10px;
@@ -54,9 +54,20 @@
     outline: none; 
     text-align: center;
     width: 200px;
+    border-radius: 8px;
 }
 
 #nickname:focus {
     border: none;
     outline: none;
+}
+
+
+#player-list {
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;    
+}
+
+#invite-title {
+    margin-bottom: 0px;
 }
