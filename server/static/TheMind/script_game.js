@@ -161,7 +161,7 @@ function playedCardAnimation(card) {
 }
 
 socket.on('next-level', async function(data) {
-    vibrateDevice(500);
+    vibrateDevice(400);
     await alert('Congratulations! You have reached level ' + data.level, 0, 'Level Up!');
     levelElement.setAttribute('data-text', data.level.toString());
 
