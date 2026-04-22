@@ -168,11 +168,33 @@ document.getElementById('invite-player').addEventListener('click', async () => {
 
     if (navigator.share) {
         try {
-            await navigator.share({
+            const shareData = {
                 title: 'Play with me!',
-                text: 'Join me! Click the link to enter the lobby.',
+                text: 'Play ' + gameEndpoint + '\n! Click here to join the lobby.',
                 url: inviteUrl
-            });
+            };
+
+            // When supported, attach the game-specific icon to avoid stale domain-level share icons.
+            if (navigator.canShare) {
+                try {
+                    const iconUrl = `${window.location.origin}/static/${gameEndpoint}/images/favicon.png`;
+                    const iconResponse = await fetch(iconUrl, { cache: 'no-store' });
+                    if (iconResponse.ok) {
+                        const iconBlob = await iconResponse.blob();
+                        const iconFile = new File([iconBlob], `${gameEndpoint}-invite.png`, {
+                            type: iconBlob.type || 'image/png'
+                        });
+
+                        if (navigator.canShare({ files: [iconFile] })) {
+                            shareData.files = [iconFile];
+                        }
+                    }
+                } catch (fileErr) {
+                    console.log('Share icon not attached', fileErr);
+                }
+            }
+
+            await navigator.share(shareData);
             console.log('Share successfully sent');
         } catch (err) {
             console.log('Share failed', err);
