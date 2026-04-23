@@ -120,7 +120,6 @@ function alert(text,status = 1) {
 }
 
 document.getElementById('start-game').addEventListener('click', function() {
-
     if(players.length < 2) {
         alert('Devi avere almeno 2 giocatori per iniziare il gioco');
         return;
@@ -128,33 +127,9 @@ document.getElementById('start-game').addEventListener('click', function() {
 
     socket.emit("ask-start-game", {'partyID': partyID, 'gameName': gameEndpoint});
     console.log("start-game emitted to",partyID)
-    /*
-    fetch(`/SosOnline/game?mtype=${mtype}&partyID=${partyID}`, {
-        method: 'GET',
-    })
-    .then(response => response.text())
-    .then(data => {
-        document.body.innerHTML = data;  // Aggiorna il corpo della pagina con i dati ricevuti
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
-    */
 });
 
 document.getElementById('remove-player').addEventListener('click', async function() {
-    /*
-    targetMtype = -1;
-
-    while(isNaN(targetMtype) || targetMtype < 2 || targetMtype >= players.length) {
-        targetMtype = parseInt(prompt("Inserisci l'ID del giocatore da rimuovere"));
-        if(targetMtype == null) 
-            return;
-        if(targetMtype == 1){
-            alert("You can't remove the host")
-        }
-    }
-    */
     targetMtype = await choosePlayer([1])
     if(targetMtype == null || isNaN(targetMtype) || targetMtype < 2 || targetMtype > players.length) 
         return;
@@ -168,33 +143,11 @@ document.getElementById('invite-player').addEventListener('click', async () => {
 
     if (navigator.share) {
         try {
-            const shareData = {
+            await navigator.share({
                 title: 'Play with me!',
-                text: 'Play ' + gameEndpoint + '\n! Click here to join the lobby.',
+                text: 'Play ' + gameEndpoint + ' with me!\n Click here to join the lobby',
                 url: inviteUrl
-            };
-
-            // When supported, attach the game-specific icon to avoid stale domain-level share icons.
-            if (navigator.canShare) {
-                try {
-                    const iconUrl = `${window.location.origin}/static/${gameEndpoint}/images/favicon.png`;
-                    const iconResponse = await fetch(iconUrl, { cache: 'no-store' });
-                    if (iconResponse.ok) {
-                        const iconBlob = await iconResponse.blob();
-                        const iconFile = new File([iconBlob], `${gameEndpoint}-invite.png`, {
-                            type: iconBlob.type || 'image/png'
-                        });
-
-                        if (navigator.canShare({ files: [iconFile] })) {
-                            shareData.files = [iconFile];
-                        }
-                    }
-                } catch (fileErr) {
-                    console.log('Share icon not attached', fileErr);
-                }
-            }
-
-            await navigator.share(shareData);
+            });
             console.log('Share successfully sent');
         } catch (err) {
             console.log('Share failed', err);
