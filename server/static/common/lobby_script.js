@@ -212,7 +212,7 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                             const drawX = (size - drawWidth) / 2;
                             const drawY = (size - drawHeight) / 2;
 
-                            ctx.drawImage(img, 0, 0, 500, 500);
+                            ctx.drawImage(img, drawX, drawY, drawWidth /2, drawHeight /2);
 
                             const outBlob = await new Promise((resolve) => {
                                 canvas.toBlob(resolve, 'image/jpeg', 0.92);
