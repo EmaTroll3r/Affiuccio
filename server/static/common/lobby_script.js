@@ -206,7 +206,7 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                             ctx.fillStyle = '#0c0c12';
                             ctx.fillRect(0, 0, size, size);
 
-                            const scale = Math.max(size / img.width, size / img.height);
+                            const scale = Math.min(size / img.width, size / img.height);
                             const drawWidth = img.width * scale;
                             const drawHeight = img.height * scale;
                             const drawX = (size - drawWidth) / 2;
