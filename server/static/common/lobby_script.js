@@ -174,7 +174,9 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                 url: inviteUrl
             };
 
-            if (navigator.canShare) {
+            const isMobileShare = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
+
+            if (isMobileShare && navigator.canShare) {
                 try {
                     const imageCandidates = [
                         `${window.location.origin}/static/${gameEndpoint}/images/share.png`,
