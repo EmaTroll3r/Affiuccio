@@ -176,16 +176,72 @@ document.getElementById('invite-player').addEventListener('click', async () => {
 
             if (navigator.canShare) {
                 try {
-                    const iconUrl = `${window.location.origin}/static/${gameEndpoint}/images/favicon.png`;
-                    const iconResponse = await fetch(iconUrl, { cache: 'no-store' });
-                    if (iconResponse.ok) {
-                        const iconBlob = await iconResponse.blob();
-                        const iconFile = new File([iconBlob], `${gameEndpoint}-invite.png`, {
-                            type: iconBlob.type || 'image/png'
-                        });
+                    const imageCandidates = [
+                        `${window.location.origin}/static/${gameEndpoint}/images/share.png`,
+                        `${window.location.origin}/static/${gameEndpoint}/images/share.jpg`,
+                        `${window.location.origin}/static/${gameEndpoint}/images/favicon.png`,
+                        `${window.location.origin}/static/${gameEndpoint}/images/favicon.jpg`
+                    ];
 
-                        if (navigator.canShare({ files: [iconFile] })) {
-                            shareData.files = [iconFile];
+                    const buildLargerShareFile = async (imageBlob) => {
+                        const localImageUrl = URL.createObjectURL(imageBlob);
+                        try {
+                            const img = await new Promise((resolve, reject) => {
+                                const image = new Image();
+                                image.onload = () => resolve(image);
+                                image.onerror = () => reject(new Error('image decode failed'));
+                                image.src = localImageUrl;
+                            });
+
+                            const size = 1200;
+                            const zoomFactor = 1.2;
+                            const canvas = document.createElement('canvas');
+                            canvas.width = size;
+                            canvas.height = size;
+
+                            const ctx = canvas.getContext('2d');
+                            if (!ctx) {
+                                return null;
+                            }
+
+                            ctx.fillStyle = '#0c0c12';
+                            ctx.fillRect(0, 0, size, size);
+
+                            const baseScale = Math.max(size / img.width, size / img.height);
+                            const scale = baseScale * zoomFactor;
+                            const drawWidth = img.width * scale;
+                            const drawHeight = img.height * scale;
+                            const drawX = (size - drawWidth) / 2;
+                            const drawY = (size - drawHeight) / 2;
+
+                            ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+
+                            const outBlob = await new Promise((resolve) => {
+                                canvas.toBlob(resolve, 'image/jpeg', 0.92);
+                            });
+
+                            if (!outBlob) {
+                                return null;
+                            }
+
+                            return new File([outBlob], `${gameEndpoint}-invite.jpg`, { type: 'image/jpeg' });
+                        } finally {
+                            URL.revokeObjectURL(localImageUrl);
+                        }
+                    };
+
+                    for (const imageUrl of imageCandidates) {
+                        const imageResponse = await fetch(imageUrl, { cache: 'no-store' });
+                        if (!imageResponse.ok) {
+                            continue;
+                        }
+
+                        const imageBlob = await imageResponse.blob();
+                        const largerShareFile = await buildLargerShareFile(imageBlob);
+
+                        if (largerShareFile && navigator.canShare({ files: [largerShareFile] })) {
+                            shareData.files = [largerShareFile];
+                            break;
                         }
                     }
                 } catch (fileErr) {
