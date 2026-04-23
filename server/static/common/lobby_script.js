@@ -209,8 +209,8 @@ document.getElementById('invite-player').addEventListener('click', async () => {
 
                             const baseScale = Math.max(size / img.width, size / img.height);
                             const scale = baseScale * zoomFactor;
-                            const drawWidth = img.width * scale;
-                            const drawHeight = img.height * scale;
+                            const drawWidth = img.width //* scale;
+                            const drawHeight = img.height //* scale;
                             const drawX = (size - drawWidth) / 2;
                             const drawY = (size - drawHeight) / 2;
 
