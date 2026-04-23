@@ -9,6 +9,16 @@
 		<meta name="google" content="notranslate">
 		<meta name="theme-color" content="{{ conf.g_themeColor | default('#0c0c12') }}">
 		<meta name="color-scheme" content="dark">
+		<meta property="og:type" content="website">
+		<meta property="og:title" content="{{ sender }} invited you to {{ conf.g_title | default('the game') }}">
+		<meta property="og:description" content="Join the lobby now and start playing.">
+		<meta property="og:url" content="{{ request.url }}">
+		<meta property="og:image" content="{{ request.url_root[:-1] ~ url_for('static', filename=conf.g_folder | trim ~ '/images/' ~ conf.g_shareImage | default(conf.g_favicon)) }}">
+		<meta property="og:image:secure_url" content="{{ request.url_root[:-1] ~ url_for('static', filename=conf.g_folder | trim ~ '/images/' ~ conf.g_shareImage | default(conf.g_favicon)) }}">
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:title" content="{{ sender }} invited you to {{ conf.g_title | default('the game') }}">
+		<meta name="twitter:description" content="Join the lobby now and start playing.">
+		<meta name="twitter:image" content="{{ request.url_root[:-1] ~ url_for('static', filename=conf.g_folder | trim ~ '/images/' ~ conf.g_shareImage | default(conf.g_favicon)) }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename=conf.g_folder | trim ~ '/styles.css') }}">
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='common/style_index.css') }}">
 		<link rel="icon" type="image/png" href="{{ url_for('static', filename=conf.g_folder | trim ~ '/images/' ~ conf.g_favicon) }}?v={{ conf.g_folder }}">
