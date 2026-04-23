@@ -203,16 +203,43 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                                 return null;
                             }
 
-                            ctx.clearRect(0, 0, size, size);
+                            const grad = ctx.createLinearGradient(0, 0, size, size);
+                            grad.addColorStop(0, '#161a34');
+                            grad.addColorStop(1, '#0f1020');
+                            ctx.fillStyle = grad;
+                            ctx.fillRect(0, 0, size, size);
 
-                            const targetMaxSide = size / 2;
-                            const scale = Math.min(targetMaxSide / img.width, targetMaxSide / img.height);
+                            const cardSize = 620;
+                            const cardX = (size - cardSize) / 2;
+                            const cardY = 180;
+                            const radius = 46;
+
+                            ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+                            ctx.beginPath();
+                            ctx.moveTo(cardX + radius, cardY);
+                            ctx.arcTo(cardX + cardSize, cardY, cardX + cardSize, cardY + cardSize, radius);
+                            ctx.arcTo(cardX + cardSize, cardY + cardSize, cardX, cardY + cardSize, radius);
+                            ctx.arcTo(cardX, cardY + cardSize, cardX, cardY, radius);
+                            ctx.arcTo(cardX, cardY, cardX + cardSize, cardY, radius);
+                            ctx.closePath();
+                            ctx.fill();
+
+                            const iconMaxSide = 470;
+                            const scale = Math.min(iconMaxSide / img.width, iconMaxSide / img.height);
                             const drawWidth = img.width * scale;
                             const drawHeight = img.height * scale;
                             const drawX = (size - drawWidth) / 2;
-                            const drawY = (size - drawHeight) / 2;
+                            const drawY = cardY + (cardSize - drawHeight) / 2;
 
                             ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+
+                            ctx.fillStyle = '#ffffff';
+                            ctx.textAlign = 'center';
+                            ctx.font = 'bold 74px Arial';
+                            ctx.fillText(gameEndpoint, size / 2, 915);
+                            ctx.font = '46px Arial';
+                            ctx.fillStyle = 'rgba(255,255,255,0.85)';
+                            ctx.fillText('Join my lobby', size / 2, 980);
 
                             const outBlob = await new Promise((resolve) => {
                                 canvas.toBlob(resolve, 'image/png');
