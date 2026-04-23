@@ -170,7 +170,7 @@ document.getElementById('invite-player').addEventListener('click', async () => {
         try {
             const shareData = {
                 title: 'Play with me!',
-                text: 'Play ' + gameEndpoint + ' with me!\n Click here to join the lobby',
+                text: 'Play ' + gameEndpoint + ' with me!\nClick here to join the lobby',
                 url: inviteUrl
             };
 
