@@ -193,7 +193,7 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                                 image.src = localImageUrl;
                             });
 
-                            const size = 2000;
+                            const size = 1200;
                             const canvas = document.createElement('canvas');
                             canvas.width = size;
                             canvas.height = size;
