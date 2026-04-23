@@ -179,8 +179,6 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                     const imageCandidates = [
                         `${window.location.origin}/static/${gameEndpoint}/images/share.png`,
                         `${window.location.origin}/static/${gameEndpoint}/images/share.jpg`,
-                        `${window.location.origin}/static/${gameEndpoint}/images/background.jpg`,
-                        `${window.location.origin}/static/${gameEndpoint}/images/background.webp`,
                         `${window.location.origin}/static/${gameEndpoint}/images/favicon.png`,
                         `${window.location.origin}/static/${gameEndpoint}/images/favicon.jpg`
                     ];
