@@ -194,7 +194,7 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                             });
 
                             const size = 1200;
-                            const zoomFactor = 1.2;
+                            const zoomFactor = 1.0;
                             const canvas = document.createElement('canvas');
                             canvas.width = size;
                             canvas.height = size;
