@@ -203,7 +203,7 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                                 return null;
                             }
 
-                            ctx.fillStyle = '#0c0c12';
+                            // ctx.fillStyle = '#0c0c12';
                             ctx.fillRect(0, 0, size, size);
 
                             const targetMaxSide = 600;
