@@ -176,30 +176,16 @@ document.getElementById('invite-player').addEventListener('click', async () => {
 
             if (navigator.canShare) {
                 try {
-                        const imageCandidates = [
-                            `${window.location.origin}/static/${gameEndpoint}/images/share.png`,
-                            `${window.location.origin}/static/${gameEndpoint}/images/share.jpg`,
-                            `${window.location.origin}/static/${gameEndpoint}/images/favicon.png`
-                            `${window.location.origin}/static/${gameEndpoint}/images/favicon.jpg`
-                            
-                        ];
+                    const iconUrl = `${window.location.origin}/static/${gameEndpoint}/images/favicon.png`;
+                    const iconResponse = await fetch(iconUrl, { cache: 'no-store' });
+                    if (iconResponse.ok) {
+                        const iconBlob = await iconResponse.blob();
+                        const iconFile = new File([iconBlob], `${gameEndpoint}-invite.png`, {
+                            type: iconBlob.type || 'image/png'
+                        });
 
-                        for (const imageUrl of imageCandidates) {
-                            const imageResponse = await fetch(imageUrl, { cache: 'no-store' });
-                            if (!imageResponse.ok) {
-                                continue;
-                            }
-
-                            const imageBlob = await imageResponse.blob();
-                            const imageType = imageBlob.type || 'image/png';
-                            const fileExtension = imageType.includes('webp') ? 'webp' : imageType.includes('jpeg') ? 'jpg' : 'png';
-                            const imageFile = new File([imageBlob], `${gameEndpoint}-invite.${fileExtension}`, {
-                                type: imageType
-                            });
-
-                            if (navigator.canShare({ files: [imageFile] })) {
-                                shareData.files = [imageFile];
-                                break;
+                        if (navigator.canShare({ files: [iconFile] })) {
+                            shareData.files = [iconFile];
                         }
                     }
                 } catch (fileErr) {
