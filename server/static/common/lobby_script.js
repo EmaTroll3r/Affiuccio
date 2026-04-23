@@ -162,6 +162,27 @@ document.getElementById('remove-player').addEventListener('click', async functio
     console.log("remove-player",partyID,targetMtype)
 });
 
+function syncShareSheetIcon() {
+    const existingIcon = document.querySelector('link[rel="icon"]');
+    const baseIconHref = existingIcon ? existingIcon.href.split('?')[0] : `${window.location.origin}/static/${gameEndpoint}/images/favicon.png`;
+    const cacheBustHref = `${baseIconHref}?share=${Date.now()}-${partyID}`;
+
+    const rels = ['icon', 'shortcut icon', 'apple-touch-icon'];
+    for (const rel of rels) {
+        let link = document.querySelector(`link[rel="${rel}"]`);
+        if (!link) {
+            link = document.createElement('link');
+            link.setAttribute('rel', rel);
+            document.head.appendChild(link);
+        }
+
+        link.setAttribute('href', cacheBustHref);
+        if (rel === 'icon') {
+            link.setAttribute('type', 'image/png');
+        }
+    }
+}
+
 document.getElementById('invite-player').addEventListener('click', async () => {
 
     const inviteUrl = `${window.location.origin}/${gameEndpoint}/invite?partyID=${partyID}&playerID=${playerID}`;
@@ -173,6 +194,9 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                 text: 'Play ' + gameEndpoint + ' with me!\nClick here to join the lobby',
                 url: inviteUrl
             };
+
+            syncShareSheetIcon();
+            await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
             // Keep share payload as pure link so WhatsApp renders a rich preview card from OG tags.
 
