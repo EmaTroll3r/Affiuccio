@@ -194,7 +194,6 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                             });
 
                             const size = 1200;
-                            const zoomFactor = 1.0;
                             const canvas = document.createElement('canvas');
                             canvas.width = size;
                             canvas.height = size;
@@ -207,8 +206,7 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                             ctx.fillStyle = '#0c0c12';
                             ctx.fillRect(0, 0, size, size);
 
-                            const baseScale = Math.max(size / img.width, size / img.height);
-                            const scale = baseScale * zoomFactor;
+                            const scale = Math.max(size / img.width, size / img.height);
                             const drawWidth = img.width * scale;
                             const drawHeight = img.height * scale;
                             const drawX = (size - drawWidth) / 2;
