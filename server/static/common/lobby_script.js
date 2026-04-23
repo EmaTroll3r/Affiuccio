@@ -195,10 +195,85 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                 url: inviteUrl
             };
 
+<<<<<<< HEAD
             syncShareSheetIcon();
             await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
             // Keep share payload as pure link so WhatsApp renders a rich preview card from OG tags.
+=======
+            if (navigator.canShare) {
+                try {
+                    const imageCandidates = [
+                        `${window.location.origin}/static/${gameEndpoint}/images/share.png`,
+                        `${window.location.origin}/static/${gameEndpoint}/images/share.jpg`,
+                        `${window.location.origin}/static/${gameEndpoint}/images/favicon.png`,
+                        `${window.location.origin}/static/${gameEndpoint}/images/favicon.jpg`
+                    ];
+
+                    const buildLargerShareFile = async (imageBlob) => {
+                        const localImageUrl = URL.createObjectURL(imageBlob);
+                        try {
+                            const img = await new Promise((resolve, reject) => {
+                                const image = new Image();
+                                image.onload = () => resolve(image);
+                                image.onerror = () => reject(new Error('image decode failed'));
+                                image.src = localImageUrl;
+                            });
+
+                            const size = 1200;
+                            const canvas = document.createElement('canvas');
+                            canvas.width = size;
+                            canvas.height = size;
+
+                            const ctx = canvas.getContext('2d');
+                            if (!ctx) {
+                                return null;
+                            }
+
+                            ctx.clearRect(0, 0, size, size);
+
+                            const targetMaxSide = size / 2;
+                            const scale = Math.min(targetMaxSide / img.width, targetMaxSide / img.height);
+                            const drawWidth = img.width * scale;
+                            const drawHeight = img.height * scale;
+                            const drawX = (size - drawWidth) / 2;
+                            const drawY = (size - drawHeight) / 2;
+
+                            ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+
+                            const outBlob = await new Promise((resolve) => {
+                                canvas.toBlob(resolve, 'image/png');
+                            });
+
+                            if (!outBlob) {
+                                return null;
+                            }
+
+                            return new File([outBlob], `${gameEndpoint}-invite.png`, { type: 'image/png' });
+                        } finally {
+                            URL.revokeObjectURL(localImageUrl);
+                        }
+                    };
+
+                    for (const imageUrl of imageCandidates) {
+                        const imageResponse = await fetch(imageUrl, { cache: 'no-store' });
+                        if (!imageResponse.ok) {
+                            continue;
+                        }
+
+                        const imageBlob = await imageResponse.blob();
+                        const largerShareFile = await buildLargerShareFile(imageBlob);
+
+                        if (largerShareFile && navigator.canShare({ files: [largerShareFile] })) {
+                            shareData.files = [largerShareFile];
+                            break;
+                        }
+                    }
+                } catch (fileErr) {
+                    console.log('Share icon not attached', fileErr);
+                }
+            }
+>>>>>>> parent of 2fa1f5c (fix icon share for pc)
 
             await navigator.share(shareData);
             console.log('Share successfully sent');
