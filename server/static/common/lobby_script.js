@@ -203,10 +203,9 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                                 return null;
                             }
 
-                            // ctx.fillStyle = '#0c0c12';
-                            ctx.fillRect(0, 0, size, size);
+                            ctx.clearRect(0, 0, size, size);
 
-                            const targetMaxSide = 600;
+                            const targetMaxSide = 200;
                             const scale = Math.min(targetMaxSide / img.width, targetMaxSide / img.height);
                             const drawWidth = img.width * scale;
                             const drawHeight = img.height * scale;
@@ -216,14 +215,14 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                             ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
 
                             const outBlob = await new Promise((resolve) => {
-                                canvas.toBlob(resolve, 'image/jpeg', 0.92);
+                                canvas.toBlob(resolve, 'image/png');
                             });
 
                             if (!outBlob) {
                                 return null;
                             }
 
-                            return new File([outBlob], `${gameEndpoint}-invite.jpg`, { type: 'image/jpeg' });
+                            return new File([outBlob], `${gameEndpoint}-invite.png`, { type: 'image/png' });
                         } finally {
                             URL.revokeObjectURL(localImageUrl);
                         }
