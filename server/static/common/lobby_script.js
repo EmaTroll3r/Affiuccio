@@ -176,72 +176,30 @@ document.getElementById('invite-player').addEventListener('click', async () => {
 
             if (navigator.canShare) {
                 try {
-                    const imageCandidates = [
-                        `${window.location.origin}/static/${gameEndpoint}/images/share.png`,
-                        `${window.location.origin}/static/${gameEndpoint}/images/share.jpg`,
-                        `${window.location.origin}/static/${gameEndpoint}/images/favicon.png`,
-                        `${window.location.origin}/static/${gameEndpoint}/images/favicon.jpg`
-                    ];
+                        const imageCandidates = [
+                            `${window.location.origin}/static/${gameEndpoint}/images/share.png`,
+                            `${window.location.origin}/static/${gameEndpoint}/images/share.jpg`,
+                            `${window.location.origin}/static/${gameEndpoint}/images/favicon.png`
+                            `${window.location.origin}/static/${gameEndpoint}/images/favicon.jpg`
+                            
+                        ];
 
-                    const buildLargerShareFile = async (imageBlob) => {
-                        const localImageUrl = URL.createObjectURL(imageBlob);
-                        try {
-                            const img = await new Promise((resolve, reject) => {
-                                const image = new Image();
-                                image.onload = () => resolve(image);
-                                image.onerror = () => reject(new Error('image decode failed'));
-                                image.src = localImageUrl;
-                            });
-
-                            const size = 1200;
-                            const zoomFactor = 1.2;
-                            const canvas = document.createElement('canvas');
-                            canvas.width = size;
-                            canvas.height = size;
-
-                            const ctx = canvas.getContext('2d');
-                            if (!ctx) {
-                                return null;
+                        for (const imageUrl of imageCandidates) {
+                            const imageResponse = await fetch(imageUrl, { cache: 'no-store' });
+                            if (!imageResponse.ok) {
+                                continue;
                             }
 
-                            ctx.fillStyle = '#0c0c12';
-                            ctx.fillRect(0, 0, size, size);
-
-                            const baseScale = Math.max(size / img.width, size / img.height);
-                            const scale = baseScale * zoomFactor;
-                            const drawWidth = img.width * scale;
-                            const drawHeight = img.height * scale;
-                            const drawX = (size - drawWidth) / 2;
-                            const drawY = (size - drawHeight) / 2;
-
-                            ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
-
-                            const outBlob = await new Promise((resolve) => {
-                                canvas.toBlob(resolve, 'image/jpeg', 0.92);
+                            const imageBlob = await imageResponse.blob();
+                            const imageType = imageBlob.type || 'image/png';
+                            const fileExtension = imageType.includes('webp') ? 'webp' : imageType.includes('jpeg') ? 'jpg' : 'png';
+                            const imageFile = new File([imageBlob], `${gameEndpoint}-invite.${fileExtension}`, {
+                                type: imageType
                             });
 
-                            if (!outBlob) {
-                                return null;
-                            }
-
-                            return new File([outBlob], `${gameEndpoint}-invite.jpg`, { type: 'image/jpeg' });
-                        } finally {
-                            URL.revokeObjectURL(localImageUrl);
-                        }
-                    };
-
-                    for (const imageUrl of imageCandidates) {
-                        const imageResponse = await fetch(imageUrl, { cache: 'no-store' });
-                        if (!imageResponse.ok) {
-                            continue;
-                        }
-
-                        const imageBlob = await imageResponse.blob();
-                        const largerShareFile = await buildLargerShareFile(imageBlob);
-
-                        if (largerShareFile && navigator.canShare({ files: [largerShareFile] })) {
-                            shareData.files = [largerShareFile];
-                            break;
+                            if (navigator.canShare({ files: [imageFile] })) {
+                                shareData.files = [imageFile];
+                                break;
                         }
                     }
                 } catch (fileErr) {
