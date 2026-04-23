@@ -120,6 +120,7 @@ function alert(text,status = 1) {
 }
 
 document.getElementById('start-game').addEventListener('click', function() {
+
     if(players.length < 2) {
         alert('Devi avere almeno 2 giocatori per iniziare il gioco');
         return;
@@ -127,9 +128,33 @@ document.getElementById('start-game').addEventListener('click', function() {
 
     socket.emit("ask-start-game", {'partyID': partyID, 'gameName': gameEndpoint});
     console.log("start-game emitted to",partyID)
+    /*
+    fetch(`/SosOnline/game?mtype=${mtype}&partyID=${partyID}`, {
+        method: 'GET',
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.body.innerHTML = data;  // Aggiorna il corpo della pagina con i dati ricevuti
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+    */
 });
 
 document.getElementById('remove-player').addEventListener('click', async function() {
+    /*
+    targetMtype = -1;
+
+    while(isNaN(targetMtype) || targetMtype < 2 || targetMtype >= players.length) {
+        targetMtype = parseInt(prompt("Inserisci l'ID del giocatore da rimuovere"));
+        if(targetMtype == null) 
+            return;
+        if(targetMtype == 1){
+            alert("You can't remove the host")
+        }
+    }
+    */
     targetMtype = await choosePlayer([1])
     if(targetMtype == null || isNaN(targetMtype) || targetMtype < 2 || targetMtype > players.length) 
         return;
@@ -143,11 +168,90 @@ document.getElementById('invite-player').addEventListener('click', async () => {
 
     if (navigator.share) {
         try {
-            await navigator.share({
+            const shareData = {
                 title: 'Play with me!',
                 text: 'Play ' + gameEndpoint + ' with me!\n Click here to join the lobby',
                 url: inviteUrl
-            });
+            };
+
+            if (navigator.canShare) {
+                try {
+                    const imageCandidates = [
+                        `${window.location.origin}/static/${gameEndpoint}/images/share.png`,
+                        `${window.location.origin}/static/${gameEndpoint}/images/share.jpg`,
+                        `${window.location.origin}/static/${gameEndpoint}/images/background.jpg`,
+                        `${window.location.origin}/static/${gameEndpoint}/images/background.webp`,
+                        `${window.location.origin}/static/${gameEndpoint}/images/favicon.png`,
+                        `${window.location.origin}/static/${gameEndpoint}/images/favicon.jpg`
+                    ];
+
+                    const buildLargerShareFile = async (imageBlob) => {
+                        const localImageUrl = URL.createObjectURL(imageBlob);
+                        try {
+                            const img = await new Promise((resolve, reject) => {
+                                const image = new Image();
+                                image.onload = () => resolve(image);
+                                image.onerror = () => reject(new Error('image decode failed'));
+                                image.src = localImageUrl;
+                            });
+
+                            const size = 1200;
+                            const zoomFactor = 1.2;
+                            const canvas = document.createElement('canvas');
+                            canvas.width = size;
+                            canvas.height = size;
+
+                            const ctx = canvas.getContext('2d');
+                            if (!ctx) {
+                                return null;
+                            }
+
+                            ctx.fillStyle = '#0c0c12';
+                            ctx.fillRect(0, 0, size, size);
+
+                            const baseScale = Math.max(size / img.width, size / img.height);
+                            const scale = baseScale * zoomFactor;
+                            const drawWidth = img.width * scale;
+                            const drawHeight = img.height * scale;
+                            const drawX = (size - drawWidth) / 2;
+                            const drawY = (size - drawHeight) / 2;
+
+                            ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+
+                            const outBlob = await new Promise((resolve) => {
+                                canvas.toBlob(resolve, 'image/jpeg', 0.92);
+                            });
+
+                            if (!outBlob) {
+                                return null;
+                            }
+
+                            return new File([outBlob], `${gameEndpoint}-invite.jpg`, { type: 'image/jpeg' });
+                        } finally {
+                            URL.revokeObjectURL(localImageUrl);
+                        }
+                    };
+
+                    for (const imageUrl of imageCandidates) {
+                        const imageResponse = await fetch(imageUrl, { cache: 'no-store' });
+                        if (!imageResponse.ok) {
+                            continue;
+                        }
+
+                        const imageBlob = await imageResponse.blob();
+                        const largerShareFile = await buildLargerShareFile(imageBlob);
+
+                        if (largerShareFile && navigator.canShare({ files: [largerShareFile] })) {
+                            shareData.files = [largerShareFile];
+                            break;
+                        }
+                    }
+                } catch (fileErr) {
+                    console.log('Share icon not attached', fileErr);
+                }
+            }
+
+            await navigator.share(shareData);
             console.log('Share successfully sent');
         } catch (err) {
             console.log('Share failed', err);
