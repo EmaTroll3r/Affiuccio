@@ -209,8 +209,8 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                             const scale = Math.min(size / img.width, size / img.height);
                             const drawWidth = img.width * scale;
                             const drawHeight = img.height * scale;
-                            const drawX = (size - drawWidth) / 2;
-                            const drawY = (size - drawHeight) / 2;
+                            const drawX = (size - drawWidth) / 1;
+                            const drawY = (size - drawHeight) / 1;
 
                             ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
 
