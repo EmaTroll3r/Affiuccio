@@ -205,7 +205,7 @@ document.getElementById('invite-player').addEventListener('click', async () => {
 
                             ctx.clearRect(0, 0, size, size);
 
-                            const targetMaxSide = 200;
+                            const targetMaxSide = 1000;
                             const scale = Math.min(targetMaxSide / img.width, targetMaxSide / img.height);
                             const drawWidth = img.width * scale;
                             const drawHeight = img.height * scale;
