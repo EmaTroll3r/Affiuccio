@@ -193,7 +193,7 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                                 image.src = localImageUrl;
                             });
 
-                            const size = 1200;
+                            const size = 600;
                             const canvas = document.createElement('canvas');
                             canvas.width = size;
                             canvas.height = size;
@@ -209,8 +209,8 @@ document.getElementById('invite-player').addEventListener('click', async () => {
                             const scale = Math.min(size / img.width, size / img.height);
                             const drawWidth = img.width * scale;
                             const drawHeight = img.height * scale;
-                            const drawX = (size - drawWidth) / 1;
-                            const drawY = (size - drawHeight) / 1;
+                            const drawX = (size - drawWidth) / 2;
+                            const drawY = (size - drawHeight) / 2;
 
                             ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
 
