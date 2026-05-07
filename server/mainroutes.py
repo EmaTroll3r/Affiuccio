@@ -72,14 +72,14 @@ def get_noise(data):
 
 @socketio.on('get-all-points')
 def get_allPoints(data):
-    partyI = int(data['partyID'])
+    partyID = int(data['partyID'])
     lobbyfunctions.get_allPoints(partyID)
 
 
 @socketio.on('leave')
 def on_leave(data):
-    partyID = data['partyID']
-    playerID = data['playerID']
+    partyID = int(data['partyID'])
+    playerID = int(data['playerID'])
 
     lobbyfunctions.leave_party(partyID, playerID)
 
